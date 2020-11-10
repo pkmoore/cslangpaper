@@ -1,0 +1,168 @@
+\section{Introduction}
+\label{SEC:introduction}
+
+\textit{Clever quote here}
+
+With the explosion of...
+
+...applications are no longer single units sitting on a specific machine.
+
+In fake study 1, researchers estimate that XX\% of distributed applications
+contain bugs...
+
+
+%No matter how well an application is tested before its release,
+%new bugs always seem to emerge after deployment.
+%In fact, Oracle estimates that 40\% of deployed applications
+%contain critical defects -- a fact that is compounded that deployment
+%increases the cost to fix these flaws by 100 times~\cite{OracleAppQuality}.
+%One reason for this behavior
+%is that these applications will operate within a diverse set of
+%deployment \emph{environments},
+%and variations between these environments tend to
+%reveal previously undiscovered flaws.
+%These flaws emerge from
+%such factors as
+%operating system APIs changing across versions
+%~\cite{LinuxGlibcChanges},
+%or small variations in file systems exhibiting subtle but critical
+%differences~\cite{EXT4Layout, AppleHFS}.
+%Even if the network and adapter are identical,
+%network behavior can still diverge from what is expected~\cite{vbox},
+%and these environmental differences greatly exacerbate
+%the chance that an application will function incorrectly when deployed.
+
+...something something something applications made of multiple
+intercommunicating modules.
+
+
+...This is increasingly true today's applications that typically consist of
+multiple, intercommunicating modules
+
+
+...These complex bugs are often difficult to reason about...
+
+
+%These unforeseeable bugs
+%complicate the work of application developers who, according to a
+%recent survey conducted by ClusterHQ~\cite{ClusterHQSurvey},
+%spend a significant portion of their time
+%debugging errors that only appear in production.
+%Numerous efforts have been made to reduce this burden.
+%One approach
+%is to hide environmental differences behind standard interfaces.
+%Unfortunately,
+%even specialized ``Write-Once, Run Anywhere'' environments
+%that attempt to hide these differences,
+%such as the Java Runtime Environment,
+%are not perfect,
+%leading them to be rechristened ``Write-Once, Debug Everywhere''~\cite{WODE}.
+%A more direct approach would be
+%to identify and fix deficiencies before deployment,
+%but history has shown that,
+%even if enormous effort is put forward,
+%it may be insufficient to uncover these bugs.
+%Microsoft employs thousands of engineers with nearly a
+%1:1 ratio of testers to developers~\cite{Page2009}.
+%Yet, a recent Windows Update released
+%in response to the Spectre Intel CPU vulnerability
+%resulted in machines with certain hardware configurations
+%being rendered unbootable~\cite{kb4056892}.
+
+
+%twe introduced Simulating Environmental Anomalies (SEA)
+%and its key insight that
+%problematic environmental properties,
+%which we refer to as \textit{anomalies},
+%can often be detected
+%in the function calls,
+%system calls,
+%or other communications an application makes within an environment.
+%When employing SEA,
+%the anomalies
+%unique to a given environment
+%can be inserted into
+%the communications of an application under test
+%in such a way
+%that its responses will indicate potential
+%for failures upon deployment.
+%These anomalies can be preserved and cataloged
+%allowing them to be reused to test other applications,
+%without requiring
+%per-application effort.
+%Over time,
+%a corpus of environmental anomalies can be assembled
+%that can help ensure
+%future applications do not suffer from bugs of the past.
+
+
+In earlier work, we made an initial thrust at this problem by employing the
+Simulating Environmental Anomalies (SEA) technique on the system calls an
+application makes. Our effort centered on the key insight, that problematic
+environmental properties, known as anomalies, are visible in the
+communications between the components that make up an application.  The
+work documented in this paper augments SEA so that its proven methodology
+can be used to test a broader set of applications.  Our improvements take
+SEA beyond system calls by providing by providing a more generic way to
+encode and simulate anomalies across the set of applications that use
+structured communications like remote procedure calls.
+This allows anomalies that were
+valuable in testing one application to be directly used to test other
+applications with similar communication strategies.  In effect, this takes
+SEA's capability at finding environmental bugs and applies it to other bug
+domains while both maintaining existing advantages of SEA and
+dramatically improving its reach.
+
+
+
+
+In order to evaluate our improvements to SEA, we needed a way to express
+anomalies that was not tied to a particular domain.  To this end, we
+implemented a new programming language, CSLang.  CSLang is a simple, but
+powerful, language for describing the transducers needed to both identify
+simulation opportunities and carry out the transformations required to make
+said simulations a reality.  Initially, we used CSLang to implement the
+mutators previously described in \preston{however you cite the first paper
+here}. We found these mutators outperformed in terms of SOME METRIC HERE and
+in XXX\% fewer lines of code.  To further our evaluation, we implemented ZZZ new
+mutators capable of simulating anomalies in applications that use either
+JSON-RPC or XML-RPC.  We employed these mutators in testing suitable
+applications that ranked highly on Debian's popularity contest.  This
+exercise identified AAA new bugs in the tested applications.  In the
+future, these mutators can be used on similar application to expose more
+bugs without additional test writing effort.
+
+%In addition to demonstrating that
+%CrashSimulator could find bugs, we were also able to
+%show that developers with varying backgrounds
+%could use the tool
+%on real world applications with ease.
+%We conducted a user study with
+%12 undergraduate and graduate computer science students
+%who were asked to use CrashSimulator to test
+%the same type of applications evaluated in our initial tests.
+%The results show that the developers were able to find bugs
+%that were missed by the applications' existing testing strategies.
+%Additionally, the
+%participants were able to find bugs
+%in environments with which they had only a limited amount of experience.
+
+The main contributions in this work can be summarized as follows:
+
+\begin{itemize}
+
+\item{An expanded version of the Simulating Environmental Anomalies (SEA)
+  technique that can expose bugs both between an application and its
+    environment and between application components that communicate with
+    one another}
+
+\item{It demonstrates a new language, {\em CSLang},
+which allows for concise descriptions of transducers that may
+modify streams of communication between components in order to simulate
+anomalous conditions}
+
+\item{It proves the value of CSLang by illustrating the ease with which
+  transducers can be constructed and the effectiveness with which they are
+    able to find bugs in real world applications }
+
+\end{itemize}
