@@ -1,15 +1,34 @@
 \begin{abstract}
 
-2-3 sentences of Motivation ...
-Password hashing and key stretching offer only limited protections against
-cracking. An attacker, using the same hardware as the server, can try N
-password guesses in N times the effort it takes the server to verify a
-password. This symmetry of effort makes password cracking feasible when
-users do not choose sufficiently random passwords.
-
-In this paper,  ...
-(close strong) Our system is used in production by X,Y,Z to cure cancer.
-
+The failure of applications after deployment
+is a constant source of headache and expense
+for development teams.
+It has been established
+that a many of these failures
+are caused by unanticipated anomalies that
+appear in the communication between an application
+and its environment.
+Earlier work has shown that the SEA technique
+is able to identify
+bugs that are visible in the
+results and side effects
+of the system calls an application makes.
+This work expands upon SEA's success by
+providing a way to catch bugs that
+are similarly visible in the communications
+between application components.
+This is accomplished through by using a new
+programming language to describe a formal model
+for transforming valid log of the communications
+between application components into one where
+a chosen anomaly is present.
+This log can then feed a testing process wherein
+an application is exposed to a simulation of the
+anomaly in order to get an idea of how it might respond
+to it.
+Using this new capability we evaluated AAA applications chosen
+based on their popularity in the Debian popularity contest.
+Our tests identified YYY new bugs in ZZZ applications.
 
 
 \end{abstract}
