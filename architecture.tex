@@ -1,13 +1,30 @@
 \section{Architecture}
 \label{SEC:architecture}
 
-[This is how the system actually works.  Go in depth with the design, but 
-don't describe implementation details (most of the time).  That usually
-goes in a separate impl section.  So, explain the commonalities if someone 
-implement it on a different OS w/ a different language, using different
-file formats, etc.]
+... The key feature of SEA is the ability to capture and encode anomalies.
 
-[Diagrams are useful here.  This is usually 2-3 pages and can also have 
-multiple sections]
+\begin{itemize}
+  \item{Language describing anomalies}
+  \item{Formal model of transducer that can implement anomalies}
+  \item{Tool to compile description into said formal transducer}
+  \item{Format-agnostic intermediate data structure (IDS) over which transducer
+  operates}
+  \item{Translation layer for converting to and from concrete data into IDS}
+\end{itemize}
 
 
+\begin{enumerate}
+\item{Anomaly is identified}
+\item{Anomaly is described using CSlang}
+\item{Anomaly is compiled into a transducer}
+\item{Transducer is executed on a stream of incoming syscalls, rpc calls, etc}
+\item{Mutated calls come out the other end}
+\item{Application being tested is exposed to simulation of mutated calls}
+\begin{itemize}
+\item{This is CrashSimulator for system calls}
+\item{Some other tool for RPC applications}
+\end{itemize}
+\item{Results come out the other side}
+\preston{We need a collective term for system calls, rpc calls, etc}
+
+\end{enumerate}
