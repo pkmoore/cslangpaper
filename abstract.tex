@@ -8,7 +8,8 @@ that a many of these failures
 are caused by unanticipated anomalies that
 appear in the communication between an application
 and its environment.
-Earlier work has shown that the SEA technique
+Earlier work has shown that the
+Simulating Environmental Anomalies (SEA) technique
 is able to identify
 bugs that are visible in the
 results and side effects
@@ -17,12 +18,15 @@ This work expands upon SEA's success by
 providing a way to catch bugs that
 are similarly visible in the communications
 between application components.
-This is accomplished through by using a new
-programming language to describe a formal model
-for transforming valid log of the communications
-between application components into one where
-a chosen anomaly is present.
-This log can then feed a testing process wherein
+This is accomplished by using our new
+programming language,
+cslang,
+to describe a transducer
+that can mutate valid communications
+between application components
+so that a chosen anomaly is inserted.
+Then, in keeping with SEA's process,
+This output feeds a testing process wherein
 an application is exposed to a simulation of the
 anomaly in order to get an idea of how it might respond
 to it.
