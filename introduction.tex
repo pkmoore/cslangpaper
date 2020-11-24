@@ -108,29 +108,32 @@ application makes. Our effort centered on the key insight, that problematic
 environmental properties, known as anomalies, are visible in the
 communications between the components that make up an application.  The
 work documented in this paper augments SEA so that its proven methodology
-can be used to test a broader set of applications.  Our improvements take
-SEA beyond system calls by providing by providing a more generic way to
+can be used to test a broader set of applications.
+In effect,
+we take
+SEA's existing capabilities and apply it to new bug
+domains while maintaining the technique's existing advantages and
+dramatically
+improving its reach.
+We achieve this by
+providing a more generic way to
 encode and simulate anomalies across the set of applications that use
 structured communications like remote procedure calls.
 This allows anomalies that were
 valuable in testing one application to be directly used to test other
-applications with similar communication strategies.  In effect, this takes
-SEA's capability at finding environmental bugs and applies it to other bug
-domains while both maintaining existing advantages of SEA and
-dramatically improving its reach.
-
-
-
+applications with similar communication strategies.
 
 In order to evaluate our improvements to SEA, we needed a way to express
-anomalies that was not tied to a particular domain.  To this end, we
+anomalies in a domain agnostic fashion.  To this end, we
 implemented a new programming language, CSLang.  CSLang is a simple, but
 powerful, language for describing the transducers needed to both identify
 simulation opportunities and carry out the transformations required to make
 said simulations a reality.  Initially, we used CSLang to implement the
 mutators previously described in \preston{however you cite the first paper
 here}. We found these mutators outperformed in terms of SOME METRIC HERE and
-in XXX\% fewer lines of code.  To further our evaluation, we implemented ZZZ new
+consisted of XXX\% fewer lines of code than the mutators presented in
+\preston{cite crashsim paper}.
+To further our evaluation, we implemented ZZZ new
 mutators capable of simulating anomalies in applications that use either
 JSON-RPC or XML-RPC.  We employed these mutators in testing suitable
 applications that ranked highly on Debian's popularity contest.  This
@@ -157,17 +160,17 @@ The main contributions in this work can be summarized as follows:
 
 \begin{itemize}
 
-\item{An expanded version of the Simulating Environmental Anomalies (SEA)
-  technique that can expose bugs both between an application and its
-    environment and between application components that communicate with
-    one another}
+\item{We present an expanded version of the Simulating Environmental
+  Anomalies (SEA) technique that can expose bugs both between an
+    application and its environment and between application components that
+    communicate with one another}
 
-\item{It demonstrates a new language, {\em CSLang},
+\item{We construct a new language, {\em CSLang},
 which allows for concise descriptions of transducers that may
 modify streams of communication between components in order to simulate
 anomalous conditions}
 
-\item{It proves the value of CSLang by illustrating the ease with which
+\item{We prove the value of CSLang by illustrating the ease with which
   transducers can be constructed and the effectiveness with which they are
     able to find bugs in real world applications }
 
