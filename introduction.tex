@@ -1,20 +1,24 @@
 \section{Introduction}
 \label{SEC:introduction}
 
-\textit{Clever quote here}
+\textit{But it works on my machine!} goes the refrain of the tortured
+software developer whose application works correctly when executed on a
+development computer only to fail once it is deployed.  This occurs with
+such frequency that the ``works on my machine'' phenomenon is a well known
+source of pain that is often discussed in software and project management
+literature~\cite{notreal}.  The problem is so widespread that FAKESTUDY
+concluded that \$XXX are spent annually on efforts to recall, fix, and
+redeploy applications because of bugs that slipped past extensive testing
+efforts during development.
 
-
-Environment also contains separate components of the same application
-that must communicate with one another
-
-With the explosion of...
-
-...applications are no longer single units sitting on a specific machine.
-
-In fake study 1, researchers estimate that XX\% of distributed applications
-contain bugs...
-
-...recent very bad environmental bug~\cite{devzeroroot}
+Earlier work has demonstrated that environmental bugs, those that occur due
+to unanticipated qualities external to an application, are a major source
+of such failures.  This fact continues to be reinforced by the regular
+appearance of high impact environmental bugs in major pieces of
+software~\cite{devzeroroot}.  And it appears that no class of application
+is safe with environmental bugs affecting operating systems~\cite{bad},
+user applications~\cite{bad} and even web applications~\cite{bad} in the
+last year alone!
 
 
 %No matter how well an application is tested before its release,
@@ -37,16 +41,6 @@ contain bugs...
 %network behavior can still diverge from what is expected~\cite{vbox},
 %and these environmental differences greatly exacerbate
 %the chance that an application will function incorrectly when deployed.
-
-...something something something applications made of multiple
-intercommunicating modules.
-
-
-...This is increasingly true today's applications that typically consist of
-multiple, intercommunicating modules
-
-
-...These complex bugs are often difficult to reason about...
 
 
 %These unforeseeable bugs
@@ -102,59 +96,73 @@ multiple, intercommunicating modules
 %future applications do not suffer from bugs of the past.
 
 
-In earlier work, we made an initial thrust at this problem by employing the
+%%% Introduce that there was a paper
+%%% We made an initial thrust at this with our 2019 paper ...
+%%% that introduced the SEA technique
+%%% Look at OOPSLA and see if it is single blind or double blind
+
+We made an initial thrust at this problem by employing the
 Simulating Environmental Anomalies (SEA) technique on the system calls an
 application makes. Our effort centered on the key insight, that problematic
 environmental properties, known as anomalies, are visible in the
-communications between the components that make up an application.  The
-work documented in this paper augments SEA so that its proven methodology
+communications between the components that make up an application.
+We found that, once captured, these anomalies allowed us to test other
+applications to see how they would fare in a given environment.
+% Combine these three sentences into something shorter
+% that talks about how we are expanding the SEA technique
+But system calls are just part of the story --
+This paper documents our effort to augment SEA
+so that its proven methodology
 can be used to test a broader set of applications.
-In effect,
-we take
-SEA's existing capabilities and apply it to new bug
-domains while maintaining the technique's existing advantages and
+Our improvements
+apply SEA's existing capability
+to new bug domains
+while maintaining the its existing advantages and
 dramatically
 improving its reach.
-We achieve this by
-providing a more generic way to
+Central to this goal is
+a more generic way to
 encode and simulate anomalies across the set of applications that use
 structured communications like remote procedure calls.
-This allows anomalies that were
+Our improvements allow anomalies that were
 valuable in testing one application to be directly used to test other
 applications with similar communication strategies.
 
-In order to evaluate our improvements to SEA, we needed a way to express
-anomalies in a domain agnostic fashion.  To this end, we
-implemented a new programming language, CSLang.  CSLang is a simple, but
-powerful, language for describing the transducers needed to both identify
-simulation opportunities and carry out the transformations required to make
-said simulations a reality.  Initially, we used CSLang to implement the
-mutators previously described in \preston{however you cite the first paper
-here}. We found these mutators outperformed in terms of SOME METRIC HERE and
-consisted of XXX\% fewer lines of code than the mutators presented in
-\preston{cite crashsim paper}.
-To further our evaluation, we implemented ZZZ new
-mutators capable of simulating anomalies in applications that use either
-JSON-RPC or XML-RPC.  We employed these mutators in testing suitable
+In order to evaluate our improvements to SEA, we needed a more powerful
+way to express anomalies.
+To this end, we
+implemented a new programming language, CSLang.  CSLang is a concise, but
+% introduction of transducers is abrupt and out of place here
+% need to introduce it earlier
+expressive, language for describing both situations indicative of
+simulation opportunities and the transformations required to make
+said simulations a reality.
+We used CSlang to describe a set of XXX anomalies that can occur in
+applications that use JSONRPC or XMLRPC and employed them against
+suitable
 applications that ranked highly on Debian's popularity contest.  This
-exercise identified AAA new bugs in the tested applications.  In the
-future, these mutators can be used on similar application to expose more
+exercise identified AAA new bugs in the tested applications.
+What's more, these descriptions can be reused on
+similar applications to expose more
 bugs without additional test writing effort.
 
-%In addition to demonstrating that
-%CrashSimulator could find bugs, we were also able to
-%show that developers with varying backgrounds
-%could use the tool
-%on real world applications with ease.
-%We conducted a user study with
-%12 undergraduate and graduate computer science students
-%who were asked to use CrashSimulator to test
-%the same type of applications evaluated in our initial tests.
-%The results show that the developers were able to find bugs
-%that were missed by the applications' existing testing strategies.
-%Additionally, the
-%participants were able to find bugs
-%in environments with which they had only a limited amount of experience.
+\preston{Some stuff here might be... ambitious to prove}
+Additionally, we used CSLang to re-implement the
+anomalies previously described in \preston{however you cite the first paper
+here}.
+Our recreations were dramatically more concise (up to XXX\% in some cases)
+than their counterparts.  Side-by-side comparison shows that our new
+descriptions are easier to understand, more maintainable, and simpler to
+update as needs change.  This lowers SEA's barrier to entry allowing the
+technique to be more easily used by a wider audience.
+%%% say that we chose JSON/XMLRPC in order to demonstrate that the
+%%% technique works on complex, application layer protocols rather than
+%%% just super low level stuff like system calls
+
+% I don't like the performance/speed comparison here.  Focus on usability
+%%% SOMEWHERE we need to talk about how old mutators were tightly coupled
+%%% to system calls and now we can write a mutator and run on whatever
+%%% we ingest
 
 The main contributions in this work can be summarized as follows:
 
@@ -165,13 +173,14 @@ The main contributions in this work can be summarized as follows:
     application and its environment and between application components that
     communicate with one another}
 
-\item{We construct a new language, {\em CSLang},
-which allows for concise descriptions of transducers that may
-modify streams of communication between components in order to simulate
-anomalous conditions}
+\item{We construct a new language, {\em CSlang},
+  which allows for concise, but powerful, descriptions of anomalies.}
 
-\item{We prove the value of CSLang by illustrating the ease with which
-  transducers can be constructed and the effectiveness with which they are
-    able to find bugs in real world applications }
+\item{We show that anomalies described by CSlang can be used to find bugs
+  in real-world applications.}
+
+\item{We prove the usability of CSLang by illustrating the ease with which
+  anomalies can be constructed.}
 
 \end{itemize}
+
