@@ -5,11 +5,19 @@
 software developer whose application works correctly when executed on a
 development computer only to fail once it is deployed.  This occurs with
 such frequency that the ``works on my machine'' phenomenon is a well known
-source of pain that is often discussed in software and project management
-literature~\cite{notreal}.  The problem is so widespread that FAKESTUDY
-concluded that \$XXX are spent annually on efforts to recall, fix, and
-redeploy applications because of bugs that slipped past extensive testing
-efforts during development.
+source of pain
+and frequent topic of discussion
+in software and project management
+literature~\cite{notreal}.
+The problem is so widespread
+that FAKESTUDY concluded
+that \$XXX are spent annually on efforts to
+recall,
+fix,
+and re-deploy applications
+because of all the bugs
+that slipped past extensive testing efforts
+during development.
 
 Earlier work has demonstrated that environmental bugs, those that occur due
 to unanticipated qualities external to an application, are a major source
@@ -96,22 +104,26 @@ last year alone!
 %future applications do not suffer from bugs of the past.
 
 
-%%% Introduce that there was a paper
-%%% We made an initial thrust at this with our 2019 paper ...
-%%% that introduced the SEA technique
-%%% Look at OOPSLA and see if it is single blind or double blind
-
-We made an initial thrust at this problem by employing the
-Simulating Environmental Anomalies (SEA) technique on the system calls an
-application makes. Our effort centered on the key insight, that problematic
-environmental properties, known as anomalies, are visible in the
+An initial thrust was made at this problem by Moore et al
+when they employed
+the Simulating Environmental Anomalies (SEA) technique
+on applications' system calls~\cite{crashsim}.
+This effort centered on the key insight
+that problematic
+environmental properties,
+known as anomalies, are visible in the
 communications between the components that make up an application.
-We found that, once captured, these anomalies allowed us to test other
-applications to see how they would fare in a given environment.
-% Combine these three sentences into something shorter
-% that talks about how we are expanding the SEA technique
-But system calls are just part of the story --
-This paper documents our effort to augment SEA
+They found that,
+once captured,
+these anomalies
+could be
+used to create simulations
+that test
+an application as if
+it had encountered the captured anomalies
+in the real world.
+But system calls are just part of the story.
+This paper documents an effort to augment SEA
 so that its proven methodology
 can be used to test a broader set of applications.
 Our improvements
@@ -120,23 +132,28 @@ to new bug domains
 while maintaining the its existing advantages and
 dramatically
 improving its reach.
+
+
 Central to this goal is
 a more generic way to
 encode and simulate anomalies across the set of applications that use
 structured communications like remote procedure calls.
-Our improvements allow anomalies that were
+Such a tool would allow
+anomalies that were
 valuable in testing one application to be directly used to test other
 applications with similar communication strategies.
-
-In order to evaluate our improvements to SEA, we needed a more powerful
-way to express anomalies.
-To this end, we
-implemented a new programming language, CSLang.  CSLang is a concise, but
+To this end,
+we implemented a new programming language,
+CSLang.
+CSLang is a concise, but
 % introduction of transducers is abrupt and out of place here
 % need to introduce it earlier
-expressive, language for describing both situations indicative of
-simulation opportunities and the transformations required to make
-said simulations a reality.
+expressive,
+language
+for describing both situations
+where anomalies can be simulated
+and the transformations required
+to generate said simulations.
 We used CSlang to describe a set of XXX anomalies that can occur in
 applications that use JSONRPC or XMLRPC and employed them against
 suitable
@@ -146,14 +163,14 @@ What's more, these descriptions can be reused on
 similar applications to expose more
 bugs without additional test writing effort.
 
-\preston{Some stuff here might be... ambitious to prove}
 Additionally, we used CSLang to re-implement the
-anomalies previously described in \preston{however you cite the first paper
-here}.
+anomalies previously described in the initial SEA paper~\cite{crashsim}.
 Our recreations were dramatically more concise (up to XXX\% in some cases)
 than their counterparts.  Side-by-side comparison shows that our new
-descriptions are easier to understand, more maintainable, and simpler to
-update as needs change.  This lowers SEA's barrier to entry allowing the
+descriptions are
+more maintainable,
+and simpler to update as needed.
+This lowers SEA's barrier to entry allowing the
 technique to be more easily used by a wider audience.
 %%% say that we chose JSON/XMLRPC in order to demonstrate that the
 %%% technique works on complex, application layer protocols rather than
@@ -176,7 +193,7 @@ The main contributions in this work can be summarized as follows:
 \item{We construct a new language, {\em CSlang},
   which allows for concise, but powerful, descriptions of anomalies.}
 
-\item{We show that anomalies described by CSlang can be used to find bugs
+\item{We show that anomalies described using CSlang can be used to find bugs
   in real-world applications.}
 
 \item{We prove the usability of CSLang by illustrating the ease with which
