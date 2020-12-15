@@ -1,7 +1,7 @@
 \section{Implementation (sometimes rolled into eval)}
 \label{SEC:implementation}
 
-Implementing CSlang was a careful balancing act between providing enough
+Implementing CSLang was a careful balancing act between providing enough
 expressiveness to succinctly describe anomalies without oppressing the user
 with excess complexity.  As a result, considerable though when into the
 language's feature set.  In this section we discuss notable features we
@@ -17,7 +17,7 @@ result.........
 
 \subsection{Intermediate Data Format and Message Adapter Classes}
 
-Ensuring CSlang was easy to extend is a central concern.  We provide an
+Ensuring CSLang was easy to extend is a central concern.  We provide an
 intermediate data format as well as a description of how to construct
 message format adaptors cthat transform messages into it.........
 
@@ -35,14 +35,14 @@ CSLang's tooling consists of AAA lines of Python code.
 \item{Compilation results in a pure-python object serialized to disk}
 \end{itemize}
 
-\subsection{Using CSlang}
+\subsection{Using CSLang}
 
-Using CSlang is a familiar process to anyone who has written, compiled, and
+Using CSLang is a familiar process to anyone who has written, compiled, and
 executed code from another programming language....
 
 \begin{enumerate}
 \item{Anomaly is identified}
-\item{Anomaly is described using CSlang}
+\item{Anomaly is described using CSLang}
 \item{Anomaly is compiled into a transducer}
 \item{Transducer is executed on a stream of incoming syscalls, rpc calls, etc}
 \item{Mutated calls come out the other end}
