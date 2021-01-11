@@ -1,37 +1,51 @@
 \begin{abstract}
 
-The failure of applications after deployment
-is a constant source of headaches and expense
-for development teams.
-Many of these failures
-are caused by unanticipated anomalies that
-appear in communications between an application
-and its environment.
-The Simulating Environmental Anomalies (SEA) technique,
-introduced in 2019,
-took an important step forward
-in stopping these failures
-by enabling developers
-to identify bugs
-that are visible in the
-results and side effects
-of the system calls an application makes.
-This work expands upon SEA's success by
-providing a way to catch other bugs that
-are similarly visible in the communications
-between application components.
-This is accomplished by using our new
-programming language,
-CSLang,
-to concisely describe application level anomalies.
-These descriptions then drive a simulation
-that can determine how an application
-would respond to the anomalies
-should they be encountered
-in the real world.
-Using this new capability we evaluated AAA applications chosen
-based on their popularity in the Debian popularity contest.
-Our tests identified YYY new bugs in ZZZ applications.
+  This work presents CSlang,
+  a new domain specific language
+  for processing application activity streams
+  like event logs,
+  remote procedure call traces,
+  or system call activity.
+  CSlang's key feature
+  is the ease with which users
+  can construct programs
+  capable of
+  recognizing important application activity
+  and taking action
+  when it appears.
+  %%%
+  This is accomplished by first transforming the incoming activity stream
+  into a format-agnostic representation.
+  The stream is then processed by an enhanced finite-state transducer that
+  makes modifications described by the CSlang program.
+  Finally, the modified stream is output in the format required by its
+  intended use case.
+  %%%
+  As earlier work on the SEA technique,
+  introduced in 2019,
+  showed success at finding bugs
+  using similar capabilities,
+  we used CSlang to recreate that
+  project's ``anomalies.''
+  We employed them
+  in evaluating AAA applications
+  chosen from the Debian popularity contest
+  and found YYY new bugs in ZZZ
+  applications.
+  %%%
+  Further, in order to illustrate CSlang's flexibility
+  we used its type system
+  and data model
+  to produce programs that can
+  transform logged network traffic into firewall rules.
+  These programs were able to identify common network attacks
+  and block offending IP addresses using iptables.
+  %%%
+  Finally,
+  we created programs that could examine
+  the contents of remote procedure calls,
+  and modify them in order to generate test cases
+  for the receiving application.
 
 
 \end{abstract}
