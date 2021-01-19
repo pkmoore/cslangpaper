@@ -2,7 +2,7 @@
 
   This work presents CSlang,
   a new domain specific language
-  for describing and recognizing
+  for describing
   sequences of application activity
   so that they can be identified
   in streams like event logs,
@@ -23,10 +23,13 @@
   created by compiling a CSlang program.
   Similar to a standard transducer,
   this model both recognizes the activity sequence described in its
-  CSlang program and outputs a modified stream based on its transition
+  CSlang program and produces output based on its transition
   relation.
-  Once the stream has been consumed, the output is transformed back into
-  its original format.
+  In this case, the output is a copy of the input stream that has been
+  modified as required by the CSlang program.
+  Once the input stream has been consumed,
+  the output is transformed back into
+  the inputs original format.
   %%%
   We employed CSlang
   in recreating the ``anomalies''
