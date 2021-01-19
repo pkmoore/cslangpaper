@@ -1,10 +1,59 @@
-\section{Background (Optional)}
+\section{Our Motivating Example}
 \label{SEC:background}
 
-Lets talk a bit about environmental bugs:
+\textit{But it works on my machine!} goes the refrain of the tortured
+software developer whose application works correctly when executed on a
+development computer only to fail once it is deployed.  This occurs with
+such frequency that the ``works on my machine'' phenomenon is a well known
+source of pain
+and frequent topic of discussion
+in software and project management
+literature~\cite{notreal}.
+The problem is so widespread
+that FAKESTUDY concluded
+that \$XXX are spent annually on efforts to
+recall,
+fix,
+and re-deploy applications
+because of all the bugs
+that slipped past extensive testing efforts
+during development.
 
-<Summary of environmental bugs stuff from CrashSim paper>
+Earlier work has demonstrated that environmental bugs, those that occur due
+to unanticipated qualities external to an application, are a major source
+of such failures.  This fact continues to be reinforced by the regular
+appearance of high impact environmental bugs in major pieces of
+software~\cite{devzeroroot}.  And it appears that no class of application
+is safe with environmental bugs affecting operating systems~\cite{bad},
+user applications~\cite{bad} and even web applications~\cite{bad} in the
+last year alone!
 
+An initial thrust was made at this problem by Moore et al
+when they employed
+the Simulating Environmental Anomalies (SEA) technique
+on applications' system calls~\cite{crashsim}.
+This effort centered on the key insight
+that problematic
+environmental properties,
+known as anomalies, are visible in the
+communications between the components that make up an application.
+They found that,
+once captured,
+these anomalies
+could be
+used to create simulations
+that test
+an application as if
+it had encountered the captured anomalies
+in the real world.
+But system calls are just part of the story.
+This paper documents an effort to augment SEA
+so that its proven methodology
+can be used to test a broader set of applications.
+Our improvements
+apply SEA's existing capability
+to new bug domains
+while maintaining its existing advantages and
+dramatically
+improving its reach.
 
-...we expand upon earlier work to include bugs that appear as a result of
-intra-application communication.

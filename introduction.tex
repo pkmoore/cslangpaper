@@ -1,171 +1,66 @@
 \section{Introduction}
 \label{SEC:introduction}
 
-\textit{But it works on my machine!} goes the refrain of the tortured
-software developer whose application works correctly when executed on a
-development computer only to fail once it is deployed.  This occurs with
-such frequency that the ``works on my machine'' phenomenon is a well known
-source of pain
-and frequent topic of discussion
-in software and project management
-literature~\cite{notreal}.
-The problem is so widespread
-that FAKESTUDY concluded
-that \$XXX are spent annually on efforts to
-recall,
-fix,
-and re-deploy applications
-because of all the bugs
-that slipped past extensive testing efforts
-during development.
+Whether it be stock prices, sensor data, or application logs,
+streams are everywhere.
+And a great deal of value can be gleaned
+from examining the contents of streaming data
+in order to identify and act upon
+interesting patterns.
+Earlier work in the areas of stream
+processing~\cite{asdf}
+and Complex Event Processing~\cite{asdf} bear this
+out.
+This work aims to take these successes
+and apply similar strategies
+at a much lower level,
+the internal activity of individual applications,
+in order to improve application reliability by catching bugs.
 
-Earlier work has demonstrated that environmental bugs, those that occur due
-to unanticipated qualities external to an application, are a major source
-of such failures.  This fact continues to be reinforced by the regular
-appearance of high impact environmental bugs in major pieces of
-software~\cite{devzeroroot}.  And it appears that no class of application
-is safe with environmental bugs affecting operating systems~\cite{bad},
-user applications~\cite{bad} and even web applications~\cite{bad} in the
-last year alone!
+To this end,
+we've constructed
+a new domain specific language called CSlang.
+CSlang allows its user to describe sequences of operations an application
+might carry out and
+then use these descriptions
+to monitor an application's system calls,
+remote procedure calls,
+or other actions in order to determine if it has
+performed what was described.
+This is possible because a CSlang program is compiled
+compiled into a transducer that,
+like a more standard transducer,
+consumes an input stream
+and produces appropriate output
+according to its transition relation.
+In the case of CSlang,
+the transducer in question is able to
+both recognize the activity it is looking for as it arises
+and produce output according to the rules laid down in the CSlang
+program from which it was built.
 
+Our inspiration for this work came from other efforts in developing
+the SEA technique~\cite{ASDF}.
+This technique showed that bugs could be found by looking at situations
+where other
+applications had failed, figuring out why they failed, and then imposing
+the conditions, known as an ``anomaly'',
+that caused a failure on another application to see how it
+responds.
 
-%No matter how well an application is tested before its release,
-%new bugs always seem to emerge after deployment.
-%In fact, Oracle estimates that 40\% of deployed applications
-%contain critical defects -- a fact that is compounded that deployment
-%increases the cost to fix these flaws by 100 times~\cite{OracleAppQuality}.
-%One reason for this behavior
-%is that these applications will operate within a diverse set of
-%deployment \emph{environments},
-%and variations between these environments tend to
-%reveal previously undiscovered flaws.
-%These flaws emerge from
-%such factors as
-%operating system APIs changing across versions
-%~\cite{LinuxGlibcChanges},
-%or small variations in file systems exhibiting subtle but critical
-%differences~\cite{EXT4Layout, AppleHFS}.
-%Even if the network and adapter are identical,
-%network behavior can still diverge from what is expected~\cite{vbox},
-%and these environmental differences greatly exacerbate
-%the chance that an application will function incorrectly when deployed.
-
-
-%These unforeseeable bugs
-%complicate the work of application developers who, according to a
-%recent survey conducted by ClusterHQ~\cite{ClusterHQSurvey},
-%spend a significant portion of their time
-%debugging errors that only appear in production.
-%Numerous efforts have been made to reduce this burden.
-%One approach
-%is to hide environmental differences behind standard interfaces.
-%Unfortunately,
-%even specialized ``Write-Once, Run Anywhere'' environments
-%that attempt to hide these differences,
-%such as the Java Runtime Environment,
-%are not perfect,
-%leading them to be rechristened ``Write-Once, Debug Everywhere''~\cite{WODE}.
-%A more direct approach would be
-%to identify and fix deficiencies before deployment,
-%but history has shown that,
-%even if enormous effort is put forward,
-%it may be insufficient to uncover these bugs.
-%Microsoft employs thousands of engineers with nearly a
-%1:1 ratio of testers to developers~\cite{Page2009}.
-%Yet, a recent Windows Update released
-%in response to the Spectre Intel CPU vulnerability
-%resulted in machines with certain hardware configurations
-%being rendered unbootable~\cite{kb4056892}.
-
-
-%twe introduced Simulating Environmental Anomalies (SEA)
-%and its key insight that
-%problematic environmental properties,
-%which we refer to as \textit{anomalies},
-%can often be detected
-%in the function calls,
-%system calls,
-%or other communications an application makes within an environment.
-%When employing SEA,
-%the anomalies
-%unique to a given environment
-%can be inserted into
-%the communications of an application under test
-%in such a way
-%that its responses will indicate potential
-%for failures upon deployment.
-%These anomalies can be preserved and cataloged
-%allowing them to be reused to test other applications,
-%without requiring
-%per-application effort.
-%Over time,
-%a corpus of environmental anomalies can be assembled
-%that can help ensure
-%future applications do not suffer from bugs of the past.
-
-
-An initial thrust was made at this problem by Moore et al
-when they employed
-the Simulating Environmental Anomalies (SEA) technique
-on applications' system calls~\cite{crashsim}.
-This effort centered on the key insight
-that problematic
-environmental properties,
-known as anomalies, are visible in the
-communications between the components that make up an application.
-They found that,
-once captured,
-these anomalies
-could be
-used to create simulations
-that test
-an application as if
-it had encountered the captured anomalies
-in the real world.
-But system calls are just part of the story.
-This paper documents an effort to augment SEA
-so that its proven methodology
-can be used to test a broader set of applications.
-Our improvements
-apply SEA's existing capability
-to new bug domains
-while maintaining its existing advantages and
-dramatically
-improving its reach.
-
-
-%% We are going to end up naming the tool
-%% Probably something fishy or nautical
-Central to this goal is
-a more generic way to
-encode and simulate anomalies across the set of applications that use
+It was reported that most of the effort involved when using the technique
+was expended in encoding the anomalies once
+they had been identified.
+To improve the situation we decided to build a language
+that could more clearly
+encode anomalies across the set of applications that use
 structured communications like remote procedure calls.
 Such a tool would allow
 anomalies that were
 valuable in testing one application to be directly used to test other
 applications with similar communication strategies.
-To this end,
-we implemented a new programming language,
-CSLang.
-CSLang is a concise, but
-% introduction of transducers is abrupt and out of place here
-% need to introduce it earlier
-expressive,
-language
-for describing both situations
-where anomalies can be simulated
-and the transformations required
-to generate said simulations.
-We used CSLang to describe a set of XXX anomalies that can occur in
-applications that use JSONRPC or XMLRPC and employed them against
-suitable
-applications that ranked highly on Debian's popularity contest.  This
-exercise identified AAA new bugs in the tested applications.
-What's more, these descriptions can be reused on
-similar applications to expose more
-bugs without additional test writing effort.
 
-Additionally, we used CSLang to re-implement the
+To see if we achieved our initial goal, we re-implemented the
 anomalies previously described in the initial SEA paper~\cite{crashsim}.
 Our recreations were dramatically more concise (up to XXX\% in some cases)
 than their counterparts.  Side-by-side comparison shows that our new
@@ -183,23 +78,39 @@ technique to be more easily used by a wider audience.
 %%% to system calls and now we can write a mutator and run on whatever
 %%% we ingest
 
+Encouraged by this initial success,
+we applied CSlang to another domain.
+We used the language to describe a set of XXX anomalies that can occur in
+applications that use JSONRPC or XMLRPC and employed them against
+suitable
+applications that ranked highly on Debian's popularity contest.  This
+exercise identified AAA new bugs in the tested applications.
+What's more, these descriptions can be reused on
+similar applications to expose more
+bugs without additional test writing effort.
+
 The main contributions in this work can be summarized as follows:
 
 \begin{itemize}
 
-\item{We present an expanded version of the Simulating Environmental
-  Anomalies (SEA) technique that can expose bugs both between an
-    application and its environment and between application components that
-    communicate with one another}
+\item{We present a new language, {\em CSLang},
+  which allows for concise, but powerful, descriptions of
+    application activity and what should be output when they arise.}
 
-\item{We construct a new language, {\em CSLang},
-  which allows for concise, but powerful, descriptions of anomalies.}
+%\item{We present an expanded version of the Simulating Environmental
+%  Anomalies (SEA) technique that can expose bugs both between an
+%    application and its environment and between application components that
+%    communicate with one another}
 
-\item{We show that anomalies described using CSLang can be used to find bugs
-  in real-world applications.}
+\item{We demonstrate our success at finding bugs by employing CSlang
+  alongside the SEA technique}
+
+\item{We illustrate the flexibility of CSLang by using it to recognize
+  sequences in several types of application activity.}
 
 \item{We prove the usability of CSLang by illustrating the ease with which
   anomalies can be constructed.}
+
 
 \end{itemize}
 
