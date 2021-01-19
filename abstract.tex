@@ -2,8 +2,10 @@
 
   This work presents CSlang,
   a new domain specific language
-  for processing application activity streams
-  like event logs,
+  for describing and recognizing
+  sequences of application activity
+  so that they can be identified
+  in streams like event logs,
   remote procedure call traces,
   or system call activity.
   CSlang's key feature
@@ -14,38 +16,46 @@
   and taking action
   when it appears.
   %%%
-  This is accomplished by first transforming the incoming activity stream
-  into a format-agnostic representation.
-  The stream is then processed by an enhanced finite-state transducer that
-  makes modifications described by the CSlang program.
-  Finally, the modified stream is output in the format required by its
-  intended use case.
+  This is accomplished by first ingesting
+  the incoming activity stream
+  and transforming it into a generic representation.
+  The stream is then processed by an enhanced finite-state transducer
+  created by compiling a CSlang program.
+  Similar to a standard transducer,
+  this model both recognizes the activity sequence described in its
+  CSlang program and outputs a modified stream based on its transition
+  relation.
+  Once the stream has been consumed, the output is transformed back into
+  its original format.
   %%%
-  As earlier work on the SEA technique,
-  introduced in 2019,
-  showed success at finding bugs
-  using similar capabilities,
-  we used CSlang to recreate that
-  project's ``anomalies.''
-  We employed them
-  in evaluating AAA applications
+  We employed CSlang
+  in recreating the ``anomalies''
+  used in
+  the SEA technique,
+  a project introduced in 2019,
+  that showed success at finding bugs
+  by modifying and replaying the results of
+  an application's system calls.
+  We then used these anomalies
+  to test AAA applications
   chosen from the Debian popularity contest
   and found YYY new bugs in ZZZ
   applications.
   %%%
-  Further, in order to illustrate CSlang's flexibility
-  we used its type system
-  and data model
-  to produce programs that can
+  Further, in order to illustrate CSlang's flexibility,
+  we produced programs that can
   transform logged network traffic into firewall rules.
   These programs were able to identify common network attacks
-  and block offending IP addresses using iptables.
+  and block offending IP addresses.
   %%%
   Finally,
   we created programs that could examine
   the contents of remote procedure calls,
-  and modify them in order to generate test cases
-  for the receiving application.
+  and modify them in order to generate test cases.
+  Using these programs we improved the test suites
+  of YYY applications.  This effort identified ZZZ new bugs
+  in these applications and improved code coverage by AA\%.
+
 
 
 \end{abstract}
