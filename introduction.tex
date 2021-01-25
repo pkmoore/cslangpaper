@@ -1,6 +1,7 @@
 \section{Introduction}
 \label{SEC:introduction}
 
+% Talk here about streaming data
 Whether it be stock prices, sensor data, or application logs,
 streams are everywhere.
 And a great deal of value can be gleaned
@@ -11,12 +12,17 @@ Earlier work in the areas of stream
 processing~\cite{asdf}
 and Complex Event Processing~\cite{asdf} bear this
 out.
+% Need to explain why stream processing and Complex Event Processing
+% are high level.
+% Follow the above sentence with an example that is not SEA
 This work aims to take these successes
 and apply similar strategies
 at a much lower level,
 the internal activity of individual applications,
 in order to improve application reliability by catching bugs.
 
+% At this point, I have not built the case strongly enough for what we are
+% doing.
 To this end,
 we've constructed
 a new domain specific language called CSlang.
@@ -27,7 +33,7 @@ to monitor an application's system calls,
 remote procedure calls,
 or other actions in order to determine if it has
 performed what was described.
-This is possible because a CSlang program is compiled
+This is possible because a CSlang program is
 compiled into a transducer that,
 like a more standard transducer,
 consumes an input stream
@@ -39,6 +45,7 @@ both recognize the activity it is looking for as it arises
 and produce output according to the rules laid down in the CSlang
 program from which it was built.
 
+% May need to move this above the previous paragraph
 Our inspiration for this work came from other efforts in developing
 the SEA technique~\cite{ASDF}.
 This technique showed that bugs could be found by looking at situations
@@ -48,6 +55,8 @@ the conditions, known as an ``anomaly'',
 that caused a failure on another application to see how it
 responds.
 
+% This paragraph might need to be rolled into the above "to this end..."
+% paragraph
 It was reported that most of the effort involved when using the technique
 was expended in encoding the anomalies once
 they had been identified.
@@ -59,6 +68,14 @@ Such a tool would allow
 anomalies that were
 valuable in testing one application to be directly used to test other
 applications with similar communication strategies.
+
+% We need a paragraph somewhere in here that describes what information we
+% got out of the SEA technique and why it motivated us to undertake this
+% work
+
+% Maybe we need to have the motivating example up here in the introduction
+% instead of as a subsection in the background
+
 
 To see if we achieved our initial goal, we re-implemented the
 anomalies previously described in the initial SEA paper~\cite{crashsim}.
