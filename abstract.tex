@@ -1,8 +1,18 @@
 \begin{abstract}
 
-  % We need a better topic sentence that describes what we're trying to do
-  % here
-  This work presents CSlang,
+  Event processing applications
+  are able to examine incoming streams
+  of events in order to
+  recognize and react
+  when important sequences occur.
+  Such programs have proven successful
+  in complex scenarios such as fire alarms,
+  industrial control systems,
+  and computer network monitoring software.
+  In this work, we illustrate how similar techniques
+  can be applied to the low level actions an application
+  takes in order to identify bugs in the application.
+  Central to this effort is CSlang,
   a new domain specific language
   for describing
   sequences of application activity
@@ -12,29 +22,22 @@
   or system call activity.
   CSlang's key feature
   is the ease with which users
-  can construct programs
-  capable of
-  recognizing important application activity
-  % A cslang program describes a pattern and what action to take when it
-  % appears
-  and taking action
-  when it appears.
-  %%%
+  can construct a program
+  describing important application activity
+  and what action to take when it appears.
   This is accomplished by first ingesting
   the incoming activity stream
   and transforming it into a generic representation.
   The stream is then processed by an enhanced finite-state transducer
   created by compiling a CSlang program.
   Similar to a standard transducer,
-  this model both recognizes the activity sequence described in its
-  % Think about whether you want to keep transition relation in here or not
-  CSlang program and produces output based on its transition
-  relation.
+  this model both is able to recognize the desired activity sequence
+  and produce appropriate output when it occurs.
   In this case, the output is a copy of the input stream that has been
   modified as required by the CSlang program.
   Once the input stream has been consumed,
   the output is transformed back into
-  the inputs original format.
+  the input's original format.
   %%%
   We employed CSlang
   in recreating the ``anomalies''
