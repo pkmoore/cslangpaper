@@ -1,17 +1,25 @@
 \begin{abstract}
 
+  Earlier work has demonstrated that there is tremendous value in
+  information that can be extracted from an application's activity.
+  The trick is getting it out.
   Event processing applications
-  are able to examine incoming streams
-  of events in order to
-  recognize and react
-  when important sequences occur.
+  are designed to search
+  incoming streams of events
+  for a given set of sequence,
+  and
+  to react appropriately
+  when such sequences occur.
   Such programs have proven successful
   in complex scenarios such as fire alarms,
   industrial control systems,
   and computer network monitoring software.
-  In this work, we illustrate how similar techniques
-  can be applied to the low level actions an application
-  takes in order to identify bugs in the application.
+  In this work, we illustrate how the
+  actions an application takes
+  can be treated as events so that
+  similar techniques
+  can be applied to them
+  in order to identify bugs.
   Central to this effort is CSlang,
   a new domain specific language
   for describing
@@ -23,24 +31,24 @@
   CSlang's key feature
   is the ease with which users
   can construct a program
-  describing important application activity
-  and what action to take when it appears.
+  that not only describes the activity,
+  but also what action to take when it appears.
   This is accomplished by first ingesting
   the incoming activity stream
   and transforming it into a generic representation.
   The stream is then processed by an enhanced finite-state transducer
   created by compiling a CSlang program.
   Similar to a standard transducer,
-  this model both is able to recognize the desired activity sequence
-  and produce appropriate output when it occurs.
+  this model is both able to recognize the desired activity sequence
+  and produce the appropriate output.
   In this case, the output is a copy of the input stream that has been
   modified as required by the CSlang program.
   Once the input stream has been consumed,
   the output is transformed back into
-  the input's original format.
+  the original format.
   %%%
   We employed CSlang
-  in recreating the ``anomalies''
+  to recreate the ``anomalies''
   used in
   the SEA technique,
   a project introduced in 2019,
