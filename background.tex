@@ -82,18 +82,21 @@ improving its reach.
 
 
 The decision to create a new programming language was not one we
-undertook lightly.  There is a significant amount of work involved in defining,
-implementing, documenting, and supporting such a creation.  In this section
-we discuss the features we needed for this work and why existing systems fell short
-leading to our decision to undertake such an effort.
+undertook lightly,
+as such an effort takes
+a significant amount of work
+to define,
+implement, document, and support.
+In this section we discuss the features we needed for this work
+and why existing systems fell short.
 
 First, we needed a language that treated state as a first-class citizen.
 That is, it must allow the internal contents of events like argument data,
 pointer addresses, and return values to be easily captured, manipulated, and
 reused in subsequent operations.
-This requirement is necessary because,
+This is necessary because,
 at a very high level,
-the primary purpose of system calls,
+the purpose of system calls,
 function calls,
 rpc calls,
 or other similar activity
@@ -101,14 +104,13 @@ is to allow an application
 to gather data from an external module like a library or the operating
 system.
 As a result, it is frequently useful to be able to store the data returned by
-one such action, modify it, and used it in matching actions.
+one such action, modify it, and use it in matching actions.
 For example, one may store the file descriptor returned by a {\tt
-socket()} system call and use it later to match other related,
+socket()} system call and use it later to match other related
 communication system calls.
-This first-class treatment of state served its
-purpose well when working with system calls and proved equally useful in
-processing input streams from other domains.
-
+We found that this sort of usage was common across many types of
+application activity further reinforcing our desire for a language that was
+closely tailored to our needs on this in this area.
 
 % Need to support new event stream formats easily?
 
@@ -127,30 +129,34 @@ a file without reading from it.  When such a sequence is found, it is
 modified such that the {\tt close()} call returns -1, indicating failure.
 The main work of this program is performed in just four lines of CSlang
 code.  For comparison, figure~\ref{fig:flinklisting} contains a Java program that
-implements an approximation of the same program.  This program does not
-perform the return value modification and assumes significant other work
-on Apache Flink to allow it to correctly consume a sequence of system calls.
+implements an approximation of the same program that was implemented in
+CSlang~\ref{fig:cslanglisting}.
+This program is only an approximation because it does not modify the return
+value of the close() call as the CSLang program does.  Further, it assumes
+that other work has been done to modify Apache Flink to enable the
+consumption of a sequence of system calls.
 In spite of these shortcomings, comparing the two programs remains
-illustrative.  The Flink program is harder to read because it contains a
+enlightening.  The Flink program is harder to read because it contains a
 great deal of boilerplate code
 that cannot be avoided due to its dependence on a fully-featured
 programming language.  Other work that explores how developers read and
 understand (or mis-understand!) code has shown that such constructs obscure
-a programs meaning, harming understanding and maintainability.
+a programs meaning, harming understanding and
+maintainability~\ref{CITEATOMSWORK}.
 In light of this, we believe the benefits of a
 new programming language
 focused on allowing its users to get a lot of work done
-with a small amount of easily-readable code are clear.
+with a small amount of easily-readable code are evident.
 
-The second front involves the CSlang's programming paradigm.
-While other event processing languages tend toward a functional or
+The second front involves CSlang's programming paradigm.
+While other event processing languages tend toward functional or
 declarative programming,
 CSlang programs more closely follow an imperative programming style.
 We came to this decision because studies
 have shown that developers are more likely to be familiar and comfortable
 with such a paradigm~\cite{XXXX}.  We believe this will make it easier for
-developers to learn the language, foster greater popularity, and, it aligns
-nicely with the goals presented in our motivating example.
+developers to learn the language, foster greater popularity, and it aligns
+with the goals presented in our motivating example.
 
 Our final requirement is, perhaps, the most important.
 We want CSlang programs to be capable of more than simply matching
@@ -160,6 +166,9 @@ Our review of the work on the SEA technique has shown that the ability to
 it may fail rather than only passively monitoring for it to perform
 problematic sequences.  While the feature-rich nature of several related
 languages and libraries means it is likely possible to modify and output
-incoming events it is by no means a straightforward and ergonomic experience.
+incoming events, it is by no means a straightforward
+and ergonomic experience.
+Constructing CSlang to support output as a primary feature allows us to
+easily describe the types of transformations needed to expose bugs.
 
-\preston{Some sort of concluding paragraph?}
+
