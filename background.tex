@@ -1,4 +1,4 @@
-\section{Our Motivating Example}
+\section{Background and Motivation}
 \label{SEC:background}
 
 \subsection{The Problem of Environmental Bugs}
@@ -93,13 +93,19 @@ pointer addresses, and return values to be easily captured, manipulated, and
 reused in subsequent operations.
 This requirement is necessary because,
 at a very high level,
-the primary purpose of system calls is to transfer data
-from one side of the operating system-application boundary.
+the primary purpose of system calls,
+function calls,
+rpc calls,
+or other similar activity
+is to allow an application
+to gather data from an external module like a library or the operating
+system.
 As a result, it is frequently useful to be able to store the data returned by
-one system call, modify it, and used it in a predicate to match a subsequent
-system call.  For example, one may store the file descriptor returned by a {\tt
-socket()} system call and use it in later statements to match other related,
-communication system calls.  This first-class treatment of state served its
+one such action, modify it, and used it in matching actions.
+For example, one may store the file descriptor returned by a {\tt
+socket()} system call and use it later to match other related,
+communication system calls.
+This first-class treatment of state served its
 purpose well when working with system calls and proved equally useful in
 processing input streams from other domains.
 
@@ -114,22 +120,22 @@ Our second requirement appears to be largely aesthetic at first glance
 but there is a
 larger purpose -- ease of learning and ease of use.  CSlang offers
 improvements over existing languages along two primary fronts.
-First, many event processing languages are extremely verbose.
+First, many event processing languages are verbose.
 Consider figure~\ref{fig:cslanglisting}  which shows a
 CSLang program that matches sequences where an application opens and closes
 a file without reading from it.  When such a sequence is found, it is
 modified such that the {\tt close()} call returns -1, indicating failure.
 The main work of this program is performed in just four lines of CSlang
-code.  Figure~\ref{fig:flinklisting} contains a Java program that
+code.  For comparison, figure~\ref{fig:flinklisting} contains a Java program that
 implements an approximation of the same program.  This program does not
-perform the return value modification and assumes significant other on
-Apache Flink to allow it to correctly consume a sequence of system calls.
+perform the return value modification and assumes significant other work
+on Apache Flink to allow it to correctly consume a sequence of system calls.
 In spite of these shortcomings, comparing the two programs remains
 illustrative.  The Flink program is harder to read because it contains a
 great deal of boilerplate code
 that cannot be avoided due to its dependence on a fully-featured
 programming language.  Other work that explores how developers read and
-understand (or mis-understand!) has shown that such code constructs obscure
+understand (or mis-understand!) code has shown that such constructs obscure
 a programs meaning, harming understanding and maintainability.
 In light of this, we believe the benefits of a
 new programming language
