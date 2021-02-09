@@ -23,7 +23,6 @@ that test
 an application as if
 it had encountered the captured anomalies
 in the real world.
-
 In that work, SEA was used to test applications
 by recording the system calls they made
 during execution,
@@ -34,7 +33,7 @@ responded correctly to the anomaly.
 Using this strategy, the authors were able to identify numerous bugs
 in major applications~\cite{crashsim}.
 
-Our takeaway from this work
+Our takeaway
 was that an application's activity
 is a valuable resource that can be systematically mined
 in order find to bugs
@@ -46,7 +45,7 @@ is to treat application activity
 as a sequence of events
 so that proven event processing techniques
 may be employed in analyzing them.
-Two understandings followed shortly after this
+Two realizations followed shortly after this
 insight.
 First was that, with the correct tools,
 SEA's success in identifying environmental bugs using system calls
@@ -74,12 +73,16 @@ draw a boundary around the types of bugs we are targeting.
 This work sets its sights on the bugs that occur when an some external
 entity supplies unexpected or incorrect data to an
 application resulting in its failure.
-This may happen in a simple situation such as a library function that
-returns data in an unexpected format or as complex as a request to a remote
+Such bugs may appear in simple situations such as a library function that
+returns data in an unexpected format or in scenarios as complex
+as a request to a remote
 system returning bad data because of corruption on an intermediate network
 node.
-These bugs, known in the literature as ``environmental bugs,'' occur with
-such frequency
+Both cases share the commonality that the symptoms of misbehavior are
+visible in a recording of the applications activity.
+These bugs, defined by Moore et al. as ``environmental bugs,''
+often cause applications to fail after deployment
+and occur with such frequency
 that the ``works on my machine'' phenomenon is a well known
 source of pain
 and frequent topic of discussion
