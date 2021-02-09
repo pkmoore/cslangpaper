@@ -1,41 +1,14 @@
 \section{Background and Motivation}
 \label{SEC:background}
 
-\subsection{The Problem of Environmental Bugs}
-
-\textit{But it works on my machine!} goes the refrain of the tortured
-software developer whose application works correctly when executed on a
-development computer only to fail once it is deployed.  This occurs with
-such frequency that the ``works on my machine'' phenomenon is a well known
-source of pain
-and frequent topic of discussion
-in software and project management
-literature~\cite{notreal}.
-The problem is so widespread
-that FAKESTUDY concluded
-that \$XXX are spent annually on efforts to
-recall,
-fix,
-and re-deploy applications
-because of all the bugs
-that slipped past extensive testing efforts
-during development.
-
-Earlier work has demonstrated that environmental bugs, those that occur due
-to unanticipated qualities external to an application, are a major source
-of such failures.  This fact continues to be reinforced by the regular
-appearance of high impact environmental bugs in major pieces of
-software~\cite{devzeroroot}.  And it appears that no class of application
-is safe with environmental bugs affecting operating systems~\cite{bad},
-user applications~\cite{bad} and even web applications~\cite{bad} in the
-last year alone!
 
 \subsection{Our Motivating Example}
 
-An initial thrust was made at this problem by Moore et al
-when they employed
-the Simulating Environmental Anomalies (SEA) technique
-on applications' system calls~\cite{crashsim}.
+% How SEA showed success using system calls
+
+The initial impetus for this work came from our review
+of earlier efforts by Moore et al. on the
+the Simulating Environmental Anomalies (SEA) technique.
 This effort centered on the key insight
 that problematic
 environmental properties,
@@ -50,16 +23,90 @@ that test
 an application as if
 it had encountered the captured anomalies
 in the real world.
-But system calls are just part of the story.
-This paper documents an effort to augment SEA
-so that its proven methodology
-can be used to test a broader set of applications.
-Our improvements
-apply SEA's existing capability
-to new bug domains
-while maintaining its existing advantages and
-dramatically
-improving its reach.
+
+In that work, SEA was used to test applications
+by recording the system calls they made
+during execution,
+modifying the results of these calls such that a desired anomaly
+was present,
+and observing the application to see whether or not it
+responded correctly to the anomaly.
+Using this strategy, the authors were able to identify numerous bugs
+in major applications~\cite{crashsim}.
+
+Our takeaway from this work
+was that an application's activity
+is a valuable resource that can be systematically mined
+in order find to bugs
+that may be missed by other techniques.
+The work described in this paper
+is based on our own key insight that that the best way to extract this
+value
+is to treat application activity
+as a sequence of events
+so that proven event processing techniques
+may be employed in analyzing them.
+Two understandings followed shortly after this
+insight.
+First was that, with the correct tools,
+SEA's success in identifying environmental bugs using system calls
+could be expanded
+to encompass other activity types
+like calls to library functions
+and remote procedure calls.
+Second was the understanding that existing tools,
+while effective in their given areas,
+are not up to the
+task we had in mind.
+
+
+%%% What are we really doing here.  WHY did we decided to make this language?
+%%% That's really the question that needs to be answered.  I think that instead
+%%% of making things up that we had the language and decided to apply it here
+%%% we need to talk about how seeing the success of this work motivated us to
+%%% try it at a larger scale.  We can avoid talk of "Augmenting" SEA or
+%%% whatever though
+
+\subsection{Expanding on Environmental Bugs}
+
+Before we discuss the details of our bug-finding efforts it is necessary to
+draw a boundary around the types of bugs we are targeting.
+This work sets its sights on the bugs that occur when an some external
+entity supplies unexpected or incorrect data to an
+application resulting in its failure.
+This may happen in a simple situation such as a library function that
+returns data in an unexpected format or as complex as a request to a remote
+system returning bad data because of corruption on an intermediate network
+node.
+These bugs, known in the literature as ``environmental bugs,'' occur with
+such frequency
+that the ``works on my machine'' phenomenon is a well known
+source of pain
+and frequent topic of discussion
+in software and project management
+literature~\cite{notreal}.
+The problem is so widespread
+that FAKESTUDY concluded
+that \$XXX are spent annually on efforts to
+recall,
+fix,
+and re-deploy applications
+because of all the bugs
+that slipped past extensive testing efforts
+during development.
+
+The impact of these bugs continues to be reinforced by the regular
+appearance of dangerous environmental bugs in major pieces of
+software~\cite{devzeroroot}.  And it appears that no class of application
+is safe with environmental bugs affecting operating systems~\cite{bad},
+user applications~\cite{bad} and even web applications~\cite{bad} in the
+last year alone!
+
+
+\preston{Maybe I should include something here similar to the list from the
+CrashSim paper that talks about different environmental bug sources in more
+detail?}
+
 
 
 \subsection{Why a New Programming Language?}
