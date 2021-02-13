@@ -2,8 +2,15 @@
 \label{SEC:introduction}
 
 % Talk here about streaming data
-Whether it be stock prices, sensor data, or application logs,
-streams are everywhere.
+It is common for modern applications to produce data
+far faster than it can be used.
+Consider the case of
+applications that must act on ever changing stock prices,
+industrial sensor data,
+or the logs of a popular web application.
+
+
+
 And a great deal of value can be gleaned
 from examining the contents of streaming data
 in order to identify and act upon
@@ -23,6 +30,15 @@ in order to improve application reliability by catching bugs.
 
 % At this point, I have not built the case strongly enough for what we are
 % doing.
+Our inspiration for this work came from other efforts in developing
+the SEA technique~\cite{ASDF}.
+This technique showed that bugs could be found by looking at situations
+where other
+applications had failed, figuring out why they failed, and then imposing
+the conditions, known as an ``anomaly'',
+that caused a failure on another application to see how it
+responds.
+
 To this end,
 we've constructed
 a new domain specific language called CSlang.
@@ -44,16 +60,6 @@ the transducer in question is able to
 both recognize the activity it is looking for as it arises
 and produce output according to the rules laid down in the CSlang
 program from which it was built.
-
-% May need to move this above the previous paragraph
-Our inspiration for this work came from other efforts in developing
-the SEA technique~\cite{ASDF}.
-This technique showed that bugs could be found by looking at situations
-where other
-applications had failed, figuring out why they failed, and then imposing
-the conditions, known as an ``anomaly'',
-that caused a failure on another application to see how it
-responds.
 
 % This paragraph might need to be rolled into the above "to this end..."
 % paragraph
