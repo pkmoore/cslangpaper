@@ -37,9 +37,11 @@
   an enhanced transducer
   which consumes an input application activity stream
   and recognizes when the described activity occurs.
-  In addition to passively detecting specified activity,
+  This allows the program to recognize and accept program
+  executions that match the described pattern.
+  In addition to simply accepting these executions,
   CSlang is able to
-  rewrite the activity stream on the fly
+  rewrite an input activity stream on the fly
   producing a modified stream that can be used
   for more active testing.
   % suggest new inputs for test cases
@@ -67,7 +69,7 @@
   %%%%
   %Finally,
   We further utilized this mechanism
-  in programs that
+  to create programs that
   could generate test cases
   by examining and rewriting the contents of
   Using these programs we improved the test suites
