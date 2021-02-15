@@ -6,11 +6,11 @@
   Event processing applications
   are designed to search
   incoming streams of events
-  for a given set of sequence,
+  for a given set of sequences,
   and
   to react appropriately
   when such sequences occur.
-  Such programs have proven successful
+  Similar programs have proven successful
   in fire alarms,
   industrial control systems,
   and computer network monitoring software,
@@ -31,28 +31,25 @@
   CSlang's key feature
   is the ease with which users
   can construct a program
-  that not only describes the activity,
+  that not only describes an activity,
   but also what action to take when it appears.
-  This is accomplished by first ingesting
-  the incoming activity stream
-  and transforming it into a generic representation.
-  The stream is then processed by an enhanced finite-state transducer
-  created by compiling a CSlang program.
-  Similar to a standard transducer,
-  this model is both able to recognize the desired activity sequence
-  and produce the appropriate output.
-  In this case, the output is a copy of the input stream that has been
-  modified as required by the CSlang program.
-  Once the input stream has been consumed,
-  the output is transformed back into
-  the original format.
-  %%%
-  We employed CSlang
+  A CSlang program compiles into
+  an enhanced transducer
+  which consumes an input application activity stream
+  and recognizes when the described activity occurs.
+  In addition to passively detecting specified activity,
+  CSlang is able to
+  rewrite the activity stream on the fly
+  producing a modified stream that can be used
+  for more active testing.
+  % suggest new inputs for test cases
+  % offer correct API usage?+
+  For example, we employed CSlang
   to recreate the ``anomalies''
   used in
   the SEA technique,
-  a project introduced in 2019,
-  that showed success at finding bugs
+  a project introduced in 2019
+  that was able to find bugs
   by modifying and replaying the results of
   an application's system calls.
   We then used these anomalies
@@ -69,10 +66,10 @@
   %and block offending IP addresses.
   %%%%
   %Finally,
-  Further,
-  we created programs that could examine
-  the contents of remote procedure calls,
-  and modify them in order to generate test cases.
+  We further utilized this mechanism
+  in programs that
+  could generate test cases
+  by examining and rewriting the contents of
   Using these programs we improved the test suites
   of YYY applications.  This effort identified ZZZ new bugs
   in these applications and improved code coverage by AA\%.
