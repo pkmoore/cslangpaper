@@ -2,25 +2,30 @@
 
   Earlier work has demonstrated that there is tremendous value in
   information that can be extracted from an application's activity.
-  The trick is getting it out.
-  Event processing applications
+  The trick is in how to extract it.
+  Applications often make hundreds or thousands of requests
+  to external entities over the course of an execution
+  which makes recognizing important patterns difficult.
+  We looked to existing event processing applications
+  that are designed
   are designed to search
   incoming streams of events
-  for a given set of sequences,
+  for a sequence,
   and
   to react appropriately
-  when such sequences occur.
-  Similar programs have proven successful
+  when such it occur as a potential solution to this problem.
+  These programs have proven successful
   in fire alarms,
   industrial control systems,
   and computer network monitoring software,
   and other complex scenarios.
   In this work,
-  we illustrate how similar techniques
+  we illustrate how
+  the principles behind event processing applications
   can be applied to identifying bugs
-  if the actions an application takes
+  application actions
   can be treated as events.
-  Central to this effort is CSlang,
+  To do so we created CSlang,
   a new domain specific language
   for describing
   sequences of application activity
@@ -32,15 +37,7 @@
   is the ease with which users
   can construct a program
   that not only describes an activity,
-  but also what action to take when it appears.
-  A CSlang program compiles into
-  an enhanced transducer
-  which consumes an input application activity stream
-  and recognizes when the described activity occurs.
-  This allows the program to recognize and accept program
-  executions that match the described pattern.
-  In addition to simply accepting these executions,
-  CSlang is able to
+  but also  can
   rewrite an input activity stream on the fly
   producing a modified stream that can be used
   for more active testing.
@@ -54,7 +51,8 @@
   that was able to find bugs
   by modifying and replaying the results of
   an application's system calls.
-  We then used these anomalies
+  In turn, we were able to use
+  these anomalies
   to test AAA applications
   chosen from the Debian popularity contest
   and found YYY new bugs in ZZZ
@@ -72,6 +70,7 @@
   to create programs that
   could generate test cases
   by examining and rewriting the contents of
+  remote procedure calls.
   Using these programs we improved the test suites
   of YYY applications.  This effort identified ZZZ new bugs
   in these applications and improved code coverage by AA\%.
