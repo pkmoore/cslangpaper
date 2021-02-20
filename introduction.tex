@@ -10,11 +10,23 @@
 
 {\textit ``Actions speak louder than words...'' - Unknown}
 
-It is well established that monitoring and examining the actions of an
-application during execution can give insight into the root cause of a failure
-when one occurs.  The challenge is in identifying and extracting
-this information from large and detailed sources like application logs,
-system call traces, or application recordings.
+It is a well established principles
+that in the wake of a failure,
+monitoring and examining the actions
+of an application
+during execution can give insight
+into its root cause.
+Taking advantage of such information
+can aid in correcting
+the cause of failure
+and assist in the creation
+of tests to ensure that it
+is not repeated in the future.
+The challenge is in
+how to identify and extract this data
+from large and detailed sources like application logs,
+system call traces,
+or application recordings.
 Central to this problem
 is accurately describing exactly what activity is important
 and what to do when you find it.
@@ -22,50 +34,65 @@ This work covers our effort to make the process easier.
 
 In addressing this difficulty,
 we draw inspiration from two sources.
-The first is the great deal of literature supporting the use of event
+The first is the great amount of literature supporting the use of event
 processing techniques over large streams of data such as
 industrial control system sensor readings,
 transaction processing software,
 and networking monitoring systems.
-We argue that similar techniques can be applied
+We argue that the techniques used
+to achieve success
+in these domains
+can be applied
 to large application activity streams in order to accurately
 and efficiently identify target behavior.
-The second is the recent success had
-in identifying bugs by monitoring
+The second is a recent successful effort
+to identify bugs by monitoring
 and modifying an application's interactions with its environment.
-%Other work has shown that it is possible to uncover bugs in widely
-%deployed applications by cataloguing the aspects of a deployment environment
-%that can cause a failure and using them to test applications.
-In this work we combine and build upon these successes by presenting a tool that
-allows its users to take advantage of event processing techniques in testing
-an application in order to identify environmental bugs.
 
-Driving this effort is CSlang, our new domain specific language.
-CSlang allows its user to describe sequences of operations an application
-might carry out and
-then use these descriptions
+In this work
+we combine and build upon these successes
+by introducing a tool
+that adapts event processing techniques
+in order to allow its users to
+to test which aspects of an environment
+could interfere with
+the successful operation of an application.
+What makes this possible is CSlang,
+a new domain specific language
+that allows users
+to describe sequences of operations
+an application might carry out.
+These descriptions are then used
 to monitor an application's system calls,
 remote procedure calls,
 or other actions in order to determine if it has
 performed what was described.
-CSlang is further capable of
-allowing its user to describe a set of modifications
+CSlang also permits
+its user to describe a set of modifications
 to be made to an activity sequence should it be encountered.
-By combining passive monitoring and active modification of an application's
-activity CSlang allows its users to identify environmental bugs that may
-be missed by other testing strategies.
+By combining passive monitoring and active modification
+of an application's activity,
+CSlang aids in identifying environmental bugs
+that may be missed by other testing strategies.
 
-This combined approach is possible because a CSlang program is
-compiled into a transducer that
-operates on similar principles to a standard finite-state transducer.
-That is, it consumes an input sequence of activity
+This combined approach is possible
+because a CSlang program
+is compiled into a transducer
+that operates on similar principles
+to a standard finite-state transducer.
+That is,
+it consumes an input sequence of activity
 in order to determine if the desired pattern is present
 and simultaneously produces an output stream by
 following the rules laid down in its CSlang program.
-The results of this are twofold.  If the transducer accepts the input sequence
-it means the described activity is present which, depending on the nature of
-the sequence may indicate the existence of a bug.  In cases where acceptance
-is not intended to diagnose a bug, the modified output sequence may be used
+The results of this are twofold.
+If the transducer accepts the input sequence
+it means the described activity is present which,
+depending on the nature of the sequence
+may indicate the existence of a bug.
+In cases where acceptance indicates an opportunity
+for more detailed testing,
+the modified output sequence may be used
 to drive a simulation (as with the earlier work on environmental bugs) or populate
 a test suite in order to evaluate an application's response
 to the situation represented by the modifications.
@@ -73,7 +100,7 @@ to the situation represented by the modifications.
 We evaluated our prototype CSlang implementation initially by 
 re-treading proven ground.
 This involved re-implementing the ``anomalies''  
-described in earlier work on environmental bugs~\cite{crashsim}.
+described in earlier work on the SEA technique~\cite{crashsim}.
 Our recreations were dramatically more concise (up to XXX\% in some cases)
 than their counterparts.  Side-by-side comparison shows that our new
 descriptions are
@@ -82,10 +109,20 @@ and simpler to update as needed.
 This lowers SEA's barrier to entry allowing the
 technique to be more easily used by a wider audience.
 
-Next, we took advantage of CSlang's flexibility in order to test
-applications that use JSONRPC or XMLRPC.
-We wrote programs that could identify opportunities to modify the results of RPC
-requests made by applications that ranked highly on Debian's popularity contest.
+Next, we wanted to take CSlang beyond manipulating system calls.
+To do so, 
+we exploited the ease with which
+CSlang can be augmented
+to consume new input formats
+by adding support for JSONRPC and XMLRPC.
+These formats were chosen
+because they are popular,
+well supported communication formats
+used by major applications.
+Using this new support
+we wrote programs
+that could identify opportunities
+to modify the results of RPC calls.
 The output from these programs was used to populate a test suite
 for each application.
 When executed, these test suites identified AAA new bugs in the tested applications.
@@ -101,11 +138,8 @@ The main contributions in this work can be summarized as follows:
 \item{We demonstrate our success at finding bugs by employing CSlang
   alongside the SEA technique}
 
-\item{We illustrate the flexibility of CSLang by using greatly differing activity
-formats to test a variety of applications. }
-
-\item{We prove the usability of CSLang by illustrating the ease with which
-  anomalies can be constructed.}
+\item{We illustrate the flexibility of CSLang by extending it to test applications
+that use a variety of communication protocols. }
 
 \end{itemize}
 
