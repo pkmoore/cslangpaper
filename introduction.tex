@@ -10,8 +10,8 @@
 
 {\textit ``Actions speak louder than words...'' - Unknown}
 
-It is a well established principles
-that in the wake of a failure,
+It is a well established principle
+that, in the wake of a failure,
 monitoring and examining the actions
 of an application
 during execution can give insight
@@ -28,13 +28,13 @@ from large and detailed sources like application logs,
 system call traces,
 or application recordings.
 Central to this problem
-is accurately describing exactly what activity is important
+is accurately describing what activity is important
 and what to do when you find it.
 This work covers our effort to make the process easier.
 
 In addressing this difficulty,
 we draw inspiration from two sources.
-The first is the great amount of literature supporting the use of event
+First is the great amount of literature supporting the use of event
 processing techniques over large streams of data such as
 industrial control system sensor readings,
 transaction processing software,
@@ -43,18 +43,17 @@ We argue that the techniques used
 to achieve success
 in these domains
 can be applied
-to large application activity streams in order to accurately
-and efficiently identify target behavior.
+to large application activity streams to accurately
+and efficiently recognize target behavior.
 The second is a recent successful effort
 to identify bugs by monitoring
 and modifying an application's interactions with its environment.
 
-In this work
-we combine and build upon these successes
+We combine and build upon these successes
 by introducing a tool
 that adapts event processing techniques
 in order to allow its users to
-to test which aspects of an environment
+test which aspects of an environment
 could interfere with
 the successful operation of an application.
 What makes this possible is CSlang,
@@ -82,7 +81,7 @@ that operates on similar principles
 to a standard finite-state transducer.
 That is,
 it consumes an input sequence of activity
-in order to determine if the desired pattern is present
+to determine if the desired pattern is present
 and simultaneously produces an output stream by
 following the rules laid down in its CSlang program.
 The results of this are twofold.
@@ -132,7 +131,7 @@ The main contributions in this work can be summarized as follows:
 \begin{itemize}
 
 \item{We present a new language, {\em CSLang},
-  which allows for concise, but powerful, descriptions of
+  which allows for concise, but expressive, descriptions of
     application activity and the action to take should they arise}
 
 \item{We demonstrate our success at finding bugs by employing CSlang
