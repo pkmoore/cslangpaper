@@ -10,4 +10,5 @@ paper.synctex.gz
 paper.fdb_latexmk
 paper.fls
 paper.synctex(busy)
+paper.xdv
 .vscode
