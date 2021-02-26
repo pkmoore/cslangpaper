@@ -1,22 +1,147 @@
 \section{Evaluation}
 \label{SEC:evaluation}
 
-Our evaluation seeks to answer the following questions:
+Here we go.  This is the part where we write about our evaluation.  We've
+built this great tool and we want to show you how it lives up to the
+expectations that we've set for it.  To do this we've set up a series of
+tests that exercise different capabilities and talk about how the tool did.
+
+Here's some questions designed to give you an idea of what we're testing:
+
 
 \begin{itemize}
 
-  \item{Are inter and intra application anomalies a common source of
-    bugs}
+  \item{Are we able to express the same sorts of things that the earlier
+    crashsim work did?}
 
-  \item{Are CSLang's models able to find bugs in real world applications?}
+  \item{Ok so system calls are cool but can we work with other formats?}
 
-  \item{Is CSLang sufficiently powerful to describe a broad set of
-    anomalies}
+  \item{Great! Anomalies are pretty neat but what else can you do with the
+    tool? (network/firewall stuff)}
 
-  \item{How hard is it to expand CSLang's model to support new
-    communication formats?}
-
-  \item{Are CSLang's transducers able to quickly process large
-    communication streams?}
+  \item{Ok you can do all kinds of things but how fast can you do them?}
 
 \end{itemize}
+
+
+\subsection{Can we do the same sorts of things crashsim could do?}
+
+Given that this work was motivated
+in large part
+by the success of the SEA technique,
+we wanted to ensure that
+the language we've developed
+was sufficiently powerful
+to describe the anomalies that they were able to find bugs with.
+Specifically, we decided to take a look at their Unusual Filetype mutator,
+and Cross-disk file move checkers which were responsible for the bulk of
+the bugs that they found.
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{c}
+\begin{lstlisting}
+\\ This is absolutely a fake listing that will be changed out for a real
+\\ one!!  Preston -> Don't forget to do this!
+#include "stdio.h"
+
+int main() {
+    printf("Hello world!\n");
+    return 0;
+};
+\end{lstlisting}
+\end{tabular}
+\caption{Unusual filetype mutator in CSlang}
+\label{lst:UnusualFiletypeCSlang}
+\end{figure}
+
+So without further ado, check out this cool CSlang listing that implements
+the unusual filetype mutator in figure~\ref{lst:UnusualFiletypeCSlang}
+As you can see its nice and short and you can tell what's happening!
+We're matching on one of stat, fstat, or lstat and changing the ST\_MODE
+parameter inside the returned data structure.
+CSlang makes this easy to do for three reasons:
+\begin{enumerate}
+  \item{You don't have to manually write your automaton matching code}
+  \item{You only have to write rules for system calls you're interested in}
+  \item{You can elide all the parts of the system call you don't care
+    about}
+\end{enumerate}
+
+Compare this to Python code that tries to do the same thing!
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{c}
+\begin{lstlisting}
+\\ This is absolutely a fake listing that will be changed out for a real
+\\ one!!  Preston -> Don't forget to do this!
+#include "stdio.h"
+
+int main() {
+    printf("Hello world!\n");
+    return 0;
+};
+\end{lstlisting}
+\end{tabular}
+\caption{Python code that implements the unusual filetype mutator}
+\label{lst:UnusualFiletypePython}
+\end{figure}
+
+See how long that is?  And this is just a small piece!  CSlang takes care
+of the annoying boilerplate and lets you get done what you need to get
+done.
+
+We also took a look at the Cross-Disk move checkers.
+This one also found a lot of bugs for the CrashSim folks.
+In this case, we implemented several CSlang programs that each performed
+one of the checks the other paper was interested in.
+These programs didn't perform any mutation but if they accept a particular
+execution then that execution performed the check they were looking for.
+If all the programs pass for a given execution then we can pretty confident
+that the application did everything it needed to in order to move a file
+from one disk to another correctly.
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{c}
+\begin{lstlisting}
+\\ This is absolutely a fake listing that will be changed out for a real
+\\ one!!  Preston -> Don't forget to do this!
+#include "stdio.h"
+
+int main() {
+    printf("Hello world!\n");
+    return 0;
+};
+\end{lstlisting}
+\end{tabular}
+\caption{One of the cross disk move checkers implemented in CSlang}
+\label{lst:Cross-Disk Move}
+\end{figure}
+
+We were not able to do the check for extended file attributes because we
+don't have the capability to store an arbitrary list of values.  This is a
+feature we are planning to add in the near future.
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{c}
+\begin{lstlisting}
+\\ This is absolutely a fake listing that will be changed out for a real
+\\ one!!  Preston -> Don't forget to do this!
+#include "stdio.h"
+
+int main() {
+    printf("Hello world!\n");
+    return 0;
+};
+\end{lstlisting}
+\end{tabular}
+\caption{One of the cross disk move checkers implemented in Python}
+\label{lst:Cross-Disk Move}
+\end{figure}
+
+As you can see things are much shorter and easier to read.  This is largely
+because CSlang is a domain specific language rather than a general purpose
+one.  This is a big reason we decided to make it.
