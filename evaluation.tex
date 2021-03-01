@@ -14,7 +14,8 @@ Here's some questions designed to give you an idea of what we're testing:
   \item{Are we able to express the same sorts of things that the earlier
     crashsim work did?}
 
-  \item{Ok so system calls are cool but can we work with other formats?}
+  \item{Ok so system calls are cool but can we work with other formats?
+    How quickly can we support new formats?}
 
   \item{Great! Anomalies are pretty neat but what else can you do with the
     tool? (network/firewall stuff)}
@@ -145,3 +146,84 @@ int main() {
 As you can see things are much shorter and easier to read.  This is largely
 because CSlang is a domain specific language rather than a general purpose
 one.  This is a big reason we decided to make it.
+
+
+\subsection{Working with other formats}
+
+Early on we realized that CSlang could be used to consume and process
+formats other than system calls.  Throughout its development process
+we maintained this flexibility.  To make sure everything went according to
+plan we add support for a format that was similar enough to system calls
+that we were confident that it would work but different enough to show off
+the language's flexibility.
+
+In the end we settled on JSONRPC...
+
+
+Given how well this went, we decided to expand our reach to another similar
+format -- XMLRPC.  To get a more accurate idea of how difficult this was we
+recorded out time to plan and implement the module.  We found that it took
+around 2 hours
+%2:09:14 to be specific%
+worth of planning.  Most of this time was evaluating our options for
+Python XML parsing modules.
+Creating our initial implementation took around an hour
+%1:14:32
+
+With these formats we did many things...
+
+
+To further ease the processing of new formats we added a generic CSV
+processor.  This processor consumes a CSV row by row and allows operations
+to be performed on each field.  The purpose of this capability is to allow
+users to quickly get useful work done at the expense of some rigor/type
+checking etc.
+
+
+\subsection{Function like stuff is great but can we do other things?}
+
+After our success in the above work we wanted to stretch CSlang to perform
+useful work in a significantly different domain.  We showed that CSlang
+could process common protocols used to communicate across networks but
+could we do something interesting with the network traffic itself.
+
+Using generic CSV support we processed incoming network traffic as recorded
+by sysdig.  We constructed CSlang programs that could take incoming network
+traffic, recognize a pattern and output a firewall rule to address it.
+
+At a high level this works as follows:
+Sysdig records network traffic, extracts the fields we are interested in,
+and outputs them as a CSV.  We use our generic CSV processor to read this
+representation of the network traffic and process it with a transducer.
+The transducer outputs new stream of CSV data that is handed to a shell
+script that transforms them into IPtables rules.
+
+While we were happy with the results of this effort there were some
+drawbacks.  Primarily, we do not try to generate an optimal set of rules
+for a given stream of input network traffic.  In many cases there are
+duplicate or unnecessary rules that would be undesirable in a final rule
+set.  Fortunately, other work as been done in the area of optimizing
+firewall rules so we are confident a post-processing pass could be put in
+place to mitigate this problem.
+
+
+\subsection{The question of performance}
+
+It doesn't matter how useful a tool is if it takes too long to get its work
+done.  As a result, performance is a concern.  Though our implementation is
+only a prototype, we wanted to make sure that it wasn't overly slow in
+getting its work done.  To make this determination we devised a series of
+performance tests.  The results of these tests can be seen in
+table~\ref{tbl:perf}.
+
+\begin{figure}
+  \begin{tabular}{|c|c|c|}
+  Test & Input Size on Disk & Num. Elem. \\
+  test1        & 1GB                        & 10000 \\
+  test2        & 2GB                        & 20000 \\
+  test3        & 3GB                        & 30000 \\
+\end{tabular}
+\label{tbl:perf}
+\caption{performance results table}
+\end{figure}
+
