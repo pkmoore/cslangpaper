@@ -36,6 +36,28 @@ responded correctly to the anomaly.
 Using this strategy, the authors were able to identify numerous bugs
 in major applications~\cite{crashsim}.
 
+As a concrete example of the above
+consider the ``Unusual Filetypes'' anomaly
+discussed in that paper's evaluation.
+This anomaly appears
+when an application running under Linux
+attempts to open and read data from a file on disk.
+In addition to ``regular'' files,
+which are used to store text and
+binary data,
+Linux supports several special file types.
+Each of these file types requires special procedures when writing to and
+reading from them.
+As a result, an application should check the type of files it intends to
+process so that it can handle it correctly.
+To use this anomaly, the authors intercepted application's attempts to
+examine files with system calls from the {\tt stat} family and modified
+their results to make regular files appear as if they were one of the
+unusual file types.  Application's that failed to recognize the presence of
+an unusual file often handled it incorrectly leading to application hangs,
+crashes, and even damage to the host system as a result of disks being
+completely filled.
+
 Our takeaway
 was that an application's activity
 is a valuable resource that can be systematically mined
