@@ -12,3 +12,4 @@ paper.fls
 paper.synctex(busy)
 paper.xdv
 .vscode
+*.code-workspace
