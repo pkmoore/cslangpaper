@@ -1,31 +1,27 @@
 \section{Evaluation}
 \label{SEC:evaluation}
 
-Here we go.  This is the part where we write about our evaluation.  We've
-built this great tool and we want to show you how it lives up to the
-expectations that we've set for it.  To do this we've set up a series of
-tests that exercise different capabilities and talk about how the tool did.
-
-Here's some questions designed to give you an idea of what we're testing:
-
+With our prototype in hand we set about putting together a set of
+evaluations that would let us know how well we had achieved our goals.
+We designed our tests to answer the following questions:
 
 \begin{itemize}
 
-  \item{Are we able to express the same sorts of things that the earlier
-    crashsim work did?}
+  \item{How well is CSlang able to express the sorts of anomalies that lead
+    to SEA's success?}
 
-  \item{Ok so system calls are cool but can we work with other formats?
-    How quickly can we support new formats?}
+  \item{Is it easy to extend CSlang to support other input formats?}
 
-  \item{Great! Anomalies are pretty neat but what else can you do with the
-    tool? (network/firewall stuff)}
+ % \item{Can CSlang support input formats other than those that are similar
+ %   to function calls?}
 
-  \item{Ok you can do all kinds of things but how fast can you do them?}
+  \item{Is CSlang able to process input streams in a reasonable amount of
+    time?}
 
 \end{itemize}
 
 
-\subsection{Can we do the same sorts of things crashsim could do?}
+\subsection{Expressing SEA Anomalies}
 
 Given that this work was motivated
 in large part
@@ -36,7 +32,7 @@ was sufficiently powerful
 to describe the anomalies that they were able to find bugs with.
 Specifically, we decided to take a look at their Unusual Filetype mutator,
 and Cross-disk file move checkers which were responsible for the bulk of
-the bugs that they found.
+the bugs that were found.
 
 \begin{figure}[H]
 \centering
@@ -56,20 +52,63 @@ int main() {
 \label{lst:UnusualFiletypeCSlang}
 \end{figure}
 
-So without further ado, check out this cool CSlang listing that implements
-the unusual filetype mutator in figure~\ref{lst:UnusualFiletypeCSlang}
-As you can see its nice and short and you can tell what's happening!
-We're matching on one of stat, fstat, or lstat and changing the ST\_MODE
-parameter inside the returned data structure.
-CSlang makes this easy to do for three reasons:
-\begin{enumerate}
-  \item{You don't have to manually write your automaton matching code}
-  \item{You only have to write rules for system calls you're interested in}
-  \item{You can elide all the parts of the system call you don't care
-    about}
-\end{enumerate}
+The first phase of this work was implementing an ``Unusual Filetype''
+mutator using CSlang.
+This mutator, whose code is available in
+Listing~\ref{lst:UnusualFiletypeCSlang},
+should take an input trace that either a call to either {\tt stat()}, {\tt
+fstat()}, or {\tt lstat()} and modify the call's result data structure such
+that its {\tt ST\_MODE} member contains one of the values from
+table~\ref{tbl:ST_MODEValues}.  As can be seen in
+Listing~\ref{lst:UnusualFiletypeCSlang}, CSlang's semantics mean such an
+operation can be captured with only a handful of lines of code.  In this
+listing lines XX-XX define what {\tt stat()}, {\tt fstat()}, and {\tt
+lstat()} calls look like and which parameter contains the result buffer.
+Line YY generates an accepting state that, when entered, produces an output
+system call with a modified value in the return structure's {\tt st\_mode}
+field.  Such output can then be used to modify the results of a running
+application's system calls in order to carry out the remaining steps of the
+SEA technique.
 
-Compare this to Python code that tries to do the same thing!
+\begin{figure}
+  \begin{tabular}{|c|c}
+  Value    & Meaning          \\
+  IF\_BLK  & Block Device     \\
+  IF\_CHR  & Character Device \\
+  IF\_SOCK & Socket           \\
+\end{tabular}
+\caption{ST\_MODE values}
+\label{tbl:ST_MODEValues}
+\end{figure}
+
+CSlang's advantages are made even more obvious when the CSlang Unusual
+Filetype mutator is compared to a program that implements the same
+functionality in general purpose programming language like Python.
+Listing~\ref{lst:UnusualFiletypePython} shows an excerpt from a XX line
+Python program taken from the SEA paper's CrashSimulator that performs the
+above operation.  Comparing this listing to
+Listing~\ref{lst:UnusualFiletypeCSlang} shows several key differences:
+
+\textit{No Boilerplate Code:} The CSlang program lacks the boilerplate
+code associated with
+reading an input trace, managing transducer state, and producing output.
+This is possible because CSlang's capabilities are narrowly defined to
+describing the states and operations of a transducer.  This means these
+functions can be generically implemented within CSlang's core eliminating
+the need for user's to do it themselves.
+
+\textit{No code for uninteresting calls:} CSlang's user does
+not need to write any code to deal with system
+calls they are not interested in.  Each statement defines a new state with
+incoming and outgoing transitions configured such that any system calls not
+dealt with in the CSlang program are ignored.
+
+\textit{Easy to Modify Call Contents:}  CSlang's operators make it
+trivial to change components of a system call
+and produce output while leaving the remainder intact.  This is a far cry
+from the Python program which relies on manual, fragile string manipulation
+to achieve the same effect.
+
 
 \begin{figure}[H]
 \centering
@@ -89,19 +128,46 @@ int main() {
 \label{lst:UnusualFiletypePython}
 \end{figure}
 
-See how long that is?  And this is just a small piece!  CSlang takes care
-of the annoying boilerplate and lets you get done what you need to get
-done.
+The second phase of this work involved the recreation of a set of
+``checkers'' that could examine an application as it moved a file from one
+disk to another and report whether it whether or the operation was carried
+out correctly.  These checkers took advantage of the fact that the Linux
+{\tt rename()} system call does not support moving files from one disk to
+another which results in applications having to perform this complex
+operation manually.  Earlier work on the SEA technique
+identified XX steps required to
+correctly perform such a move by examining the source code of the ``mv''
+command and implemented a set of checkers to identify situations where one
+of or more of these steps were not carried out correctly.
+When applied to real world applications,
+these checkers were able to identify bugs
+in many popular applications and libraries that offered file movement
+capabilities.
 
-We also took a look at the Cross-Disk move checkers.
-This one also found a lot of bugs for the CrashSim folks.
-In this case, we implemented several CSlang programs that each performed
-one of the checks the other paper was interested in.
-These programs didn't perform any mutation but if they accept a particular
-execution then that execution performed the check they were looking for.
-If all the programs pass for a given execution then we can pretty confident
-that the application did everything it needed to in order to move a file
-from one disk to another correctly.
+In a similar fashion to our Unusual Filetype work we first implemented the
+set of checkers in CSlang.  Listing~lst{lst:Cross-DiskMoveCSlang} shows one
+such checker that ensures {\tt fstat} is used after a file is opened but
+before it is moved.  This pattern indicates that an application may be
+storing the {\tt inode} number of the file -- a step necessary to prevent a race
+condition where the file is replaced either during the move process.  When
+we compare this checker to the Python version in
+Listing~\ref{lst:Cross-DiskMovePython} many of the qualities we discussed
+above are apparent.  The CSlang version is more concise and its meaning is
+less obscured by boilerplate and state management code that makes up the
+bulk of the python version.
+
+This exercise did expose one of CSlang's shortcomings.
+The Python checker in Listing~\ref{lst:XattrsPython} ensures an application
+preserves all of a file's extended file attributes and re-applies them the
+destination file after moving it.  We were unable to implement this checker
+in CSlang for two reasons.  First, CSlang does not support looping with a
+runtime-defined number of iterations.  This is necessary to capture all
+calls to {\tt getxattr()}.
+Further, CSlang does not support a list data structure to store the values
+retrieved by such calls and ensure they have all been applied with a
+corresponding call to {\tt setxattr()}.
+We are evaluating these deficiencies and plan to address them in the future
+future.
 
 \begin{figure}[H]
 \centering
@@ -118,12 +184,9 @@ int main() {
 \end{lstlisting}
 \end{tabular}
 \caption{One of the cross disk move checkers implemented in CSlang}
-\label{lst:Cross-Disk Move}
+\label{lst:Cross-DiskMoveCSlang}
 \end{figure}
 
-We were not able to do the check for extended file attributes because we
-don't have the capability to store an arbitrary list of values.  This is a
-feature we are planning to add in the near future.
 
 \begin{figure}[H]
 \centering
@@ -140,90 +203,185 @@ int main() {
 \end{lstlisting}
 \end{tabular}
 \caption{One of the cross disk move checkers implemented in Python}
-\label{lst:Cross-Disk Move}
+\label{lst:Cross-DiskMovePython}
 \end{figure}
-
-As you can see things are much shorter and easier to read.  This is largely
-because CSlang is a domain specific language rather than a general purpose
-one.  This is a big reason we decided to make it.
-
 
 \subsection{Working with other formats}
 
-Early on we realized that CSlang could be used to consume and process
-formats other than system calls.  Throughout its development process
-we maintained this flexibility.  To make sure everything went according to
-plan we add support for a format that was similar enough to system calls
-that we were confident that it would work but different enough to show off
-the language's flexibility.
+While the above results are encouraging, we wanted to ensure that CSlang's
+usefulness was not limited to system call manipulation.
+A logical next step would be to test CSlang's capabilities when working
+with a higher level, but similarly structured, activity stream format.
+After some consideration we settled on JSONRPC and XMLRPC.  These formats
+were ideal because they are well defined, popular, and both have well
+supported parsing libraries or modules.
 
-In the end we settled on JSONRPC...
+\preston{I'm not sure if this timing information stays in.}
+With this decision made we set about implementing the modules necessary
+translate both formats to and from CSlang's internal data representation as
+discussed in Section XXX.  To get a rough idea of the amount of effort
+involved we timed our work on XMLRPC support and found our initial
+implementation took 3 hours and 32 minutes to complete.
 
+\preston{I don't know if this ``Google as a popularity oracle'' idea is
+going to fly...}
+To see how well our new formats worked we decided to test applications that
+used them in the spirit of the SEA technique.  We identified a set of
+candidate popular applications by searching for the terms ``XMLRPC API''
+and ``JSONRPC API'' using Google\footnote{Insert date and time here}.  Our
+final set of test applications were chosen by ordering the results by search
+ranking and removing entries that depended on special hardware or
+commercial software.
 
-Given how well this went, we decided to expand our reach to another similar
-format -- XMLRPC.  To get a more accurate idea of how difficult this was we
-recorded out time to plan and implement the module.  We found that it took
-around 2 hours
-%2:09:14 to be specific%
-worth of planning.  Most of this time was evaluating our options for
-Python XML parsing modules.
-Creating our initial implementation took around an hour
-%1:14:32
-
-With these formats we did many things...
-
-
-To further ease the processing of new formats we added a generic CSV
-processor.  This processor consumes a CSV row by row and allows operations
-to be performed on each field.  The purpose of this capability is to allow
-users to quickly get useful work done at the expense of some rigor/type
-checking etc.
-
-
-\subsection{Function like stuff is great but can we do other things?}
-
-After our success in the above work we wanted to stretch CSlang to perform
-useful work in a significantly different domain.  We showed that CSlang
-could process common protocols used to communicate across networks but
-could we do something interesting with the network traffic itself.
-
-Using generic CSV support we processed incoming network traffic as recorded
-by sysdig.  We constructed CSlang programs that could take incoming network
-traffic, recognize a pattern and output a firewall rule to address it.
-
-At a high level this works as follows:
-Sysdig records network traffic, extracts the fields we are interested in,
-and outputs them as a CSV.  We use our generic CSV processor to read this
-representation of the network traffic and process it with a transducer.
-The transducer outputs new stream of CSV data that is handed to a shell
-script that transforms them into IPtables rules.
-
-While we were happy with the results of this effort there were some
-drawbacks.  Primarily, we do not try to generate an optimal set of rules
-for a given stream of input network traffic.  In many cases there are
-duplicate or unnecessary rules that would be undesirable in a final rule
-set.  Fortunately, other work as been done in the area of optimizing
-firewall rules so we are confident a post-processing pass could be put in
-place to mitigate this problem.
+\preston{Make some calls
+pick some calls
+Capture results
+Run results through CSlang programs that do transformations
+Run calls again
+Capture with proxy
+modify results based on output from cslang programs
+see how application responds}
 
 
-\subsection{The question of performance}
+
+
+% To further ease the processing of new formats we added a generic CSV
+% processor.  This processor consumes a CSV row by row and allows operations
+% to be performed on each field.  The purpose of this capability is to allow
+% users to quickly get useful work done at the expense of some rigor/type
+% checking etc.
+
+
+%\subsection{Function like stuff is great but can we do other things?}
+%
+%After our success in the above work we wanted to stretch CSlang to perform
+%useful work in a significantly different domain.  We showed that CSlang
+%could process common protocols used to communicate across networks but
+%could we do something interesting with the network traffic itself.
+%
+%Using generic CSV support we processed incoming network traffic as recorded
+%by sysdig.  We constructed CSlang programs that could take incoming network
+%traffic, recognize a pattern and output a firewall rule to address it.
+%
+%At a high level this works as follows:
+%Sysdig records network traffic, extracts the fields we are interested in,
+%and outputs them as a CSV.  We use our generic CSV processor to read this
+%representation of the network traffic and process it with a transducer.
+%The transducer outputs new stream of CSV data that is handed to a shell
+%script that transforms them into IPtables rules.
+%
+%While we were happy with the results of this effort there were some
+%drawbacks.  Primarily, we do not try to generate an optimal set of rules
+%for a given stream of input network traffic.  In many cases there are
+%duplicate or unnecessary rules that would be undesirable in a final rule
+%set.  Fortunately, other work as been done in the area of optimizing
+%firewall rules so we are confident a post-processing pass could be put in
+%place to mitigate this problem.
+
+
+\subsection{CSlang's Performance}
 
 It doesn't matter how useful a tool is if it takes too long to get its work
 done.  As a result, performance is a concern.  Though our implementation is
 only a prototype, we wanted to make sure that it wasn't overly slow in
-getting its work done.  To make this determination we devised a series of
-performance tests.  The results of these tests can be seen in
-table~\ref{tbl:perf}.
+getting its work done.  Our first task was to get an idea of CSlang's
+performance in an ideal setting.  For this test we constructed the program
+shown in Listing~\ref{lst:SyntheticPerformance}
+and used it to transform a specific
+pattern of events in synthetic system call JSONRPC, and XMLRPC traces to
+see how CSlang performed when processing each format.  We also varied the
+size of each trace to get an idea of how total trace size impacted
+performance.  The results of this effort can be seen in
+Table~\ref{tbl:SyntheticPerformance}
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{c}
+\begin{lstlisting}
+\\ This is absolutely a fake listing that will be changed out for a real
+\\ one!!  Preston -> Don't forget to do this!
+#include "stdio.h"
+
+int main() {
+    printf("Hello world!\n");
+    return 0;
+};
+\end{lstlisting}
+\end{tabular}
+\caption{CSlang program used }
+\label{lst:SyntheticPerformance}
+\end{figure}
+
 
 \begin{figure}
-  \begin{tabular}{|c|c|c|}
-  Test & Input Size on Disk & Num. Elem. \\
-  test1        & 1GB                        & 10000 \\
-  test2        & 2GB                        & 20000 \\
-  test3        & 3GB                        & 30000 \\
+  \begin{tabular}{|c|c|c|c|}
+                & 1000 Events   & 10000 Events & 100000 Events \\
+  Strace        & 2.3 sec FAKE  & 23 sec FAKE  & 230 sec FAKE  \\
+  JSONRPC       & 1.7 sec FAKE  & 17 sec FAKE  & 170 sec FAKE  \\
+  XMLRPC        & 3.0 sec FAKE  & 30 sec FAKE  & 300 sec FAKE  \\
 \end{tabular}
-\label{tbl:perf}
-\caption{performance results table}
+\caption{Time in seconds to process the specified number of events of each
+  format.}
+\label{tbl:SyntheticPerformance}
 \end{figure}
+
+As can be seen in Table~\ref{tbl:SyntheticPerformance} CSlang is able to
+process large synthetic traces in a reasonable amount of time.  Further,
+the time required to process a trace grows in line with the number of
+events being processed.  It is reasonable to conclude that the largest
+factor behind our recorded processing times is the speed with which the
+traces can be read from disk.  The time required to advance the state of
+the underlying CSlang transducer is small by comparison.
+
+The second part of our performance evaluation focused identifying specific
+patterns within real world system call traces.  We recorded our test traces
+from three popular web servers - Apache, Nginx, and Lighttpd.  These
+applications were chosen because they are widely deployed and sufficiently
+complex to offer a representation of what CSlang might encounter under
+realistic use cases.
+
+Our testing operated as follows.  First, each web server was configured to
+serve a static web page while being recorded using {\tt strace}.  Next, we
+requested the page from each server using {\tt wget}.  The strace
+recordings were then processed using the CSlang program from
+Listing~\ref{lst:RealWorldPerformance}.  The purpose of this program is to
+identify the sequence of system calls that a web server's request handling
+loop.  Table~\ref{tbl:RealWorldPerformance}
+shows the times in seconds required to perform this identification on each
+web server as well as the total number of system calls in each trace.
+
+\begin{figure}
+  \begin{tabular}{|c|c|c}
+                & Time in Sec. & Num. Syscalls.\\
+  Apache        & 1.7 sec FAKE & 1700 FAKE      \\
+  Nginx         & 2.3 sec FAKE & 2300 FAKE      \\
+  Lighttpd      & 0.9 sec FAKE & 850  FAKE      \\
+\end{tabular}
+\caption{Time in seconds to process the specified number of events of each format.}
+\label{tbl:RealWorldPerformance}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{c}
+\begin{lstlisting}
+\\ This is absolutely a fake listing that will be changed out for a real
+\\ one!!  Preston -> Don't forget to do this!
+#include "stdio.h"
+
+int main() {
+    printf("Hello world!\n");
+    return 0;
+};
+\end{lstlisting}
+\end{tabular}
+\caption{CSlang program used for real world performance testing}
+\label{lst:RealWorldPerformance}
+\end{figure}
+
+The results in Table~\ref{tbl:RealWorldPerformance} closely align with
+those in Table~\ref{tbl:SyntheticPerformance}.  This lends further
+credibility to our assertions that CSlang's performance is closely tied to
+disk throughput with little additional overhead coming from the process of
+evaluating each system call and appropriately advancing the transducer.
 
