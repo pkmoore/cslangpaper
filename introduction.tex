@@ -2,9 +2,9 @@
 \label{SEC:introduction}
 
 %H. Dornhackl, K. Kadletz, R. Luh and P. Tavolato,
-% "Defining Malicious Behavior," 
-%2014 Ninth International Conference on Availability, 
-%Reliability and Security, Fribourg, Switzerland, 2014, 
+% "Defining Malicious Behavior,"
+%2014 Ninth International Conference on Availability,
+%Reliability and Security, Fribourg, Switzerland, 2014,
 %pp. 273-278, doi: 10.1109/ARES.2014.43.
 % Using a formal model to encode some sort of desired behavior
 
@@ -14,8 +14,8 @@ It is a well established principle
 that, in the wake of a failure,
 monitoring and examining the actions
 of an application
-during execution provide valid insight
-into its root cause.
+during execution can provide valid insight
+into the root cause.
 Taking advantage of such information
 can aid in correcting
 the cause of failure
@@ -31,14 +31,14 @@ or application recordings.
 Central to this problem
 is accurately describing what activity is important
 and what to do when you find it.
-This work covers our effort to make this process easier.
+% This paper covers our efforts to make this process easier.
 
 In addressing this difficulty,
-we draw inspiration from two sources.
+we drew inspiration from two sources.
 The first is
 the great amount of literature
 supporting the use of event
-processing techniques over large streams of data such as
+processing techniques over large streams of data, such as
 industrial control system sensor readings,
 transaction processing software,
 and networking monitoring systems.
@@ -57,7 +57,7 @@ visible in the results of system calls
 made by a failing application
 could be captured and applied
 to the results of other applications
-to see how it would fair under the same circumstances.
+to see how it would fare under the same circumstances.
 
 Building upon these successes,
 we introduce a tool
@@ -69,7 +69,7 @@ What makes this possible is CSlang,
 a new domain specific language
 for describing these behaviors.
 These descriptions are then used
-to monitor an application's system calls,
+to search a recording of an application's system calls,
 remote procedure calls,
 or other actions in order to determine if it has
 performed what was described.
@@ -92,7 +92,7 @@ that operates on principles similar
 to a standard finite-state transducer.
 That is,
 according to the rules laid down in its CSlang program,
-it consumes an input sequence of activity
+the transducer consumes an input sequence of activity
 to determine if the desired pattern is present,
 while simultaneously producing an output stream.
 The results of this are twofold.
@@ -107,10 +107,10 @@ to drive a simulation (as with the earlier work on environmental bugs)
 to evaluate an application's response to the simulated scenario
 or to populate a test suite.
 
-We evaluated our prototype CSlang
-implementation initially by 
+We created a prototype implementation of CSlang
+and initially tested it by
 re-treading proven ground.
-This involved reimplementing the ``anomalies''  
+This involved reimplementing the ``anomalies''
 described in earlier work on the SEA technique~\cite{crashsim}.
 Side-by-side comparison shows that our new
 descriptions are dramatically more concise (up to XXX\% in some cases)
@@ -118,19 +118,22 @@ than their original counterparts.
 This makes them
 more readable
 and maintainable.
-In this way, CSlang lowers SEA's barrier to entry
-allowing the technique to be more easily used by a wider audience.
+In this way, CSlang increases the applicability of the SEA technique
+by expanding its use to a wider audience.
 
-Next, we wanted to take CSlang beyond manipulating system calls.
-To do so, 
+Next, we wanted to
+show that CSlang
+could be used on activity streams
+other than system calls.
+To do so,
 we exploited the ease with which
 CSlang can be augmented
 to consume new input formats
 by adding support for two remote procedure call formats -- JSONRPC and XMLRPC.
 These formats were chosen
 because they are popular,
-well supported communication formats
-used by major applications.
+and well supported and are
+used by many major applications.
 Taking advantage of these new input formats,
 we wrote programs
 that could identify opportunities
@@ -143,13 +146,14 @@ The main contributions in this work can be summarized as follows:
 
 \begin{itemize}
 
-\item{We present a new language, {\em CSLang},
+\item{We create a new language, {\em CSLang},
   which allows for concise, but expressive, descriptions of
-    application activity and the action to take should they arise}
+    application activity and the action to take should this activity arise}
 
 \item{We show how CSlang can be used make employing the SEA technique easier}
 
-\item{We illustrate the flexibility of CSLang by extending it to accept variety of communication protocols}
+\item{We illustrate the ease with which CSLang can be extended by modifying
+  it to accept variety of communication protocols}
 
 \end{itemize}
 

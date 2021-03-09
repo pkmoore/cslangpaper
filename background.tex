@@ -9,15 +9,16 @@
 \label{sec:MotivatingExample}
 % How SEA showed success using system calls
 
-The initial impetus for this work came from our review
-of earlier efforts by Moore et al. on the
+The initial impetus for this work came from a review
+of earlier efforts by Moore et al.
+that lead to the creation of
 the Simulating Environmental Anomalies (SEA) technique.
 This effort centered on the key insight
 that problematic
 environmental properties,
 known as anomalies, are visible in the
 communications between the components that make up an application.
-They found that,
+The researchers found that,
 once captured,
 these anomalies
 could be
@@ -38,7 +39,7 @@ in major applications~\cite{crashsim}.
 
 As a concrete example of the above
 consider the ``Unusual Filetypes'' anomaly
-discussed in that paper's evaluation.
+discussed in the SEA paper's evaluation.
 This anomaly appears
 when an application running under Linux
 attempts to open and read data from a file on disk.
@@ -50,21 +51,22 @@ Each of these file types requires special procedures when writing to and
 reading from them.
 As a result, an application should check the type of files it intends to
 process so that it can handle it correctly.
-To use this anomaly, the authors intercepted application's attempts to
+To use this anomaly, the authors intercepted applications' attempts to
 examine files with system calls from the {\tt stat} family and modified
 their results to make regular files appear as if they were one of the
-unusual file types.  Application's that failed to recognize the presence of
-an unusual file often handled it incorrectly leading to application hangs,
+unusual file types.
+Applications that failed to recognize the presence of
+an unusual file often handled it incorrectly leading to hangs,
 crashes, and even damage to the host system as a result of disks being
 completely filled.
 
 Our takeaway
 was that an application's activity
 is a valuable resource that can be systematically mined
-in order find to bugs
+in order to find bugs
 that may be missed by other techniques.
 The work described in this paper
-is based on our own key insight that that the best way to extract this
+is based on our own key insight that the best way to extract this
 value
 is to treat application activity
 as a sequence of events
@@ -78,8 +80,8 @@ could be expanded
 to encompass other activity types
 like calls to library functions
 and remote procedure calls.
-Second was the understanding that existing tools,
-while effective in their given areas,
+Second was the understanding that existing
+stream processing tools
 are not up to the
 task we had in mind.
 
@@ -91,20 +93,20 @@ task we had in mind.
 %%% try it at a larger scale.  We can avoid talk of "Augmenting" SEA or
 %%% whatever though
 
-\subsection{Expanding on Environmental Bugs}
+\subsection{Explaining Environmental Bugs}
 
 Before we discuss the details of our bug-finding efforts it is necessary to
 draw a boundary around the types of bugs we are targeting.
 This work sets its sights on the bugs that occur when an some external
 entity supplies unexpected or incorrect data to an
 application resulting in its failure.
-Such bugs may appear in simple situations such as a library function that
+Such bugs may appear in simple situations like a library function that
 returns data in an unexpected format or in scenarios as complex
 as a request to a remote
 system returning bad data because of corruption on an intermediate network
 node.
-Both cases share the commonality that the symptoms of misbehavior are
-visible in a recording of the applications activity.
+Both cases share the commonality that the symptoms of misbehavior
+can be found in a recording of the applications activity.
 These bugs, defined by Moore et al. as ``environmental bugs,''
 often cause applications to fail after deployment
 and occur with such frequency
