@@ -10,6 +10,7 @@
 
 {\textit ``Actions speak louder than words...'' - Unknown}
 
+
 It is a well established principle
 that, in the wake of a failure,
 monitoring and examining the actions
@@ -17,9 +18,9 @@ of an application
 during execution can provide valid insight
 into the root cause.
 Taking advantage of such information
-can aid in correcting
-the cause of failure
-and assist in the creation
+can aid not only in correcting
+the cause of failure,
+but also assist in the creation
 of tests to ensure
 that those causes
 are not repeated in the future.
@@ -44,8 +45,8 @@ transaction processing software,
 and networking monitoring systems.
 We argue that the techniques these tools use
 to identify problems in a manufacturing environment,
-network outages,
-or patterns in customer behavior
+or patterns in network outages,
+or customer behavior,
 can be applied
 to large application activity streams to accurately
 and efficiently recognize target sequences.
@@ -61,25 +62,28 @@ to see how it would fare under the same circumstances.
 
 Building upon these successes,
 we introduce a tool
-that applies event processing techniques
-to the identification
+that utilizes event processing techniques
+to identify
 of behaviors carried out by an application
 that could interfere with its successful operation.
 What makes this possible is CSlang,
 a new domain specific language
-for describing these behaviors.
+created to describe these behaviors.
 These descriptions are then used
-to search a recording of an application's system calls,
-remote procedure calls,
-or other actions in order to determine if it has
+to search a recording of an application's actions
+across a variety of ``activity representations'',
+such as system calls,
+or remote procedure calls,
+in order to determine if it has
 performed what was described.
 This capability is useful
 for ensuring an application executed a desired behavior
-or avoided an undesired one
+or avoided an undesired one,
 depending on the user's need.
 Further, CSlang permits
 its user to describe a set of modifications
-to be made to an activity sequence should it be encountered.
+that should be made
+if a particular activity sequence is encountered.
 By combining passive monitoring and active modification
 of an application's activity,
 CSlang aids in identifying environmental bugs
@@ -107,10 +111,10 @@ to drive a simulation (as with the earlier work on environmental bugs)
 to evaluate an application's response to the simulated scenario
 or to populate a test suite.
 
-We created a prototype implementation of CSlang
-and initially tested it by
-re-treading proven ground.
-This involved reimplementing the ``anomalies''
+We first evaluated the effectiveness of the above technique
+by creating a prototype implementation of CSlang
+and using it to
+reimplement the ``anomalies''
 described in earlier work on the SEA technique~\cite{crashsim}.
 Side-by-side comparison shows that our new
 descriptions are dramatically more concise (up to XXX\% in some cases)
@@ -118,8 +122,12 @@ than their original counterparts.
 This makes them
 more readable
 and maintainable.
-In this way, CSlang increases the applicability of the SEA technique
-by expanding its use to a wider audience.
+As an added benefit,
+CSlang can expand the use of the SEA technique,
+which has already been proven
+to be an effective bug detector,
+by facilitating its use
+on a wider variety of applications.
 
 Next, we wanted to
 show that CSlang
@@ -128,13 +136,13 @@ other than system calls.
 To do so,
 we exploited the ease with which
 CSlang can be augmented
-to consume new input formats
+to consume new activity representations
 by adding support for two remote procedure call formats -- JSONRPC and XMLRPC.
 These formats were chosen
 because they are popular,
 and well supported and are
 used by many major applications.
-Taking advantage of these new input formats,
+Taking advantage of these new activity representations,
 we wrote programs
 that could identify opportunities
 to modify the results of RPC calls.
@@ -150,10 +158,11 @@ The main contributions in this work can be summarized as follows:
   which allows for concise, but expressive, descriptions of
     application activity and the action to take should this activity arise}
 
-\item{We show how CSlang can be used make employing the SEA technique easier}
+\item{We show how CSlang can be used to make employing the SEA technique
+  more widely applicable}
 
 \item{We illustrate the ease with which CSLang can be extended by modifying
-  it to accept variety of communication protocols}
+  it to accept a variety of ``activity representations''}
 
 \end{itemize}
 
