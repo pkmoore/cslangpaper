@@ -19,6 +19,93 @@ larger CSlang program explaining each feature along the way.
 \subsection{Syntax and Semantics}
 \label{sub:SyntaxAndSemantics}
 
+\begin{figure}[H]
+\centering
+\begin{tabular}{c}
+\begin{lstlisting}
+
+S: statementlist
+statementlist: statement*
+statement: eventdefinition
+           | variantdefinition
+           | assignment
+           | dataword
+eventdefinition: id (id\_1, t\_1, l\_1), ..., (id\_n, t\_n, l\_n)
+variantdefinition: var\_id ed\_1, ..., ed\_n
+assignment: x <- e
+dataword: id paramexp predexp outputexp
+paramexp: (pid\_1, op\_1, regid\_1), ..., (pid\_n, op\_n, regid\_n)
+predexp: (lhs\_1, cmp\_1, rhs\_1), ..., (lhs\_n, cmp\_n, rhs\_n)
+outputexp: id paramexp
+e \in Expr := e\_1 + e\_2 | e\_1 - e\_2 | ...
+\end{lstlisting}
+\end{tabular}
+\caption{Grammer of CSlang's syntax}
+\label{lst:SyntaxGrammar}
+\end{figure}
+
+
+\begin{quote}
+\centering
+\textbf{S: statementlist}
+\end{quote}
+
+This production triggers the creation of a transducer with only a starting
+state.  This state is an accepting state in two situations:
+\begin{itemize}
+  \item{When no other states are added to the automaton by subsequent
+    statements}
+  \item{When the only other states added to the automaton are NOT states
+    which reject sequences where they match the event they describe}
+\end{itemize}
+In all other cases this is a rejecting state that produces no output.
+
+\begin{quote}
+\centering
+\textbf{assignment: x <- e}
+\end{quote}
+
+Assignment statements store the value of an expression, e, into a named
+register on the transducer being described.  If the register does not exist
+it is created otherwise its stored value is overwritten.
+Registers may contain Numeric or String values.  Register contents
+may be used in subsequent statements to specify parameter values that must
+be present in order for an event to match or as values to be output.
+
+\begin{quote}
+\centering
+\textbf{eventdefinition:}
+\end{quote}
+
+An eventdefinition statement describes an event that may appear in an input
+stream.  This description is used to select the parameters
+.....................................
+
+\begin{quote}
+\centering
+\textbf{variantdefinition:}
+\end{quote}
+
+A variant definition allows several event definitions to be combined under
+a single identifier.  This identifier may then be used in a dataword
+statement to match any of the collected events.  This feature arose as a
+result of situations where one of several system calls could be used to
+perform the same operation (e.g. {\tt read()} and {\tt recv()}).
+
+\begin{quote}
+\centering
+\textbf{dataword: id paramexp predexp outputexp}
+\end{quote}
+
+Dataword statments are the most complex variety in CSlang and, as such, we
+will discuss it one piece at a time.
+
+
+{\textit id paramexp}
+
+{\textit predexp}
+
+{\textit outputexp}
 
 
 %%%% We need to talk about how we are different from other
