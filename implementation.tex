@@ -74,16 +74,22 @@ be present in order for an event to match or as values to be output.
 
 \begin{quote}
 \centering
-\textbf{eventdefinition:}
+\textbf{eventdefinition: id (id\_1, t\_1, l\_1), ..., (id\_n, t\_n, l\_n) }
 \end{quote}
 
-An eventdefinition statement describes an event that may appear in an input
-stream.  This description is used to select the parameters
-.....................................
+\preston{ I use the word type here because I can't think of a better term.
+I don't like that it could be confused with type as from a type system...}
+
+An event definition statement describes an event that may appear in an input
+stream.  Each statement specifies an event ``type'' and a list of
+parameters that should be accessible later.  An event's type corresponds
+with the system call name, RPC call name, or, in the case of other activity
+representations, a unique identifier that would allow events of the same
+variety to be picked out of a stream.
 
 \begin{quote}
 \centering
-\textbf{variantdefinition:}
+\textbf{variantdefinition: var\_id ed\_1, ..., ed\_n}
 \end{quote}
 
 A variant definition allows several event definitions to be combined under
@@ -97,15 +103,52 @@ perform the same operation (e.g. {\tt read()} and {\tt recv()}).
 \textbf{dataword: id paramexp predexp outputexp}
 \end{quote}
 
-Dataword statments are the most complex variety in CSlang and, as such, we
-will discuss it one piece at a time.
-
+Dataword statements are responsible for adding new states to the
+transducer.  This means they must specify any register operations,
+transition conditions, and output associated with these new states.  To
+tackle this complexity we will address each part of this production
+individually.
 
 {\textit id paramexp}
 
+The parameter expression offers an opportunity to examine and store
+parameter values from the current event.  CSlang supports two operators
+that may be applied to parameter expression members.  The match operator
+(!) allows for the rejection of otherwise matching events
+by enforcing a required value on a
+chosen parameter while the store operator (?) copies a value from the
+current event and stores it in the specified register.
+
+
 {\textit predexp}
 
+Predicate expressions are used to place additional restrictions that must
+be met if the transducer is to advance into the newly created state.  These
+restrictions compare values from the current event to either register
+values or literal values.
+
 {\textit outputexp}
+
+An output clause controls the output that will be produced when its
+associated state is entered.  The nature of this output is controlled by a
+parameter expression which specifies which parameters of the current event
+should be replaced with a value from a register.  If a parameter is not
+included in the parameter expression, its original value is used and,
+similarly,
+if an output clause is omitted the original, unmodified event is output.
+
+\subsection{Dataword Operators}
+\preston{I don't know if we need to discuss these further or if the above
+is enough to cover them}
+{\textit Match Operator (?)}
+
+{\textit Store Operator (!)}
+
+
+\subsection{Other Features}
+\preston{I don't know if this is worth its own subsection}
+{\textit The NOT Keyword}
+
 
 
 %%%% We need to talk about how we are different from other
