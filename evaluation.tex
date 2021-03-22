@@ -2,7 +2,7 @@
 \label{SEC:evaluation}
 
 With our prototype in hand we organized a set of
-evaluations that would let us know if the language was effective
+evaluations that would let us know if the CSlang was effective
 in real world situations.
 We designed our tests to answer the following questions:
 
@@ -144,7 +144,7 @@ int main() {
 
 \subsubsection{Creating the Cross-Disk Move Checkers}
 
-The second phase of this work involved the recreation of a set o
+The second phase of this work involved the recreation of a set of
 ``checkers'' that could examine an application as it moved a file from one
 disk to another and report whether or the operation was carried
 out correctly.  These checkers took advantage of the fact that the Linux
@@ -237,7 +237,8 @@ supported parsing libraries or modules.
 
 \preston{I'm not sure if this timing information stays in.}
 With this decision made we set about implementing the modules necessary
-translate both formats to and from CSlang's internal data representation as
+to translate
+both formats to and from CSlang's internal data representation as
 discussed in Section XXX.  To get a rough idea of the amount of effort
 involved we timed our work on XMLRPC support and found our initial
 implementation took 3 hours and 32 minutes to complete.
@@ -311,7 +312,7 @@ CSlang
 in an ideal setting.  For this test we constructed the program
 shown in Figure~\ref{lst:SyntheticPerformance}
 and used it to transform a specific
-pattern of events in synthetic system call JSONRPC, and XMLRPC traces to
+pattern of events in synthetic system call, JSONRPC, and XMLRPC traces to
 see how CSlang performed when processing each format.  We also varied the
 size of each trace to get an idea of how total trace size impacted
 performance.  The results of this effort can be seen in
