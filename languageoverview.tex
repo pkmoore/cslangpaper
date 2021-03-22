@@ -109,7 +109,7 @@ transition conditions, and output associated with these new states.  To
 tackle this complexity we will address each part of this production
 individually.
 
-{\textit id paramexp}
+\textit{id paramexp}
 
 The parameter expression offers an opportunity to examine and store
 parameter values from the current event.  CSlang supports two operators
@@ -120,14 +120,14 @@ chosen parameter while the store operator (?) copies a value from the
 current event and stores it in the specified register.
 
 
-{\textit predexp}
+\textit{predexp}
 
 Predicate expressions are used to place additional restrictions that must
 be met if the transducer is to advance into the newly created state.  These
 restrictions compare values from the current event to either register
 values or literal values.
 
-{\textit outputexp}
+\textit{outputexp}
 
 An output clause controls the output that will be produced when its
 associated state is entered.  The nature of this output is controlled by a
@@ -140,14 +140,14 @@ if an output clause is omitted the original, unmodified event is output.
 \subsection{Dataword Operators}
 \preston{I don't know if we need to discuss these further or if the above
 is enough to cover them}
-{\textit Match Operator (?)}
+\textit{Match Operator (?)}
 
-{\textit Store Operator (!)}
+\textit{Store Operator (!)}
 
 
 \subsection{Other Features}
 \preston{I don't know if this is worth its own subsection}
-{\textit The NOT Keyword}
+\textit{The NOT Keyword}
 
 
 
