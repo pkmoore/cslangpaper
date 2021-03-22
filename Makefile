@@ -11,10 +11,9 @@ dvi: $(PAPER).dvi
 SECTIONS = \
 	abstract.tex \
 	introduction.tex \
-	threat-model.tex \
 	background.tex \
-	architecture.tex \
-	implementation.tex \
+	languageoverview.tex \
+	archandimpl.tex \
 	evaluation.tex \
  	related-work.tex \
 	conclusion.tex \
