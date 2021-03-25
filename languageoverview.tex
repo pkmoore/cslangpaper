@@ -1,11 +1,12 @@
 \section{Language Overview}
 \label{sec:Overview}
 
-Figure XXX contains a simplified version of CSlang's grammar.  The purpose
+The purpose
 of a CSlang program is to completely describe a transducer that both
 accepts a chosen stream if it contains a particular
-activity sequence and produces an output stream containing specific
-modifications needed for application testing.  As a result, such a
+activity sequence and can produce a modified
+output stream
+for application testing.  As a result, such a
 description covers all states, their associated output, and the transition
 relation that ties them all together.
 Simply enumerating every feature of such a transducer could be very verbose
@@ -18,6 +19,9 @@ larger CSlang program explaining each feature along the way.
 
 \subsection{Syntax and Semantics}
 \label{sub:SyntaxAndSemantics}
+
+Figure~\ref{lst:SyntaxGrammar} contains a simplified
+version of CSlang's grammar.
 
 \begin{figure}[H]
 \centering
