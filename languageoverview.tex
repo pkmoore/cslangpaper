@@ -2,14 +2,16 @@
 \label{sec:Overview}
 
 The purpose
-of a CSlang program is to completely describe a transducer that both
+of a CSlang program is to completely describe a CSlang
+transducer that both
 accepts a chosen stream if it contains a particular
 activity sequence and can produce a modified
 output stream
-for application testing.  As a result, such a
-description covers all states, their associated output, and the transition
+for application testing.
+In order to do accomplish this
+description must cover all states, their associated output, and the transition
 relation that ties them all together.
-Simply enumerating every feature of such a transducer could be very verbose
+Simply enumerating every aspect of such a transducer could be very verbose
 so we carefully tailored CSlang's semantics to allow its users to
 describe complex configurations in a concise manner.
 We discuss the details of of the
@@ -55,12 +57,12 @@ e \in Expr := e\_1 + e\_2 | e\_1 - e\_2 | ...
 \end{quote}
 
 This production triggers the creation of a transducer with only a starting
-state.  This state is an accepting state in two situations:
+state.  This state is accepting in two situations:
 \begin{itemize}
   \item{When no other states are added to the automaton by subsequent
     statements}
   \item{When the only other states added to the automaton are NOT states
-    which reject sequences where they match the event they describe}
+    which reject sequences they match}
 \end{itemize}
 In all other cases this is a rejecting state that produces no output.
 
@@ -70,8 +72,10 @@ In all other cases this is a rejecting state that produces no output.
 \end{quote}
 
 Assignment statements store the value of an expression, e, into a named
-register on the transducer being described.  If the register does not exist
-it is created otherwise its stored value is overwritten.
+register on the transducer being described.
+If the register does not exist,
+it is created;
+otherwise its stored value is overwritten.
 Registers may contain Numeric or String values.  Register contents
 may be used in subsequent statements to specify parameter values that must
 be present in order for an event to match or as values to be output.
@@ -85,8 +89,8 @@ be present in order for an event to match or as values to be output.
 I don't like that it could be confused with type as from a type system...}
 
 An event definition statement describes an event that may appear in an input
-stream.  Each statement specifies an event ``type'' and a list of
-parameters that should be accessible later.  An event's type corresponds
+stream.  Each statement specifies an event ``variety'' and a list of
+parameters that should be accessible later.  An event's variety corresponds
 with the system call name, RPC call name, or, in the case of other activity
 representations, a unique identifier that would allow events of the same
 variety to be picked out of a stream.
@@ -135,23 +139,34 @@ values or literal values.
 
 An output clause controls the output that will be produced when its
 associated state is entered.  The nature of this output is controlled by a
-parameter expression which specifies which parameters of the current event
+parameter expression that specifies which parameters of the current event
 should be replaced with a value from a register.  If a parameter is not
-included in the parameter expression, its original value is used and,
-similarly,
+included in the parameter expression, its original value is used.
+Similarly,
 if an output clause is omitted the original, unmodified event is output.
 
 \subsection{Dataword Operators}
-\preston{I don't know if we need to discuss these further or if the above
-is enough to cover them}
+
+CSlang supports two operators that may be applied to a dataword's
+parameters: Match and Store.  These operators are a central component in
+the description of a CSlang transducer.
+
 \textit{Match Operator (?)}
+The match operator allows register values
 
 \textit{Store Operator (!)}
+The store operator instructs the CSlang transducer to store the value
 
+\textit{The NOT keyword}
 
-\subsection{Other Features}
-\preston{I don't know if this is worth its own subsection}
-\textit{The NOT Keyword}
+The NOT keyword is used to reject a sequence if the event being
+described is encountered.  This is done by creating a rejecting state with
+transition requirements as described in the dataword
+statement and no outgoing transitions.
+We found this capability useful for writing programs that could identify
+situations where an application incorrectly performs one or more steps of a
+complex operation.
+
 
 
 
