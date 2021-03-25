@@ -1,6 +1,9 @@
 \section{Language Overview}
 \label{sec:Overview}
 
+In the simplest case, each state has a single incoming transition and a
+single outgoing transition
+
 The purpose
 of a CSlang program is to completely describe a CSlang
 transducer that both
@@ -152,10 +155,20 @@ parameters: Match and Store.  These operators are a central component in
 the description of a CSlang transducer.
 
 \textit{Match Operator (?)}
-The match operator allows register values
+
+The match operator, ``\textit{?}'', allows CSlang's user to
+require that the value of the event parameter it is operating on matches
+the value in the specified register.  This functionality is
+useful when a value is stored upon the occurrence of one event
+and then used to identify an associated event that is expected to appear later.
+An common example of this pattern is storing the file descriptor
+returned by an {\tt open()} or {\tt socket()} call into a register
+and using it to find related {\tt read()} further along in a system call
+trace.
+
 
 \textit{Store Operator (!)}
-The store operator instructs the CSlang transducer to store the value
+The store operator, ``\textit{?}'', instructs the CSlang transducer to store the value
 
 \textit{The NOT keyword}
 
