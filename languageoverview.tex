@@ -1,6 +1,7 @@
 \section{Language Overview}
 \label{sec:Overview}
 
+paragraph here about a program
 In the simplest case, each state has a single incoming transition and a
 single outgoing transition
 
@@ -154,6 +155,14 @@ CSlang supports two operators that may be applied to a dataword's
 parameters: Match and Store.  These operators are a central component in
 the description of a CSlang transducer.
 
+\textit{Store Operator (!)}
+
+The store operator, ``\textit{?}'', adds a requirement that the
+CSlang transducer should extract a value from the current event and store
+it in the specified register.  These values may then be modified by
+register expressions, combined with the match operator to add more
+entry requirements to a state, or used in output expressions.
+
 \textit{Match Operator (?)}
 
 The match operator, ``\textit{?}'', allows CSlang's user to
@@ -165,10 +174,6 @@ An common example of this pattern is storing the file descriptor
 returned by an {\tt open()} or {\tt socket()} call into a register
 and using it to find related {\tt read()} further along in a system call
 trace.
-
-
-\textit{Store Operator (!)}
-The store operator, ``\textit{?}'', instructs the CSlang transducer to store the value
 
 \textit{The NOT keyword}
 
