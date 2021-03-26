@@ -89,8 +89,17 @@ be present in order for an event to match or as values to be output.
 \textbf{eventdefinition: id (id\_1, t\_1, l\_1), ..., (id\_n, t\_n, l\_n) }
 \end{quote}
 
-\preston{ I use the word type here because I can't think of a better term.
-I don't like that it could be confused with type as from a type system...}
+\begin{figure}[H]
+\centering
+\begin{tabular}{c}
+\begin{lstlisting}
+
+type statbuf {dev: String@0, stino: String@1, mode: String@2};
+type fstat {filedesc: Numeric@0, statstruct: statbuf@1};
+
+\end{lstlisting}
+\end{tabular}
+\end{figure}
 
 An event definition statement describes an event that may appear in an input
 stream.  Each statement specifies an event ``variety'' and a list of
@@ -99,16 +108,33 @@ with the system call name, RPC call name, or, in the case of other activity
 representations, a unique identifier that would allow events of the same
 variety to be picked out of a stream.
 
+The second line in the above example shows an event
+definition for the {\tt fstat()} system call with two parameters: a numeric
+file descriptor and ``statbuf'' structure named statbuf.
+The first line in the above defines the layout of a statbuf.
+
 \begin{quote}
 \centering
 \textbf{variantdefinition: var\_id ed\_1, ..., ed\_n}
 \end{quote}
 
+\begin{figure}[H]
+\centering
+\begin{tabular}{c}
+\begin{lstlisting}
+type bothread {read filedesc: Numeric@0} | {recv filedesc: Numeric@0};
+\end{lstlisting}
+\end{tabular}
+\end{figure}
+
 A variant definition allows several event definitions to be combined under
 a single identifier.  This identifier may then be used in a dataword
 statement to match any of the collected events.  This feature arose as a
 result of situations where one of several system calls could be used to
-perform the same operation (e.g. {\tt read()} and {\tt recv()}).
+perform the same operation (e.g. {\tt read()} and {\tt recv()}).  The
+concrete syntax necessary to achieve this paring is shown in the example
+above where the variant ``bothread'' is defined such that it will match
+either a {\tt read()} or {\tt recv()} system call.
 
 \begin{quote}
 \centering
@@ -155,15 +181,15 @@ CSlang supports two operators that may be applied to a dataword's
 parameters: Match and Store.  These operators are a central component in
 the description of a CSlang transducer.
 
-\textit{Store Operator (!)}
+\subsubsection{Store Operator (!)}
 
-The store operator, ``\textit{?}'', adds a requirement that the
+The store operator, ``\textit{!}'', adds a requirement that the
 CSlang transducer should extract a value from the current event and store
 it in the specified register.  These values may then be modified by
 register expressions, combined with the match operator to add more
 entry requirements to a state, or used in output expressions.
 
-\textit{Match Operator (?)}
+\subsubsection{Match Operator (?)}
 
 The match operator, ``\textit{?}'', allows CSlang's user to
 require that the value of the event parameter it is operating on matches
@@ -175,7 +201,7 @@ returned by an {\tt open()} or {\tt socket()} call into a register
 and using it to find related {\tt read()} further along in a system call
 trace.
 
-\textit{The NOT keyword}
+\subsubsection{The NOT keyword}
 
 The NOT keyword is used to reject a sequence if the event being
 described is encountered.  This is done by creating a rejecting state with
