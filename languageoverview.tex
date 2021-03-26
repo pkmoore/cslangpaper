@@ -113,6 +113,9 @@ definition for the {\tt fstat()} system call with two parameters: a numeric
 file descriptor and ``statbuf'' structure named statbuf.
 The first line in the above defines the layout of a statbuf.
 
+\preston{If these are events then what are we calling structure
+definitions?}
+
 \begin{quote}
 \centering
 \textbf{variantdefinition: var\_id ed\_1, ..., ed\_n}
@@ -140,6 +143,19 @@ either a {\tt read()} or {\tt recv()} system call.
 \centering
 \textbf{dataword: id paramexp predexp outputexp}
 \end{quote}
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{c}
+\begin{lstlisting}
+
+fstat({statstruct: {dev: !finddev2, stino: !findino2}})
+with filedesc == 4 and statstruct.dev == "st_dev=makedev(0, 4)"
+-> fstat({filedesc: ->fdout2});
+
+\end{lstlisting}
+\end{tabular}
+\end{figure}
 
 Dataword statements are responsible for adding new states to the
 transducer.  This means they must specify any register operations,
