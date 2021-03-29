@@ -1,9 +1,16 @@
 \section{Language Overview}
 \label{sec:Overview}
 
-paragraph here about a program
-In the simplest case, each state has a single incoming transition and a
-single outgoing transition
+\begin{figure}
+  \includegraphics[scale=.8]{images/processing}
+  \caption{A CSlang transducer individually processes each item in an input
+  sequence.  For each item in the sequence, the transducer updates it's
+  internal state and produces output according to the rules described in
+  its program.}
+  \label{fig:processing}
+\end{figure}
+
+\preston{The processing figure is not mentioned anywhere}
 
 The purpose
 of a CSlang program is to completely describe a CSlang
