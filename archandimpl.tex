@@ -71,8 +71,19 @@ necessary and, further, we found that the same capabilities allowed us to
 support other activity representations.
 
 The second component is the set of modules, known as transformers, that can
-take a recording of an application in its original representation and
-transform to, and from, IDF.
+convert an activity stream from its original representation into IDF and
+back.  A transformer achieves the former by parsing each activity entry,
+extracting the relevant fields, and assembling this information into an IDF
+record.  These records are re-assembled into a stream which is input into a
+CSlang transducer.  The result of processing this stream undergoes the
+reverse.  The output IDF stream is converted by a transformer back into the
+original activity representation.  The current version of CSlang ships with
+three transformers:
+\begin{itemize}
+\item{strace via Posix-Omni-Parser}
+\item{JSONRPC via Python's json module}
+\item{XMLRPC via Python's lxml module}
+\end{itemize}
 
 
 % !!! This paragraph is about the generic internal representation
