@@ -4,7 +4,8 @@
 \begin{figure}
   \includegraphics[scale=.08]{images/architecture}
   \caption{The CSLang compiler produces a transducer that operates over a
-  generic intermediate representation of the contents of a given trace.}
+  generic internal data format that contains the contents of an application
+  recording.}
   \label{fig:architecture}
 \end{figure}
 
@@ -31,6 +32,16 @@
 %%describe anomalies that was concise, easy to understand, and generic enough
 %%that it could support many message formats.
 \subsection{The CSlang Compiler}
+
+The CSlang compiler is responsible for constructing a CSlang transducer
+from a CSlang program.  Once constructed, this automaton is serialized to
+disk so that it may be stored and reused.
+Our decision to model CSlang after a compiled language was made because our
+experience has shown that CSlang programs are typically
+compiled a few times during construction
+and executed many times over many different applications.  remove the
+performance penalty of re-interpreting a CSlang program each time it is
+run.
 
 % !!! This part is about the transducer which is now covered in language
 % !!! overview
@@ -127,4 +138,6 @@ three transformers:
 %  operates}
 %  \item{Translation layer for converting to and from concrete data into IDS}
 %\end{itemize}
+
+\subsection{Nuts and Bolts}
 
