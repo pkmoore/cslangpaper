@@ -1,4 +1,14 @@
-\section{Architecture}
+\section{Architecture and Implementation}
+
+Until now, this paper has been primarily concerned with the details of the
+CSlang language.  However, the language alone is not enough to do the work
+we intended it to accomplish.  The CSlang tool set
+consists of several related
+components that allow a CSlang program to be used to analyze a stream of
+application activity.
+In this section we discuss the most important of these components and some
+of the decisions that went into their design and operation.
+
 \label{SEC:architecture}
 
 \begin{figure}
@@ -9,56 +19,18 @@
   \label{fig:architecture}
 \end{figure}
 
-
-%!!! This paragraph is about how we wanted to improve encoding and will
-%!!! probably disappear
-%%% We want to capture and encode anomalies
-%%The SEA technique's power comes from its ability to capture and encode
-%%anomalies so they can be repeatedly employed to test applications.  But, as
-%%previous work discussed, taking advantage of this feature can be
-%%% What are the challenges -> writing the programs
-%%challenging.  Based on these qualities, we reasoned the capture process
-%%% Improvement efforts here feel out of place.  We are not improving SEA, we
-%%% are working on a new language
-%%was a good candidate for our improvement efforts.
-%%As a first step, we examined the encoded anomalies used in the
-%%earlier SEA work and found several deficiencies.
-%%They were
-%%long (in terms of lines of code),
-%%difficult to read and maintain,
-%%and tightly coupled to the implementation details of system calls.
-%%We decided to address each of these concerns by developing a new
-%%programming language, CSLang.  Our goal with CSLang was to provide a way to
-%%describe anomalies that was concise, easy to understand, and generic enough
-%%that it could support many message formats.
 \subsection{The CSlang Compiler}
 
 The CSlang compiler is responsible for constructing a CSlang transducer
 from a CSlang program.  Once constructed, this automaton is serialized to
 disk so that it may be stored and reused.
-Our decision to model CSlang after a compiled language was made because our
+We made the decision to make CSlang a compiled language because
 experience has shown that CSlang programs are typically
 compiled a few times during construction
-and executed many times over many different applications.  remove the
-performance penalty of re-interpreting a CSlang program each time it is
-run.
+and executed many times over many different applications.
+By compiling ahead of time we save the performance cost associated with other
+approaches like just-in-time compilation or execution via an interpreter.
 
-% !!! This part is about the transducer which is now covered in language
-% !!! overview
-%%% We used a transducer as a model
-%While the development of CSLang
-%is the star of the show,
-%it is important to first understand
-%several new components
-%that form the language's foundation.
-%At the core of our efforts is
-%a new model for recognizing and transforming streams of messages.  Our
-%model is based on a finite-state transducer and builds upon the earlier SEA
-%work's success at describing simulation opportunities using deterministic
-%finite automata.  We chose the transducer as our foundation
-%because it better suits our need for stream editing and allows us to get
-%rid of the secondary mutation step described in earlier work.
-%Instead, recognition and transformation of streams can be done at the same time.
 
 \subsection{Supporting Many Activity Representations}
 
@@ -97,38 +69,17 @@ three transformers:
 \end{itemize}
 
 
-% !!! This paragraph is about the generic internal representation
-% !!! and will probably need to stay
-%%%% We convert the stream of messages to a generic format
-%The model does not serve much purpose without a stream of messages to
-%operate on.
-%This stream is provided by our second component,
-%the message format adaptor,
-%which takes
-%stream of messages in their original representation and converts
-%them into a format that a CSLang transducer can consume. This conversion process
-%captures the identifying information and parameters of each message in the
-%input stream and stores them in CSLang's Intermediate Data Format (IDF).
-%Operating on this generic intermediate format means CSLang transducers are
-%not dependent on a specific message format.
-
 \subsection{Executing a CSlang Program}
-%%% We have this thing that hands the stream of stuff off to the
-%%% automaton
-%A final component, known as the CSLang executor,
-%receives both the transducer and the converted message stream.
-%This program is responsible for passing each message of the stream
-%to the transducer
-%so that it may advance its internal state and
-%produce the appropriate output.
-%In this case, output comes in the form of modifications to the IDF stream itself.
-%If the transducer
-%ends in an accepting state, the stream of messages has
-%been modified to include an anomaly and will be output in its original
-%representation.  If the automaton is not in an accepting state, the stream
-%did not contain an opportunity to simulate the described anomaly.
-%
-%<Something Something Something how simulation works goes here?>
+
+Unlike an executable program, a compiled CSlang program is a static entity
+that cannot run by itself.  Instead, a component we refer to as the
+``CSlang Executor'' is responsible for carrying out the ancillary work
+required to analyze an application recording with a CSlang transducer.
+These tasks include deserializing a stored transducer from disk, converting
+the selected input stream to CSlang's internal data format using an
+appropriate transformer, translating the output stream back to the original
+activity representation, and reporting whether the input sequence was
+accepted or rejected by the transducer. 
 
 %\begin{itemize}
 %  \item{Language describing anomalies}
