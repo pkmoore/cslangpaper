@@ -22,14 +22,20 @@ of the decisions that went into their design and operation.
 \subsection{The CSlang Compiler}
 
 The CSlang compiler is responsible for constructing a CSlang transducer
-from a CSlang program.  Once constructed, this automaton is serialized to
-disk so that it may be stored and reused.
+from a CSlang program.
 We made the decision to make CSlang a compiled language because
 experience has shown that CSlang programs are typically
 compiled a few times during construction
 and executed many times over many different applications.
 By compiling ahead of time we save the performance cost associated with other
 approaches like just-in-time compilation or execution via an interpreter.
+
+Compilation happens in two phases.  In the first phase, the program text is
+parsed into an abstract syntax tree using an LALR parser.
+In the second, the
+contents of the AST are used to assemble a complete CSlang transducer.
+This transducer is serialized to
+disk so that it may be stored and reused.
 
 
 \subsection{The Internal Data Format}
@@ -79,7 +85,7 @@ These tasks include deserializing a stored transducer from disk, converting
 the selected input stream to CSlang's internal data format using an
 appropriate transformer, translating the output stream back to the original
 activity representation, and reporting whether the input sequence was
-accepted or rejected by the transducer. 
+accepted or rejected by the transducer.
 
 %\begin{itemize}
 %  \item{Language describing anomalies}
