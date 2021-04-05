@@ -32,6 +32,46 @@ language's syntax and semantics and illustrate the details
 with small examples.  Section~\ref{sub:DatawordOperators} takes a more
 detailed look at important operators.
 
+\subsection{What Does an Event Stream Look Like?}
+\label{sub:EventLookLike}
+Stream of events
+Events have a unique identifier and associated data -> parameters
+
+
+
+\subsection{Preamble and Body}
+\label{sub:PreambleAndBody}
+
+A CSlang program can be divided into two sections: the preamble and the body.
+The purpose of the preamble is to define the sorts of events that are
+expected
+to appear in an input event stream and the set of components from those
+events future statements will operate on.  Specifying this information up
+front configures a CSlang mutator to
+automatically ignore extraneous information from the incoming stream.  This
+means that subsequent body statements only have to deal with events and
+parameters that pertain to the goal of the program.
+
+Body statements are responsible for configuring the states and transitions
+that will be included in the mutator being described by a CSlang program.
+Each statement (excluding usages of the NOT operator) configures a single
+state and the rules that govern transitioning into it.
+In order for a Mutator to transition into a new state
+the current event must ``match'' the requirements of the destination state.
+ Matching requires that three rules be satisfied:
+
+\begin{itemize}
+\item{The event's identifier must match the destination state's identifier}
+\item{All parameters with the match operator applied must have a value equal to
+  the value currently stored in the associated register (discussed further
+    in Section~\ref{sub:DatawordOperators}}
+\item{All predicates must be satisfied by the parameter values in the
+  current event}
+\end{itemize}
+
+
+
+
 \subsection{Syntax and Semantics}
 \label{sub:SyntaxAndSemantics}
 
