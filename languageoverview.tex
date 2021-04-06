@@ -7,7 +7,7 @@
   sequence.  For each item in the sequence, the Mutator updates it's
   internal state and produces outputs according to the rules described in
   its program.}
-  \label{fig:processing}
+  \label{fig:Processing}
 \end{figure}
 
 \preston{The processing figure is not mentioned anywhere}
@@ -27,16 +27,56 @@ relation that ties them all together.
 Simply enumerating every aspect of a Mutator could be very verbose
 so we intentionally tailored CSlang's semantics to allow its users to
 describe complex configurations in a concise manner.
-In Section~\ref{sub:SyntaxAndSemantics}, we discuss the
+In this Section we cover the operation and contents of a CSlang program.
+Section~\ref{sub:ProcessingEventStreams} describes how executing a program works
+while
+in Sections~\ref{sub:PreambleAndBody}~and~\ref{sub:SyntaxAndSemantics},
+we discuss the
 language's syntax and semantics and illustrate the details
 with small examples.  Section~\ref{sub:DatawordOperators} takes a more
 detailed look at important operators.
 
-\subsection{What Does an Event Stream Look Like?}
-\label{sub:EventLookLike}
-Stream of events
-Events have a unique identifier and associated data -> parameters
+\subsection{Processing and Event Streams}
+\label{sub:ProcessingEventStreams}
+CSlang adapts event processing
+techniques to application activity in order to catch bugs and drive further
+testing.  To accomplish this, a CSlang program maps this activity onto an
+event stream
+made up of a chronological listing of all of the function calls, library
+calls, system calls, or other structured requests made by the program.
+Within this stream each element consists of two pieces: a unique
+identifier and parameters.
+This arrangement allows an event with desired properties to be identified
+from the stream by specifying an identifier and a set of parameter value
+constraints.  For example, an unsuccessful {\tt close()} call could be
+found by looking for events with the identifier {\tt close} and a return
+value of -1.  This pairing of an identifier and a set of parameter
+constraints, known as a dataword, forms the primary mechanism in CSlang for
+selecting specific events out of an activity stream.
 
+Building on this, we can use datawords to implement the method by which
+a CSlang program is able to
+identify a  pattern of activity from an activity stream.
+The general process, illustrated in Figure~\ref{fig:Processing}, goes like
+this.  A pattern is encoded as a list of datawords and events from the
+input event stream are compared against the first dataword until one
+``matches'' it (matching is discussed further in
+Section~\ref{sub:PreambleAndBody}).  Events starting after the event that
+matched the first dataword are then compared against the second dataword
+and so on until all datawords have been matched or the event stream is
+exhausted.
+
+
+%% talk about output.
+%Output is achieved through one further addition -- an output clause.  This
+%clause may be applied to any of the datawords in the list and describes
+%what output should be produced when the dataword it is associated with
+%matches an event.
+%
+%Datawords without an output clause are simply output without modification.
+%
+%In the following sections we discuss how these elements may be written as a
+%CSlang program and transformed into a working mutator.
 
 
 \subsection{Preamble and Body}
@@ -45,16 +85,18 @@ Events have a unique identifier and associated data -> parameters
 A CSlang program can be divided into two sections: the preamble and the body.
 The purpose of the preamble is to define the sorts of events that are
 expected
-to appear in an input event stream and the set of components from those
-events future statements will operate on.  Specifying this information up
+to appear in an input event stream and the set of parameters from those
+events future datawords will operate on.  Specifying this information up
 front configures a CSlang mutator to
 automatically ignore extraneous information from the incoming stream.  This
 means that subsequent body statements only have to deal with events and
 parameters that pertain to the goal of the program.
 
-Body statements are responsible for configuring the states and transitions
+The body of a CSlang program consists of a list of datawords that
+are responsible for configuring the states and transitions
 that will be included in the mutator being described by a CSlang program.
-Each statement (excluding usages of the NOT operator) configures a single
+Each dataword (excluding usages of the NOT operator, discussed further
+in~\ref{subsub:NOT}) configures a single
 state and the rules that govern transitioning into it.
 In order for a Mutator to transition into a new state
 the current event must ``match'' the requirements of the destination state.
@@ -267,6 +309,7 @@ and using it to find related {\tt read()} further along in a system call
 trace.
 
 \subsubsection{The NOT keyword}
+\label{subsub:NOT}
 
 The NOT keyword is used to reject a sequence if the event being
 described is encountered.  This is done by creating a ``trap''
@@ -283,8 +326,3 @@ complex operation.
 %%%% We need to talk about how we are different from other
 %%%% languages that are regular-expression like here
 %\subsection{Inspiration from Regular Expressions}
-%
-%
-%%%% This is probably better called something more generic like "type
-%%%% system" because we also have variant types and need to describe why we
-%%%% included them and how they help us express stuff
