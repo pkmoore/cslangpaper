@@ -1,7 +1,11 @@
 \begin{abstract}
 
-Earlier work has demonstrated that there is tremendous value in
-information that can be extracted from an application's activity.
+Earlier work has demonstrated that,
+when evaluating the quality of a piece of software,
+there is tremendous value in
+information that can be extracted
+from recordings
+of an application's activity.
 The trick is in how to extract it.
 Applications often make hundreds or thousands of requests
 to external entities over the course of an execution
@@ -46,36 +50,23 @@ to identify sequences
 in streams like event logs,
 remote procedure call traces,
 or system call activity.
-For example, we employed CSlang
-to recreate the ``anomalies''
-used in
+To see how our efforts compared against other work
+We employed CSlang
+in recreating the mutators and checkers
+used by
 the SEA technique,
 a project introduced in 2019
 that was able to find bugs
 by modifying and replaying the results of
 an application's system calls.
-In turn, we were also able to use
-these anomalies
-to test AAA applications
-chosen from the Debian popularity contest
-and found YYY new bugs in ZZZ
-applications.
-%%%
-%Further, in order to illustrate CSlang's flexibility,
-%we produced programs that can
-%transform
-%logged network traffic into firewall rules.
-%These programs were able to identify common network attacks
-%and block offending IP addresses.
-%%%%
-%Finally,
-We further utilized this mechanism
-to create programs that
-could generate test cases
-by examining and rewriting the contents of
-remote procedure calls.
-Using these programs we improved the test suites
-of YYY applications identifying ZZZ new bugs in the process
-and improving code coverage by AA\%.
+We found our re-implementations
+achieved the same efficacy
+and better reliability
+while consisting of XX\% less lines of code.
+We further illustrated CSlang's extensibility
+by adding support for remote procedure call traces
+and creating programs that
+could examine and rewrite the contents of
+these recordings.
 
 \end{abstract}
