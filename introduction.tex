@@ -86,7 +86,7 @@ that should be made
 if a particular activity sequence is encountered.
 By combining passive monitoring and active modification
 of an application's activity,
-CSlang aids in identifying environmental bugs
+CSlang can aid in identifying bugs
 that may be missed by other testing strategies.
 
 This combined approach is made possible
@@ -97,17 +97,20 @@ to a standard finite-state transducer.
 That is,
 according to the rules laid down in its CSlang program,
 the transducer consumes an input sequence of activity
-to determine if the desired pattern is present,
+to determine if a particular pattern is present,
 while simultaneously producing an output stream.
 The results of this are twofold.
 If the transducer accepts the input sequence
-it means the described activity is present which,
-depending on the nature of the sequence
-may indicate the existence of a bug.
-In cases where acceptance indicates an opportunity
-for more detailed testing,
-the modified output sequence may be used
-to drive a simulation (as with the earlier work on environmental bugs)
+it means the described activity is present.
+In some cases,
+this may directly indicate
+the existence of a bug.
+In other cases,
+the pattern may
+indicate an opportunity
+for more detailed testing
+where the modified output sequence is used
+in driving a simulation (as with the earlier work on environmental bugs)
 to evaluate an application's response to the simulated scenario
 or to populate a test suite.
 
@@ -116,6 +119,11 @@ by creating a prototype implementation of CSlang
 and using it to
 reimplement the ``anomalies''
 described in earlier work on the SEA technique~\cite{crashsim}.
+This technique used system call recordings
+to identify environmental features that
+exposed bugs in one application
+and impose these conditions on other applications
+to determine if they would also fail.
 Side-by-side comparison shows that our new
 descriptions are dramatically more concise (up to XXX\% in some cases)
 than their original counterparts.
@@ -148,7 +156,6 @@ that could identify opportunities
 to modify the results of RPC calls.
 The output from these programs was used to populate a test suite
 for each application.
-When executed, these test suites identified AAA new bugs in the tested applications.
 
 The main contributions in this work can be summarized as follows:
 
