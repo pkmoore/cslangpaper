@@ -3,28 +3,27 @@
 
 \begin{figure}
   \includegraphics[scale=.8]{images/processing}
-  \caption{A Mutator individually processes each item in an input
-  sequence.  For each item in the sequence, the Mutator updates it's
-  internal state and produces outputs according to the rules described in
-  its program.}
+  \caption{A mutator individually processes each item in an input
+  sequence, updating it's internal state and producing output according
+  to the rules described in its program.}
   \label{fig:Processing}
 \end{figure}
 
 \preston{The processing figure is not mentioned anywhere}
 
 The purpose
-of a CSlang program is to completely describe a Mutator
+of a CSlang program is to completely describe a mutator
 that both
 accepts a chosen stream if it contains a particular
 activity sequence and can produce a modified
 output stream
 for application testing.
-Because a Mutator is essentially an enhanced transducer,
+Because a mutator is essentially an enhanced transducer,
 this description must cover all states,
-their associated output,
+the associated output of those states,
 and the transition
 relation that ties them all together.
-Simply enumerating every aspect of a Mutator could be very verbose
+Simply enumerating every aspect of a mutator could be very verbose
 so we intentionally tailored CSlang's semantics to allow its users to
 describe complex configurations in a concise manner.
 In this Section we cover the operation and contents of a CSlang program.
@@ -38,16 +37,23 @@ detailed look at important operators.
 
 \subsection{Processing and Event Streams}
 \label{sub:ProcessingEventStreams}
-CSlang adapts event processing
-techniques to application activity in order to catch bugs and drive further
-testing.  To accomplish this, a CSlang program maps this activity onto an
+CSlang was written to
+apply event processing
+techniques to application activity 
+in order to catch bugs and drive further
+testing.
+To accomplish this, a CSlang program maps this activity onto an
 event stream
-made up of a chronological listing of all of the function calls, library
+made up of a chronological listing of the function calls, library
 calls, system calls, or other structured requests made by the program.
 Within this stream each element consists of two pieces: a unique
-identifier and parameters.
-This arrangement allows an event with desired properties to be identified
-from the stream by specifying an identifier and a set of parameter value
+identifier and a set of parameters.
+This arrangement allows a user to find
+a specific category of events
+in a stream
+by matching a set of desired properties.
+The system makes the match by specifying
+an identifier and a set of parameter value
 constraints.  For example, an unsuccessful {\tt close()} call could be
 found by looking for events with the identifier {\tt close} and a return
 value of -1.  This pairing of an identifier and a set of parameter
@@ -56,13 +62,15 @@ selecting specific events out of an activity stream.
 
 Building on this, we can use datawords to implement the method by which
 a CSlang program is able to
-identify a  pattern of activity from an activity stream.
+identify a  pattern of activity.
 The general process, illustrated in Figure~\ref{fig:Processing}, goes like
-this.  A pattern is encoded as a list of datawords and events from the
-input event stream are compared against the first dataword until one
-``matches'' it (matching is discussed further in
-Section~\ref{sub:PreambleAndBody}).  Events starting after the event that
-matched the first dataword are then compared against the second dataword
+this.  A pattern is encoded as a list of datawords, and compared against
+events from the
+input event stream until the first dataword
+finds a ``match'' (matching is discussed further in
+Section~\ref{sub:PreambleAndBody}).  The event stream is next matched
+against the
+second dataword
 and so on until all datawords have been matched or the event stream is
 exhausted.
 
@@ -83,30 +91,30 @@ exhausted.
 \label{sub:PreambleAndBody}
 
 A CSlang program can be divided into two sections: the preamble and the body.
-The purpose of the preamble is to define the sorts of events that are
+The preamble defines the sorts of events
 expected
-to appear in an input event stream and the set of parameters from those
-events future datawords will operate on.  Specifying this information up
-front configures a CSlang mutator to
+to appear in an input event stream and the set of parameters
+under which future datawords will operate.  Specifying this information
+up-front configures a CSlang mutator to
 automatically ignore extraneous information from the incoming stream.  This
 means that subsequent body statements only have to deal with events and
-parameters that pertain to the goal of the program.
+parameters pertinent to the goal of the program.
 
 The body of a CSlang program consists of a list of datawords that
 are responsible for configuring the states and transitions
-that will be included in the mutator being described by a CSlang program.
+that will be included in the mutator a CSlang program describes.
 Each dataword (excluding usages of the NOT operator, discussed further
 in~\ref{subsub:NOT}) configures a single
 state and the rules that govern transitioning into it.
-In order for a Mutator to transition into a new state
+In order for a mutator to transition into a new state
 the current event must ``match'' the requirements of the destination state.
- Matching requires that three rules be satisfied:
+In CSlang, a match requires satisfying three rules:
 
 \begin{itemize}
 \item{The event's identifier must match the destination state's identifier}
 \item{All parameters with the match operator applied must have a value equal to
   the value currently stored in the associated register (discussed further
-    in Section~\ref{sub:DatawordOperators}}
+    in Section~\ref{sub:DatawordOperators})}
 \item{All predicates must be satisfied by the parameter values in the
   current event}
 \end{itemize}
@@ -151,7 +159,7 @@ e \in Expr := e\_1 + e\_2 | e\_1 - e\_2 | ...
 \textbf{S: statementlist}
 \end{quote}
 
-This production triggers the creation of a Mutator with only a starting
+This production triggers the creation of a mutator with only a starting
 state.  This state is accepting in two situations:
 \begin{itemize}
   \item{When no other states are added to the automaton by subsequent
@@ -167,7 +175,7 @@ In all other cases this is a rejecting state that produces no output.
 \end{quote}
 
 Assignment statements store the value of an expression, e, into a named
-register on the Mutator being described.
+register on the mutator being described.
 If the register does not exist,
 it is created;
 otherwise its stored value is overwritten.
@@ -195,9 +203,9 @@ type fstat {filedesc: Numeric@0, statstruct: statbuf@1};
 An event definition statement describes an event that could appear in an input
 stream.  Each statement specifies an event ``variety'' and a list of
 parameters that should be accessible in later dataword statements.
-An event's variety corresponds
+An event's variety will correspond
 with the system call name, RPC call name, or, in the case of other activity
-representations, a unique identifier that would allow events of the same
+representations, a unique identifier that allows events of the same
 variety to be picked out of a stream.
 
 The second line in the above example shows an event
@@ -248,7 +256,7 @@ with filedesc == 4 and statstruct.dev == "st_dev=makedev(0, 4)"
 \end{figure}
 
 Dataword statements are responsible for adding new states to the
-Mutator.  This means they must specify any register operations,
+mutator.  This means they must specify any register operations,
 transition conditions, and output associated with these new states.  To
 tackle this complexity we will address each part of this production
 individually.
@@ -267,7 +275,7 @@ current event and stores it in the specified register.
 \textit{predexp}
 
 Predicate expressions are used to place additional restrictions that must
-be met if the Mutator is to advance into the newly created state.  These
+be met if the mutator is to advance into the newly created state.  These
 restrictions compare values from the current event to either register
 values or literal values.
 
@@ -279,19 +287,20 @@ parameter expression that specifies which parameters of the current event
 should be replaced with a value from a register.  If a parameter is not
 included in the parameter expression, its original value is used.
 Similarly,
-if an output clause is omitted the original, unmodified event is output.
+if an output clause is omitted the original, the output will be the
+original, unmodified event.
 
 \subsection{Dataword Operators}
 \label{sub:DatawordOperators}
 
 CSlang supports two operators that may be applied to a dataword's
-parameters: Match and Store.  These operators are a central component in
-the description of a Mutator.
+parameters: Match and Store.  These operators are central components in
+the description of a mutator.
 
 \subsubsection{Store Operator (!)}
 
 The store operator, ``\textit{!}'', adds a requirement that the
-Mutator should extract a value from the current event and store
+mutator should extract a value from the current event and store
 it in the specified register.  These values may then be modified by
 register expressions, combined with the match operator to add more
 entry requirements to a state, or used in output expressions.
@@ -311,7 +320,7 @@ trace.
 \subsubsection{The NOT keyword}
 \label{subsub:NOT}
 
-The NOT keyword is used to reject a sequence if the event being
+The NOT keyword is used to reject a sequence should the event being
 described is encountered.  This is done by creating a ``trap''
 rejecting state.  Such a state follows the same entry rules
 as a normal state but has no outgoing transitions.  This guarantees that a
