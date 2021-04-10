@@ -1,0 +1,13 @@
+pattern = Pattern(
+        SeqOperator(
+                    PrimitiveEventStructure("OPEN", "a"),
+                    NegationOperator(PrimitiveEventStructure("READ","b")),
+                    PrimitiveEventStructure("CLOSE","c")
+         ),
+AndCondition(EqCondition(Variable("a", lambda x: x["File Handle"]),
+                                          Variable("c", lambda x: x["File Handle"])),
+
+             EqCondition(Variable("c", lambda x: x["File Handle"]),
+                                          Variable("b", lambda x: x["File Handle"]))),
+
+timedelta(minutes=10))
