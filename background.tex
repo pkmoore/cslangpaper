@@ -37,7 +37,7 @@ in major applications~\cite{DBLP:conf/issre/MooreCFW19}.
 As a concrete example of the above
 consider the ``Unusual Filetypes'' anomaly
 discussed in the SEA paper's evaluation.
-This anomaly appears
+This anomaly may be problematic
 when an application running under Linux
 attempts to open and read data from a file on disk.
 In addition to ``regular'' files,
@@ -48,14 +48,37 @@ Each of these file types requires special procedures when writing to and
 reading from them.
 As a result, an application should check the type of files it intends to
 process so that it can handle it correctly.
-To use this anomaly, the authors intercepted applications' attempts to
-examine files with system calls from the {\tt stat} family and modified
-their results to make regular files appear as if they were one of the
-unusual file types.
-Applications that failed to recognize the presence of
-an unusual file often handled it incorrectly leading to hangs,
-crashes, and even damage to the host system as a result of disks being
-completely filled.
+SEA tests program's responses
+to unexpected file types
+by recording and analyzing a trace of system calls,
+identifying file reads and writes,
+and checking whether they are preceded by a {\tt stat}
+system call (or another call from the same family).
+Absence of a {\tt stat} calls
+immediately indicates
+that the application is vulnerable
+to failure
+when exposed to an unexpected file type.
+Even if a {\tt stat} call is present,
+the application may not respond correctly.
+In this situation,
+SEA simulates
+the behavior
+of the application
+when exposed
+to an unusual file type
+by modifying the return value
+of the {\tt stat} call,
+thereby simulating the anomalous environment.
+Moore et al. accomplish this manually
+by writing a script
+for each anomaly
+to process system call traces.
+CSlang allows us to describe
+the pattern of interest
+and modifications
+to the system call recording
+more easily.
 
 Our takeaway
 was that an application's activity
@@ -79,7 +102,7 @@ like calls to library functions
 and remote procedure calls.
 Second was the understanding that existing
 stream processing tools
-are not up to the
+are not well suited to the
 task we had in mind.
 
 
@@ -103,7 +126,7 @@ as a request to a remote
 system returning bad data because of corruption on an intermediate network
 node.
 Both cases share the commonality that the symptoms of misbehavior
-can be found in a recording of the applications activity.
+can be found in a recording of the application's activity.
 These bugs, defined by Moore et al. as ``environmental bugs,''
 often cause applications to fail after deployment
 and occur with such frequency
@@ -128,12 +151,6 @@ software~\cite{devzeroroot}.  And it appears that no class of application
 is safe with environmental bugs affecting operating systems~\cite{bad},
 user applications~\cite{bad} and even web applications~\cite{bad} in the
 last year alone!
-
-
-\preston{Maybe I should include something here similar to the list from the
-CrashSim paper that talks about different environmental bug sources in more
-detail?}
-
 
 
 \subsection{Why a New Programming Language?}
