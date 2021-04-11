@@ -22,14 +22,14 @@ could be
 used to create simulations
 that test
 an application as if
-it had encountered the captured anomalies
+it had encountered that anomaly
 in the real world.
 In that work, SEA was used to test applications
 by recording the system calls they made
 during execution,
 modifying the results of these calls such that a desired anomaly
 was present,
-and observing the application to see whether or not it
+and then observing the application to see whether or not it
 responded correctly to the anomaly.
 Using this strategy, the authors were able to identify numerous bugs
 in major applications~\cite{DBLP:conf/issre/MooreCFW19}.
@@ -37,7 +37,7 @@ in major applications~\cite{DBLP:conf/issre/MooreCFW19}.
 As a concrete example of the above
 consider the ``Unusual Filetypes'' anomaly
 discussed in the SEA paper's evaluation.
-This anomaly appears
+This anomaly may be problematic
 when an application running under Linux
 attempts to open and read data from a file on disk.
 In addition to ``regular'' files,
@@ -48,27 +48,51 @@ Each of these file types requires special procedures when writing to and
 reading from them.
 As a result, an application should check the type of files it intends to
 process so that it can handle it correctly.
-To use this anomaly, the authors intercepted applications' attempts to
-examine files with system calls from the {\tt stat} family and modified
-their results to make regular files appear as if they were one of the
-unusual file types.
-Applications that failed to recognize the presence of
-an unusual file often handled it incorrectly leading to hangs,
-crashes, and even damage to the host system as a result of disks being
-completely filled.
+SEA tests program's responses
+to unexpected file types
+by recording and analyzing a trace of system calls,
+identifying file reads and writes,
+and checking whether they are preceded by a {\tt stat}
+system call (or another call from the same family).
+Absence of a {\tt stat} calls
+immediately indicates
+that the application is vulnerable
+to failure
+when exposed to an unexpected file type.
+Even if a {\tt stat} call is present,
+the application may not respond correctly.
+In this situation,
+SEA simulates
+the behavior
+of the application
+when exposed
+to an unusual file type
+by modifying the return value
+of the {\tt stat} call,
+thereby simulating the anomalous environment.
+Moore et al. accomplish this manually
+by writing a script
+for each anomaly
+to process system call traces.
+CSlang allows us to describe
+the pattern of interest
+and modifications
+to the system call recording
+more easily.
 
 Our takeaway
+from reading this study
 was that an application's activity
 is a valuable resource that can be systematically mined
 in order to find bugs
 that may be missed by other techniques.
 The work described in this paper
 is based on our own key insight that the best way to extract this
-value
+valuable data
 is to treat application activity
 as a sequence of events
 so that proven event processing techniques
-may be employed in analyzing them.
+may be employed to analyze them.
 Two realizations followed shortly after this
 insight.
 First was that, with the correct tools,
@@ -77,9 +101,9 @@ could be expanded
 to encompass other activity types
 like calls to library functions
 and remote procedure calls.
-Second was the understanding that existing
+And, the second was the understanding that existing
 stream processing tools
-are not up to the
+are not well suited to the
 task we had in mind.
 
 
@@ -94,7 +118,7 @@ task we had in mind.
 
 Before we discuss the details of our bug-finding efforts it is necessary to
 draw a boundary around the types of bugs we are targeting.
-This work sets its sights on the bugs that occur when an some external
+This work sets its sights on the bugs that occur when some external
 entity supplies unexpected or incorrect data to an
 application resulting in its failure.
 Such bugs may appear in simple situations like a library function that
@@ -103,7 +127,7 @@ as a request to a remote
 system returning bad data because of corruption on an intermediate network
 node.
 Both cases share the commonality that the symptoms of misbehavior
-can be found in a recording of the applications activity.
+can be found in a recording of the application's activity.
 These bugs, defined by Moore et al. as ``environmental bugs,''
 often cause applications to fail after deployment
 and occur with such frequency
@@ -128,12 +152,6 @@ software~\cite{devzeroroot}.  And it appears that no class of application
 is safe with environmental bugs affecting operating systems~\cite{bad},
 user applications~\cite{bad} and even web applications~\cite{bad} in the
 last year alone!
-
-
-\preston{Maybe I should include something here similar to the list from the
-CrashSim paper that talks about different environmental bug sources in more
-detail?}
-
 
 
 \subsection{Why a New Programming Language?}
@@ -170,7 +188,7 @@ detail?}
   where a program opens a file and closes it without reading from it.  In
   such instances, it modifies the return value close call to be -1,
   indicating failure.}
-  \label{fig:cslanglisting}
+  \label{fig:CSlangListing}
 \end{figure}
 
 \begin{figure}
@@ -226,7 +244,7 @@ socket()} system call and use it later to match other related
 communication system calls.
 We found that this sort of usage was common across many types of
 application activity further reinforcing our desire for a language that was
-closely tailored to our needs on this in this area.
+closely tailored to our needs in this area.
 
 % Need to support new event stream formats easily?
 
@@ -262,7 +280,8 @@ sequence is identified by the matching engine, the return code of the
 "close" event is changed to -1, indicating failure. The main work of this
 program is performed in just four lines of CSLang code.  Figure 2 contains
 an OpenCEP\cite{open_cep_website} pattern that implements an approximation
-of the same program that was implemented in Figure 1. This program is only
+of the same program as seen in Figure~\ref{fig:CslangListing}.
+This program is only
 an approximation because the OpenCEP pattern does not modify the return
 value of the "close" call and forces the user to specify a time window
 within which the pattern matching will take place.h
@@ -273,8 +292,8 @@ a programs meaning, harming understanding and
 maintainability~\ref{CITEATOMSWORK}.
 In light of this, we believe the benefits of a
 new programming language
-focused on allowing its users to get a lot of work done
-with a small amount of easily-readable code are evident.
+focused on letting its users get a lot of work done
+with a small amount of easily-readable code should be self-evident.
 
 % The second front involves CSlang's programming paradigm.
 % While other event processing languages tend toward functional or
@@ -291,7 +310,7 @@ We want CSlang programs to be capable of more than simply matching
 a pattern of events and indicating that it has occurred.
 Our review of the work on the SEA technique has shown that the ability to
 {\textit modify} is central to forcing an application into situations where
-it may fail rather than only passively monitoring for it to perform
+it may fail rather than only passively monitoring to see if it performs
 problematic sequences.  While the feature-rich nature of several related
 languages and libraries means it is likely possible to modify and output
 incoming events, it is by no means a straightforward
