@@ -18,7 +18,9 @@ accepts a chosen stream if it contains a particular
 activity sequence and can produce a modified
 output stream
 for application testing.
-Because a mutator is essentially an enhanced transducer,
+Because a mutator is essentially a
+transducer enhanced to operate over complex data structures
+rather than symbols in a string
 this description must cover all states,
 the associated output of those states,
 and the transition
@@ -26,20 +28,23 @@ relation that ties them all together.
 Simply enumerating every aspect of a mutator could be very verbose
 so we intentionally tailored CSlang's semantics to allow its users to
 describe complex configurations in a concise manner.
-In this Section we cover the operation and contents of a CSlang program.
+In this Section we cover the design decisions we made
+in of this goal.
 Section~\ref{sub:ProcessingEventStreams} describes how executing a program works
 while
 in Sections~\ref{sub:PreambleAndBody}~and~\ref{sub:SyntaxAndSemantics},
 we discuss the
 language's syntax and semantics and illustrate the details
-with small examples.  Section~\ref{sub:DatawordOperators} takes a more
+of these properties
+with small examples.
+Section~\ref{sub:DatawordOperators} takes a more
 detailed look at important operators.
 
 \subsection{Processing and Event Streams}
 \label{sub:ProcessingEventStreams}
 CSlang was written to
 apply event processing
-techniques to application activity 
+techniques to application activity
 in order to catch bugs and drive further
 testing.
 To accomplish this, a CSlang program maps this activity onto an
@@ -90,7 +95,38 @@ exhausted.
 \subsection{Preamble and Body}
 \label{sub:PreambleAndBody}
 
+\begin{figure}[H]
+\centering
+\begin{tabular}{c}
+\begin{lstlisting}
+
+########## Preamble ##########
+type statbuf {dev: String@0, stino: String@1, mode: String@2};
+type fstat {filedesc: Numeric@0, statstruct: statbuf@1};
+##############################
+
+##########   Body   ##########
+finddev <- "st_dev=makedev(0, 4)";
+findino <- "st_ino=4026532069";
+obvious1 <- "foo";
+obvious2 <- "bar";
+fstat({statstruct: {dev: ?finddev, stino: ?findino}});
+fstat({statstruct: {dev: !finddev2, stino: !findino2}});
+fstat({statstruct: {dev: ->obvious2, stino: ->obvious2}});
+##############################
+
+\end{lstlisting}
+\end{tabular}
+\caption{An example CSlang program with its preamble and body sections
+  labeled.}
+\label{lst:PreambleBody}
+\end{figure}
+
+
+
 A CSlang program can be divided into two sections: the preamble and the body.
+Figure~\ref{lst:PreambleBody} shows an example program with these sections
+labeled.
 The preamble defines the sorts of events
 expected
 to appear in an input event stream and the set of parameters
@@ -209,9 +245,13 @@ representations, a unique identifier that allows events of the same
 variety to be picked out of a stream.
 
 The second line in the above example shows an event
-definition for the {\tt fstat()} system call with two parameters: a numeric
-file descriptor and ``statbuf'' structure named statbuf.
-The first line in the above defines the layout of a statbuf.
+definition for
+the {\tt fstat()} system call
+with two parameters:
+a numeric file descriptor, the system call's first parameter,
+and structure named statstruct
+which is the system call's second parameter.
+The first line in the above defines statstruct's layout.
 
 
 \begin{quote}
@@ -295,21 +335,32 @@ original, unmodified event.
 
 CSlang supports two operators that may be applied to a dataword's
 parameters: Match and Store.  These operators are central components in
-the description of a mutator.
+the description of a mutator.  Each operator is associated with a dataword
+parameter and a register or literal value.  We describe what each operator
+does with these inputs below.
 
 \subsubsection{Store Operator (!)}
 
 The store operator, ``\textit{!}'', adds a requirement that the
-mutator should extract a value from the current event and store
+mutator should extract a parameter value from the current event and store
 it in the specified register.  These values may then be modified by
 register expressions, combined with the match operator to add more
 entry requirements to a state, or used in output expressions.
 
 \subsubsection{Match Operator (?)}
 
-The match operator, ``\textit{?}'', allows CSlang's user to
-require that the value of the event parameter it is operating on matches
-the value in the specified register.  This functionality is
+The match operator, ``\textit{?}'',
+allows CSlang's user
+to provide additional conditions
+that an event's parameter values must meet
+in order to match a dataword.
+Specifically,
+the operator requires
+that its parameter value equal the
+register value
+or literal value
+to which it is applied.
+This functionality is
 useful when a value is stored upon the occurrence of one event
 and then used to identify an associated event expected to appear later.
 A common example of this pattern is storing the file descriptor
