@@ -1,4 +1,7 @@
-\documentclass[manuscript]{acmart}
+%\documentclass[manuscript]{acmart}
+\documentclass[10pt,acmsmall,review,screen,anonymous]{acmart}
+\settopmatter{printfolios=true,printccs=false,printacmref=false}
+
 
 \usepackage{listings}
 
@@ -31,6 +34,10 @@
   pdfstartview={FitH},
 }
 
+\bibliographystyle{ACM-Reference-Format}
+%% Citation style
+\citestyle{acmauthoryear}  %% For author/year citations
+
 
 \input{annotations}
 
@@ -60,6 +67,11 @@ Copy-paste the XML here
 \author{Authors removed for blinding purposes}
 
 \acmConference[OOPSLA’21]{OOPSLA CHANGE THIS TITLE, DATES, AND LOCATION}{November12--16}{Dallas, TX, USA}
+\acmYear{2021}
+\acmISBN{} % \acmISBN{978-x-xxxx-xxxx-x/YY/MM}
+\acmDOI{} % \acmDOI{10.1145/nnnnnnn.nnnnnnn}
+\startPage{1}
+\setcopyright{none}
 
 \keywords{We need to change these keywords}
 
@@ -76,8 +88,8 @@ Copy-paste the XML here
 
 
 %\dmyyyydate
-{\footnotesize \bibliographystyle{abbrv}
-\bibliography{bibdata}}
+%{\footnotesize \bibliographystyle{abbrv}
+\bibliography{bibdata}
 % \theendnotes
 
 \end{document}
