@@ -1,13 +1,14 @@
 \section{Language Overview}
 \label{sec:Overview}
 
-\begin{figure}
-  \includegraphics[scale=.8]{images/processing}
+\begin{figure*}[h]
+  \centering
+  \includegraphics[scale=.9]{images/processing}
   \caption{A mutator individually processes each item in an input
   sequence, updating it's internal state and producing output according
   to the rules described in its program.}
   \label{fig:Processing}
-\end{figure}
+\end{figure*}
 
 \preston{The processing figure is not mentioned anywhere}
 
@@ -95,7 +96,7 @@ exhausted.
 \subsection{Preamble and Body}
 \label{sub:PreambleAndBody}
 
-\begin{figure}[H]
+\begin{figure*}[h]
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
@@ -120,7 +121,7 @@ fstat({statstruct: {dev: ->obvious2, stino: ->obvious2}});
 \caption{An example CSlang program with its preamble and body sections
   labeled.}
 \label{lst:PreambleBody}
-\end{figure}
+\end{figure*}
 
 
 
@@ -164,7 +165,7 @@ In CSlang, a match requires satisfying three rules:
 Figure~\ref{lst:SyntaxGrammar} contains a simplified
 version of CSlang's grammar.
 
-\begin{figure}[H]
+\begin{figure*}[h]
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
@@ -187,7 +188,7 @@ e \in Expr := e\_1 + e\_2 | e\_1 - e\_2 | ...
 \end{tabular}
 \caption{Grammer of CSlang's syntax}
 \label{lst:SyntaxGrammar}
-\end{figure}
+\end{figure*}
 
 
 \begin{quote}

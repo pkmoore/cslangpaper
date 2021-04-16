@@ -1,9 +1,15 @@
-%\documentclass[manuscript]{acmart}
-\documentclass[10pt,acmsmall,review,screen,anonymous]{acmart}
-\settopmatter{printfolios=true,printccs=false,printacmref=false}
+\documentclass{IEEEtran}
 
 
+\usepackage{hyperref}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{calc}
 \usepackage{listings}
+\usepackage{float}
+
+% Format code
+\lstset{breaklines=true,basicstyle=\small\ttfamily,columns=fullflexible}
 
 %\usepackage{graphicx}
 %\usepackage[export]{adjustbox}
@@ -14,12 +20,7 @@
 \widowpenalty=10000
 \clubpenalty=10000
 
-% \usepackage[small,compact]{titlesec}
 
-% \usepackage{savetrees}
-
-
-\usepackage{hyperref}
 
 \hypersetup{
   pdftitle = {The CSLang Paper},
@@ -34,21 +35,12 @@
   pdfstartview={FitH},
 }
 
-\bibliographystyle{ACM-Reference-Format}
-%% Citation style
-\citestyle{acmauthoryear}  %% For author/year citations
-
 
 \input{annotations}
 
 \begin{document}
 
-\input{abstract}
 
-\begin{CCSXML}
-Copy-paste the XML here
-\end{CCSXML}
-\ccsdesc{Change this as well}
 
 \title{The CSLang Paper}
 
@@ -66,19 +58,14 @@ Copy-paste the XML here
 %}
 \author{Authors removed for blinding purposes}
 
-\acmConference[OOPSLA’21]{OOPSLA CHANGE THIS TITLE, DATES, AND LOCATION}{November12--16}{Dallas, TX, USA}
-\acmYear{2021}
-\acmISBN{} % \acmISBN{978-x-xxxx-xxxx-x/YY/MM}
-\acmDOI{} % \acmDOI{10.1145/nnnnnnn.nnnnnnn}
-\startPage{1}
-\setcopyright{none}
-
-\keywords{We need to change these keywords}
 
 \maketitle
 
+\input{abstract}
+\begin{IEEEkeywords}
+  We need to change these keywords
+\end{IEEEkeywords}
 \input{introduction}
-%\input{threat-model}
 \input{background}
 \input{languageoverview}
 \input{archandimpl}
@@ -87,9 +74,7 @@ Copy-paste the XML here
 \input{conclusion}
 
 
-%\dmyyyydate
-%{\footnotesize \bibliographystyle{abbrv}
+\bibliographystyle{IEEEtran}
 \bibliography{bibdata}
-% \theendnotes
 
 \end{document}

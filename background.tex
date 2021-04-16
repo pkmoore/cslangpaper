@@ -138,8 +138,35 @@ detail?}
 
 \subsection{Why a New Programming Language?}
 \begin{figure}
-  \includegraphics[scale=.50]{images/cslanglisting}
-  \caption{A listing of a cslang program.  This program finds situations
+  \begin{lstlisting}
+    type open {filename: String@0,
+                   filedesc: Numeric@ret};
+
+    type read {filedesc: Numeric@0};
+
+    type close {filedesc: Numeric@0,
+                    retval: Numeric@ret};
+
+    # Register initialization.
+    # Registers do not have to be initialized
+    # before use
+    retval <- "-1";
+
+    # Match an open call, store the file name
+    # and returned file descriptors
+    # to the 'filename' and 'filedesc'
+    # registers respectively
+    open({filename: !fn, filedesc: !fd});
+
+    NOT read({filedesc: ?fd});
+
+    # Match a close call its the value
+    # in 'filedesc' as the file descriptor
+    # being closed
+    close({retval: ->retval, filedesc: ?fd});
+
+  \end{lstlisting}
+  \caption{A listing of a CSlang program.  This program finds situations
   where a program opens a file and closes it without reading from it.  In
   such instances, it modifies the return value close call to be -1,
   indicating failure.}
@@ -147,8 +174,22 @@ detail?}
 \end{figure}
 
 \begin{figure}
-  \includegraphics[scale=.50]{images/flinklisting}
-  \caption{A listing of an Apache Flink program that does the same thing as the
+  \begin{lstlisting}
+pattern = Pattern(
+  SeqOperator(
+     PrimitiveEventStructure("OPEN", "a"),
+     NegationOperator(
+     PrimitiveEventStructure("READ","b")),
+     PrimitiveEventStructure("CLOSE","c")),
+AndCondition(EqCondition(
+     Variable("a", lambda x: x["File Handle"]),
+     Variable("c", lambda x: x["File Handle"])),
+     EqCondition(
+     Variable("c", lambda x: x["File Handle"]),
+     Variable("b", lambda x: x["File Handle"]))),
+timedelta(minutes=10))
+  \end{lstlisting}
+  \caption{A listing of an OpenCEP program that does the same thing as the
   cslang program... I need to figure out what comparison stuff to put in
   this caption.}
   \label{fig:flinklisting}
