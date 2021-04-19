@@ -179,7 +179,8 @@ pattern = Pattern(
   SeqOperator(
      PrimitiveEventStructure("OPEN", "a"),
      NegationOperator(
-     PrimitiveEventStructure("READ","b")),
+        PrimitiveEventStructure("READ","b")
+     ),
      PrimitiveEventStructure("CLOSE","c")),
 AndCondition(EqCondition(
      Variable("a", lambda x: x["File Handle"]),
@@ -189,10 +190,10 @@ AndCondition(EqCondition(
      Variable("b", lambda x: x["File Handle"]))),
 timedelta(minutes=10))
   \end{lstlisting}
-  \caption{A listing of an OpenCEP program that does the same thing as the
-  cslang program... I need to figure out what comparison stuff to put in
-  this caption.}
-  \label{fig:flinklisting}
+  \caption{
+    A listing of an OpenCEP pattern to match an event stream consisting of an OPEN event followed, later in the event stream, by a CLOSE event such that a no intervening READ event occurs on the FILE HANDLE specified in the corresponding OPEN and CLOSE events.
+}
+  \label{fig:OpenCEPListing}
 \end{figure}
 
 
@@ -243,12 +244,12 @@ provide some of the predicate matching primitives that we wished to
 incorporate into CSLang and also attempt to pattern match against a stream
 of events. However, these languages also include features and optimizations
 that are not envisioned as useful to the CSLang feature set - these include
-time-based windows, merging multiple event streams, and the calculation of
+time-based event windows, merging multiple event streams, and the calculation of
 summary statistics over specified fields in the event stream.
 
 Rules written for these complex event processing engines are typically
 written in the engine's build or host language such as Java, Scala or
-Python. This necessarily means that te author of complex event processing
+Python. This necessarily means that the author of complex event processing
 rules must be fluent in this host language.  In addition, it likely means
 that the rules themselves may only be understood by someone fluent in the
 host language.  A domain specific language like CSLang provides a more
@@ -260,9 +261,9 @@ application opens and closes a file without reading from it. When such a
 sequence is identified by the matching engine, the return code of the
 "close" event is changed to -1, indicating failure. The main work of this
 program is performed in just four lines of CSLang code.  Figure 2 contains
-an OpenCEP\cite{open_cep_website} program that implements an approximation
+an OpenCEP\cite{open_cep_website} pattern that implements an approximation
 of the same program that was implemented in Figure 1. This program is only
-an approximation because the OpenCEP program does not modify the return
+an approximation because the OpenCEP pattern does not modify the return
 value of the "close" call and forces the user to specify a time window
 within which the pattern matching will take place.h
 
