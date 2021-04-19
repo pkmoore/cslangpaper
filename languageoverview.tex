@@ -30,7 +30,7 @@ Simply enumerating every aspect of a mutator could be very verbose
 so we intentionally tailored CSlang's semantics to allow its users to
 describe complex configurations in a concise manner.
 In this Section we cover the design decisions we made
-in of this goal.
+to achieve this goal.
 Section~\ref{sub:ProcessingEventStreams} describes how executing a program works
 while
 in Sections~\ref{sub:PreambleAndBody}~and~\ref{sub:SyntaxAndSemantics},
@@ -328,7 +328,7 @@ parameter expression that specifies which parameters of the current event
 should be replaced with a value from a register.  If a parameter is not
 included in the parameter expression, its original value is used.
 Similarly,
-if an output clause is omitted the original, the output will be the
+if an output clause is omitted, the output will be the
 original, unmodified event.
 
 \subsection{Dataword Operators}
@@ -337,8 +337,7 @@ original, unmodified event.
 CSlang supports two operators that may be applied to a dataword's
 parameters: Match and Store.  These operators are central components in
 the description of a mutator.  Each operator is associated with a dataword
-parameter and a register or literal value.  We describe what each operator
-does with these inputs below.
+parameter and a register or literal value.
 
 \subsubsection{Store Operator (!)}
 
@@ -372,7 +371,7 @@ trace.
 \subsubsection{The NOT keyword}
 \label{subsub:NOT}
 
-The NOT keyword is used to reject a sequence should the event being
+The NOT keyword is used to reject a sequence if the event being
 described is encountered.  This is done by creating a ``trap''
 rejecting state.  Such a state follows the same entry rules
 as a normal state but has no outgoing transitions.  This guarantees that a
