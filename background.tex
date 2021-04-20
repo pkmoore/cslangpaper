@@ -224,37 +224,46 @@ implement, document, and support.
 In this section we discuss the features we needed for this work
 and why existing systems fell short.
 
-First, we needed a language that treated state as a first-class citizen.
-That is, it must allow the internal contents of events like argument data,
+Our primary requirement was a language that could identify specific
+patterns as they appear in a recording of application activity.
+At first glance, it seems this could be met by a simple model,
+such as a deterministic finite automaton,
+perhaps described by a language similar to
+regular expressions enhanced to operate on complex
+structures rather than symbols in a string.
+However, may patterns introduce a dependency between activities across
+time.  The program in Figure~\ref{fig:CSlangListing} demonstrates this.
+The {\tt open()} call produces a file descriptor that a subsequent {\tt
+read()} call may match.  This capability is beyond our hypothetical
+regular-expression-like language.
+Instead we need a language which can describe a model that
+allows the internal contents of events like argument data,
 pointer addresses, and return values to be easily captured, manipulated, and
 reused in subsequent operations.
-This is necessary because,
-at a very high level,
-the purpose of system calls,
-function calls,
-rpc calls,
-or other similar activity
-is to allow an application
-to gather data from an external module like a library or the operating
-system.
-As a result, it is frequently useful to be able to store the data returned by
-one such action, modify it, and use it in matching actions.
-For example, one may store the file descriptor returned by a {\tt
-socket()} system call and use it later to match other related
-communication system calls.
-We found that this sort of usage was common across many types of
-application activity further reinforcing our desire for a language that was
-closely tailored to our needs in this area.
 
-% Need to support new event stream formats easily?
+One possibility is to to describe a register automaton,
+though this model also has disqualifying limitations.
+Chief among these is that it does not allow for modified output to be
+produced during processing.
+Our review of the work on the SEA technique has shown that the ability to
+{\textit modify} activity is central to forcing
+an application into situations where
+it may fail rather than only passively monitoring to see if it performs
+problematic sequences.
+This level of complexity is similar to what is offered by
+the feature-rich nature of several event processing
+languages and libraries.
+Unfortunately, we found that, while it was possible to modify and output
+incoming events with several of these languages,
+it is by no means a straightforward
+and ergonomic experience.
+In fact, in many cases producing an output stream that met
+our needs would require
+falling back on the fully-featured nature of a host language -- a situation
+we hoped to avoid.
 
-
-\preston{We need to make sure we have given a best effort at shortening and
-optimizing code from other languages with which we are making comparisons}
-
-Our second requirement appears to be largely aesthetic at first glance
-but there is a
-larger purpose -- ease of learning and ease of use.  CSlang offers
+We also developed requirements around the syntax of our language
+as it relates to ease of learning and ease of use.  CSlang offers
 improvements over existing languages along two primary fronts.
 When designing CSLang we looked at several event processing languages, more
 specifically complex event processing (cep) languages.  These languages
@@ -274,13 +283,16 @@ host language.  A domain specific language like CSLang provides a more
 concise syntax that we believe makes it easier for individuals to read and
 write relevant programs in.
 
-Figure 1 which shows a CSLang program that matches sequences wherein an
+% Need to support new event stream formats easily?
+
+Figure~\ref{CSlangListing}
+which shows a CSLang program that matches sequences wherein an
 application opens and closes a file without reading from it. When such a
 sequence is identified by the matching engine, the return code of the
 "close" event is changed to -1, indicating failure. The main work of this
 program is performed in just four lines of CSLang code.  Figure 2 contains
 an OpenCEP\cite{open_cep_website} pattern that implements an approximation
-of the same program as seen in Figure~\ref{fig:CslangListing}.
+of the same program as seen in Figure~\ref{fig:CSlangListing}.
 This program is only
 an approximation because the OpenCEP pattern does not modify the return
 value of the "close" call and forces the user to specify a time window
@@ -305,17 +317,5 @@ with a small amount of easily-readable code should be self-evident.
 % developers to learn the language, foster greater popularity, and it aligns
 % with the goals presented in our motivating example.
 
-Our final requirement is, perhaps, the most important.
-We want CSlang programs to be capable of more than simply matching
-a pattern of events and indicating that it has occurred.
-Our review of the work on the SEA technique has shown that the ability to
-{\textit modify} is central to forcing an application into situations where
-it may fail rather than only passively monitoring to see if it performs
-problematic sequences.  While the feature-rich nature of several related
-languages and libraries means it is likely possible to modify and output
-incoming events, it is by no means a straightforward
-and ergonomic experience.
-Constructing CSlang to support output as a primary feature allows us to
-easily describe the types of transformations needed to expose bugs.
 
 
