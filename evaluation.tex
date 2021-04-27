@@ -8,12 +8,19 @@ We designed our tests to answer the following questions:
 
 \begin{itemize}
 
+    % Re-implementing CS anomalies
   \item{Can CSlang express the sorts of anomalies used by SEA to identify
     bugs?}
 
-  \item{How easy is it to extend CSlang to support input formats other than
-    system calls?}
+    % Extending to support RPC formats
+  \item{How easy is it to extend CSlang to support activity representations
+    other than system calls?}
 
+    % Dornhackl et al. defining maliciousness
+  \item{What sorts of problems can be addressed by employing CSlang on
+  non-system-call activity representations?}
+
+    % Performance information
   \item{Can CSlang process input streams in a reasonable amount of time?}
 
 \end{itemize}
@@ -85,16 +92,16 @@ field.  Such output can then be used to modify the results of a running
 application's system calls in order to carry out the remaining steps of the
 SEA technique.
 
-\begin{figure}
-  \begin{tabular}{|c|c}
-  Value    & Meaning          \\
-  IF\_BLK  & Block Device     \\
-  IF\_CHR  & Character Device \\
-  IF\_SOCK & Socket           \\
-\end{tabular}
-\caption{ST\_MODE values}
-\label{tbl:ST_MODEValues}
-\end{figure}
+%\begin{figure}
+%  \begin{tabular}{|c|c}
+%  Value    & Meaning          \\
+%  IF\_BLK  & Block Device     \\
+%  IF\_CHR  & Character Device \\
+%  IF\_SOCK & Socket           \\
+%\end{tabular}
+%\caption{ST\_MODE values}
+%\label{tbl:ST_MODEValues}
+%\end{figure}
 
 CSlang's advantages are made even more obvious when the CSlang Unusual
 Filetype mutator is compared to a program that implements the same
@@ -270,40 +277,97 @@ modify results based on output from cslang programs
 see how application responds}
 
 
+In addition to novel formats, we wanted to see if CSlang could be used to
+represent proven-useful models from other work.  One candidate for this
+effort is the work on describing malicious behavior done by Dornhackl et
+al. in 2014~\ref{Dornhackl2014}.  This work improves upon static malicious
+behavior detection using signatures by creating formal models that can
+detect misbehavior in an application's dynamic activity.  This is done
+using two models: one that describes malicious activity in the form of a
+series of tasks and a second that maps these tasks onto the concrete
+Windows API calls required to carry out these tasks.
+
+CSlang is particularly well suited to implementing the second model.  This
+requires a mechanism for first grouping a set of similar API calls
+into a single operation and then describing a malicious task in terms of
+these aggregate operations.  CSlang supports the former using variants.
+For example, the work proposes grouping the API calls that may be used to
+open a Windows registry key as is shown in Figure~\ref{lst:DornhacklOpen}.
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{c}
+\begin{lstlisting}
+OPEN => RegOpenKeyA NtOpenKey
+  | RegOpenKeyW NtOpenKey
+  | RegOpenKeyExA NtOpenKey
+  | RegOpenKeyExW NtOpenKey
+\end{lstlisting}
+\end{tabular}
+\caption{The above is a grouping of Windows API calls for opening or creating a Windows
+  registry key into an OPEN operation as per Dornhackl et al.}
+\label{lst:DornhacklOpen}
+\end{figure}
 
 
-% To further ease the processing of new formats we added a generic CSV
-% processor.  This processor consumes a CSV row by row and allows operations
-% to be performed on each field.  The purpose of this capability is to allow
-% users to quickly get useful work done at the expense of some rigor/type
-% checking etc.
+In the above grammar, each symbol beginning with ``Reg'' represents a user
+API that opens or creates a registry key.  {\tt NtOpenKey} always follows
+each of these calls because it is the underlying ``native'' call that
+Windows makes to actually perform the open or create operation.  This
+operation grouping and execution semantics can be expressed
+in CSlang as shown in Figure~\ref{lst:CSlangOpenReg}.
 
 
-%\subsection{Function like stuff is great but can we do other things?}
-%
-%After our success in the above work we wanted to stretch CSlang to perform
-%useful work in a significantly different domain.  We showed that CSlang
-%could process common protocols used to communicate across networks but
-%could we do something interesting with the network traffic itself.
-%
-%Using generic CSV support we processed incoming network traffic as recorded
-%by sysdig.  We constructed CSlang programs that could take incoming network
-%traffic, recognize a pattern and output a firewall rule to address it.
-%
-%At a high level this works as follows:
-%Sysdig records network traffic, extracts the fields we are interested in,
-%and outputs them as a CSV.  We use our generic CSV processor to read this
-%representation of the network traffic and process it with a mutator.
-%The mutator outputs new stream of CSV data that is handed to a shell
-%script that transforms them into IPtables rules.
-%
-%While we were happy with the results of this effort there were some
-%drawbacks.  Primarily, we do not try to generate an optimal set of rules
-%for a given stream of input network traffic.  In many cases there are
-%duplicate or unnecessary rules that would be undesirable in a final rule
-%set.  Fortunately, other work as been done in the area of optimizing
-%firewall rules so we are confident a post-processing pass could be put in
-%place to mitigate this problem.
+\begin{figure}[H]
+\centering
+\begin{tabular}{c}
+\begin{lstlisting}
+ open {RegOpenKeyA ...}
+    | {NtOpenKey ... }
+    | {RegOpenKeyW ...}
+
+  type NtOpenKey {...};
+
+  open({...});
+  NtOpenKey({...});
+\end{lstlisting}
+\end{tabular}
+  \caption{This listing shows an abstract CSlang program (with parameters
+  omitted) that groups the Windows API calls responsible for opening or
+  creating a Windows registry key into an open operation.  It also shows
+  how the requirement that NtOpenKey follow any of these calls can be
+  captured.}
+\label{lst:CSlangOpenReg}
+\end{figure}
+
+Dornhackl et al. used this strategy to describe a pattern that, if
+detected, would indicate that a piece of software was
+installing a Windows registry key that would cause some malicious action
+the next time the machine was restarted.  We can use CSlang to group the
+Windows API calls into the same operations as the original work and
+construct a program that could perform this detection (assuming CSlang were
+extended to support Windows).  Such a program appears in
+Figure~\ref{lst:CSlangRegDetect}.  This program groups API calls into OPEN,
+SET, and CLOSE operations and searches for a pattern that an application is
+setting an autostart key.  The CSlang program is further able to express
+that the pattern must appear for a specific registry key using the value
+stored in the ``regkey'' register.
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{c}
+\begin{lstlisting}
+Program goes here
+\end{lstlisting}
+\end{tabular}
+  \caption{This listing shows an abstract CSlang program (with parameters
+  omitted) that detects situations where an application is maliciously
+  installing an ``autostart'' Windows registry key.  It does so by
+  implementing the pattern described by Dornhackl et al.  Unimportant
+  parameters are omitted and the number of API calls in each group has been
+  reduced in order to save space.}
+\label{lst:CSlangRegDetect}
+\end{figure}
 
 
 \subsection{CSlang's Performance}
@@ -313,74 +377,26 @@ if it takes too long to complete its work.
 As a result, performance is a concern.  Though our implementation is
 only a prototype, we wanted to make sure that its performance was not
 overly slow.
-
-We started by testing
-CSlang
-in an ideal setting.  For this test we constructed the program
-shown in Figure~\ref{lst:SyntheticPerformance}
-and used it to transform a specific
-pattern of events in JSONRPC, and XMLRPC traces to
-see how CSlang performed when processing each format.  We also varied the
-size of each trace to get an idea of how total trace size impacted
-performance.  The results of this effort can be seen in
-Table~\ref{tbl:SyntheticPerformance}
-
-\begin{figure}[H]
-\centering
-\begin{tabular}{c}
-\begin{lstlisting}
-\\ This is absolutely a fake listing that will be changed out for a real
-\\ one!!  Preston -> Don't forget to do this!
-#include "stdio.h"
-
-int main() {
-    printf("Hello world!\n");
-    return 0;
-};
-\end{lstlisting}
-\end{tabular}
-\caption{CSlang program used }
-\label{lst:SyntheticPerformance}
-\end{figure}
-
-
-\begin{figure}
-  \begin{tabular}{|c|c|c|c|}
-                & 1000 Events   & 10000 Events & 100000 Events \\
-  Strace        & 2.3 sec FAKE  & 23 sec FAKE  & 230 sec FAKE  \\
-  JSONRPC       & 1.7 sec FAKE  & 17 sec FAKE  & 170 sec FAKE  \\
-  XMLRPC        & 3.0 sec FAKE  & 30 sec FAKE  & 300 sec FAKE  \\
-\end{tabular}
-\caption{Time in seconds to process the specified number of events of each
-  format.}
-\label{tbl:SyntheticPerformance}
-\end{figure}
-
-As can be seen in Table~\ref{tbl:SyntheticPerformance},
-the results indicate that CSlang is able to
-process large synthetic traces in a reasonable amount of time.  Further,
-the time required to process a trace grows in proportion to the number of
-events being processed.
-It is reasonable to conclude that the largest
-factor behind our recorded processing times is the speed with which the
-traces can be read from disk.  The time required to advance the state of
-the underlying CSlang mutator is relatively small by comparison.
-
-The second part of our performance evaluation
-focused on identifying specific
+Our performance evaluation
+is focused on identifying specific
 patterns within real world system call traces.  We recorded our test traces
-from three popular web servers - Apache, Nginx, and Lighttpd. These
-were chosen because they are widely deployed and sufficiently
-complex to offer a representation of what CSlang might encounter under
-realistic use cases.
+from three popular network applications -
+NCat,
+Python's http.server,
+and Nginx.
+These
+were chosen because they are widely used and
+offer increasing levels of complexity against which we can evaluate
+CSlang's performance.
 
-Our test operated as follows.  First, each web server was configured to
-serve a static web page while being recorded using {\tt strace}.  Next, we
-requested the page from each server using {\tt wget}.  The strace
+Our test operated as follows.  The applications were configured to service
+a simple piece of content (a single string in the case of NCat) and were
+recorded using {\tt strace} while processing a request.
+The strace
 recordings were then processed using the CSlang program from
 Figure~\ref{lst:RealWorldPerformance},  which
 identified the sequence of system calls that implement
-a web server's request handling
+a server's request handling
 loop.  Table~\ref{tbl:RealWorldPerformance}
 shows the times in seconds required to perform this identification on each
 web server as well as the total number of system calls in each trace.
@@ -388,9 +404,9 @@ web server as well as the total number of system calls in each trace.
 \begin{figure}
   \begin{tabular}{|c|c|c}
                 & Time in Sec. & Num. Syscalls.\\
-  Apache        & 1.7 sec FAKE & 1700 FAKE      \\
-  Nginx         & 2.3 sec FAKE & 2300 FAKE      \\
-  Lighttpd      & 0.9 sec FAKE & 850  FAKE      \\
+  http.server   & 1.7 sec FAKE & 1700 FAKE      \\
+  NCat          & 2.3 sec FAKE & 2300 FAKE      \\
+  wget          & 0.9 sec FAKE & 850  FAKE      \\
 \end{tabular}
 \caption{Time in seconds to process the specified number of events of each format.}
 \label{tbl:RealWorldPerformance}
@@ -410,13 +426,22 @@ int main() {
 };
 \end{lstlisting}
 \end{tabular}
-\caption{CSlang program used for real world performance testing}
+\caption{This CSlang program matches patterns where a server application
+  accepts a connection, receives a request, sends a response, and closes a
+  the connection.  The program uses variants to handle cases where
+  applications use different system calls to perform some common action
+  (e.g. receiving data from a socket)}
 \label{lst:RealWorldPerformance}
 \end{figure}
 
-The results in Table~\ref{tbl:RealWorldPerformance} closely align with
-those in Table~\ref{tbl:SyntheticPerformance}.  This lends further
-credibility to our assertions that CSlang's performance is closely tied to
+The results in Table~\ref{tbl:RealWorldPerformance} show that, as expected,
+CSlang's
+processing time increases in line with the total number system calls
+present in a recording.  We anticipate that much of this processing cost is
+associated with setting up a Python execution environment and that a more
+optimized implementation could see performance gains in this area.
+Further,
+it is likely that CSlang's performance is closely tied to
 disk throughput, with
 the process of evaluating each system call and appropriately advancing the
 mutator adding little additional overhead.
