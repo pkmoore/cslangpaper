@@ -2,7 +2,7 @@
 \label{SEC:evaluation}
 
 With our prototype in hand we organized a set of
-evaluations that would let us know if the CSlang would be as effective
+evaluations that would let us know if the CSlang would be effective
 in real world situations.
 We designed our tests to answer the following questions:
 
@@ -276,7 +276,7 @@ Capture with proxy
 modify results based on output from cslang programs
 see how application responds}
 
-
+\subsection{Utilizing CSlang's Flexibility}
 In addition to novel formats, we wanted to see if CSlang could be used to
 represent proven-useful models from other work.  One candidate for this
 effort is the work on describing malicious behavior done by Dornhackl et
@@ -304,7 +304,7 @@ OPEN => RegOpenKeyA NtOpenKey
   | RegOpenKeyExW NtOpenKey
 \end{lstlisting}
 \end{tabular}
-\caption{The above is a grouping of Windows API calls for opening or creating a Windows
+\caption{Grouping of Windows API calls for opening or creating a Windows
   registry key into an OPEN operation as per Dornhackl et al.}
 \label{lst:DornhacklOpen}
 \end{figure}
@@ -313,8 +313,8 @@ OPEN => RegOpenKeyA NtOpenKey
 In the above grammar, each symbol beginning with ``Reg'' represents a user
 API that opens or creates a registry key.  {\tt NtOpenKey} always follows
 each of these calls because it is the underlying ``native'' call that
-Windows makes to actually perform the open or create operation.  This
-operation grouping and execution semantics can be expressed
+Windows makes to actually perform the operation.
+The grouping and execution semantics for this operation can be expressed
 in CSlang as shown in Figure~\ref{lst:CSlangOpenReg}.
 
 
@@ -332,7 +332,7 @@ in CSlang as shown in Figure~\ref{lst:CSlangOpenReg}.
   NtOpenKey({...});
 \end{lstlisting}
 \end{tabular}
-  \caption{This listing shows an abstract CSlang program (with parameters
+  \caption{Abstract CSlang program (with parameters
   omitted) that groups the Windows API calls responsible for opening or
   creating a Windows registry key into an open operation.  It also shows
   how the requirement that NtOpenKey follow any of these calls can be
@@ -341,14 +341,17 @@ in CSlang as shown in Figure~\ref{lst:CSlangOpenReg}.
 \end{figure}
 
 Dornhackl et al. used this strategy to describe a pattern that, if
-detected, would indicate that a piece of software was
-installing a Windows registry key that would cause some malicious action
+detected, would indicate
+a Windows registry key was being installed
+that would cause some malicious action
 the next time the machine was restarted.  We can use CSlang to group the
 Windows API calls into the same operations as the original work and
 construct a program that could perform this detection (assuming CSlang were
 extended to support Windows).  Such a program appears in
 Figure~\ref{lst:CSlangRegDetect}.  This program groups API calls into OPEN,
-SET, and CLOSE operations and searches for a pattern that an application is
+SET, and CLOSE operations and searches for a pattern that
+indicates
+an application is
 setting an autostart key.  The CSlang program is further able to express
 that the pattern must appear for a specific registry key using the value
 stored in the ``regkey'' register.
@@ -374,12 +377,14 @@ Program goes here
 
 It doesn't matter how useful a tool may be
 if it takes too long to complete its work.
-As a result, performance is a concern.  Though our implementation is
+Though our implementation is
 only a prototype, we wanted to make sure that its performance was not
 overly slow.
 Our performance evaluation
-is focused on identifying specific
-patterns within real world system call traces.  We recorded our test traces
+is focused on the time required
+to identify specific
+patterns within real world system call traces.
+We recorded test traces
 from three popular network applications -
 NCat,
 Python's http.server,
@@ -387,11 +392,11 @@ and Nginx.
 These
 were chosen because they are widely used and
 offer increasing levels of complexity against which we can evaluate
-CSlang's performance.
+CSlang's effectiveness.
 
 Our test operated as follows.  The applications were configured to service
 a simple piece of content (a single string in the case of NCat) and were
-recorded using {\tt strace} while processing a request.
+recorded using {\tt strace} while handling a request from a remote client.
 The strace
 recordings were then processed using the CSlang program from
 Figure~\ref{lst:RealWorldPerformance},  which
@@ -427,7 +432,7 @@ int main() {
 \end{lstlisting}
 \end{tabular}
 \caption{This CSlang program matches patterns where a server application
-  accepts a connection, receives a request, sends a response, and closes a
+  accepts a connection, receives a request, sends a response, and closes
   the connection.  The program uses variants to handle cases where
   applications use different system calls to perform some common action
   (e.g. receiving data from a socket)}
@@ -436,12 +441,17 @@ int main() {
 
 The results in Table~\ref{tbl:RealWorldPerformance} show that, as expected,
 CSlang's
-processing time increases in line with the total number system calls
+processing time increases in line with the total number of system calls
 present in a recording.  We anticipate that much of this processing cost is
 associated with setting up a Python execution environment and that a more
-optimized implementation could see performance gains in this area.
+optimized implementation could improve performance gains in this area.
 Further,
 it is likely that CSlang's performance is closely tied to
-disk throughput, with
-the process of evaluating each system call and appropriately advancing the
-mutator adding little additional overhead.
+disk throughput,
+and that advancing the mutator
+as each system call is evaluated
+adds little additional overhead.
+A condition with varying disk
+speeds could be designed to confirm this suspicion.  As a whole, our
+results indicate that CSlang's performance is not a limiting factor to its
+usage in real-world situations.
