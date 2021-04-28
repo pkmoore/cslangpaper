@@ -1,18 +1,22 @@
 \begin{abstract}
 
-Earlier work has demonstrated that,
-when evaluating the quality of a piece of software,
-there is tremendous value in
+Earlier work in software testing has demonstrated
+the value of
 information that can be extracted
-from recordings
-of its activity.
+from recording
+an application's activity.
 The trick is in how to extract it.
-Applications often make hundreds or thousands of requests
-to external entities over the course of an execution
-which makes it difficult
-to recognize and respond to important patterns.
+The number
+of requests
+to external entities
+made over the course
+of an execution
+makes it difficult
+complicates the task
+of recognizing and responding
+to important patterns.
 Existing event processing applications,
-used successfully in fire alarms,
+used successfully in
 industrial control systems,
 and computer network monitoring software,
 have emerged as a potential solution
@@ -26,41 +30,37 @@ and
 react appropriately
 when a pattern occurs.
 Thus,
-if it were possible to process
-application actions like events,
-this technology could also be harnessed
+if application actions
+can be processed like events,
+this technology could be harnessed
 as a tool for identifying bugs.
 In this work,
-we demonstrate
-how
-the creation of
+we introduce
 a new domain specific language
 called CSlang
-makes this happen.
-CSlang allows users
-to not only construct a program that describes an activity,
-but also to rewrite an input activity stream on the fly.
+that can
+not only construct a program
+to describe an activity,
+but can also
+rewrite an input activity stream on the fly.
 The former can
-to identify application activity
-that may indicate the presence of a bug,
-while the latter produces a modified stream
-that can be applied
-to more active testing.
-Using CSlang makes it easy
-to identify sequences
-in streams like event logs,
+identify sequences in streams
+like event logs,
 remote procedure call traces,
-or system call activity.
-To see how our efforts compared against other work,
-we employed CSlang
-in recreating the mutators and checkers
+or system call activity
+that points
+towards potential bugs
+while the latter produces a modified stream
+that can be applied to more active testing.
+We employed CSlang
+to recreate the mutators and checkers
 used by
 the SEA technique,
-a project introduced in 2019
-that was able to find bugs
+a 2019 project that demonstrated
+bugs could be found
 by modifying and replaying the results of
 an application's system calls.
-We found our re-implementations
+Our re-implementations
 achieved the same efficacy
 and better reliability
 while consisting of XX\% less lines of code.
