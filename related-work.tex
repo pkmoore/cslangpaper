@@ -2,11 +2,18 @@
 \label{SEC:related-work}
 
 CSlang is a declarative domain-specific language designed to
-assist developers in creating applications that need to pattern match and perform
-transformations on a single stream of, possibly infinite, events. Applications
-of Clang include processing streams of system calls, RPC invocations or
+assist developers in creating
+applications that need to pattern match and perform
+transformations on a single stream of possibly infinite events.
+Potential applications
+of CSlang could include
+processing streams of system calls, RPC invocations or
 web-browser events for the purpose of intrusion detection, fault-injection, or
 other program-level testing.
+In developing the language and its potential uses,
+we examine
+earlier work system call processing applications,
+and event stream processing languages and algorithms.
 
 \subsection{System Call Stream Processing Applications}
 The
@@ -26,11 +33,16 @@ malicious\cite{DBLP:conf/sp/ForrestHSL96}.
 
 As misuse-based intrusion detection systems are only
 effective against previously known intrusion signatures they are rarely used in
-isolation and are typically combined with anomaly-based systems. Intrusion
+isolation and are typically combined with anomaly-based systems.
+Intrusion
 detection systems also vary in the way in which they examine the system call
-stream. Some examine each system call in isolation, without regard to previous
-execution context, looking for specific arguments that may imply malicious
-intent.  Others look for fixed patterns or sequences of system calls executed
+stream.
+Some examine each system call in isolation,
+without regard to previous
+execution context,
+looking for specific arguments that may imply malicious
+intent.
+Others look for fixed patterns or sequences of system calls executed
 within a certain window of instructions.
 
 Forrest et al.\cite{DBLP:conf/sp/ForrestHSL96} describe
@@ -38,22 +50,38 @@ an anomaly detection system based on the premise that small deviations from
 an application's previously exhibited system call execution pattern are likely
 malicious. An application to be protected using this mechanism is first
 “exercised” on various inputs. This training phase is intended to expose the
-sequence of system calls found in valid uses of the application. Using a sliding
-window on the system call stream, each witnessed pattern of six (this number can
+sequence of system calls found in valid uses of the application.
+Using a sliding
+window on the system call stream,
+each witnessed pattern of six (this number can
 be changed) contiguous system calls are cataloged in a database. After the
-training phase the application's system call stream is monitored and any detected
+training phase the application's system call stream
+is monitored and any detected
 deviation from the expected system call patterns (stored in the database) are
-acted upon in accordance with a predefined security policy. A hidden Markov model
+acted upon in accordance with a predefined security policy.
+A hidden Markov model
 based implementation of this same system is described in \cite{DBLP:conf/sp/WarrenderFP99}.
 
-Sekar et al.\cite{DBLP:conf/sp/SekarBDB01} extend the work of \cite{DBLP:conf/sp/ForrestHSL96} by proposing an algorithm and associated optimizations to create a finite state automata that
-learns the valid system call sequences of an application. The automata is not
+Sekar et al.\cite{DBLP:conf/sp/SekarBDB01} extend the work
+of \cite{DBLP:conf/sp/ForrestHSL96} by proposing
+an algorithm and associated optimizations
+to create a finite state automaton that
+learns the valid system call sequences of an application.
+The automaton is not
 limited to recognizing the small system call sequence sizes proposed in
- \cite{DBLP:conf/sp/ForrestHSL96} - rather the entire sequence of system calls produced by each
-run of the application is learned by the automata. To help minimize the size of
-the automata the authors incorporate program counter information to recognize
-loops. In addition, system calls made within standard libraries (such as libc)
-are excluded from the automata as the authors felt that these system calls do not
+\cite{DBLP:conf/sp/ForrestHSL96}.
+Instead,
+the automaton learns the entire
+sequence of system calls produced by each
+run of the application.
+To help minimize the size
+of the automaton
+the authors incorporate program counter information to recognize
+loops.
+In addition,
+system calls made within standard libraries (such as libc)
+are excluded from the automaton
+as the authors felt that these system calls do not
 necessarily help capture the unique nature of system call behavior within the
 program.
 
@@ -68,7 +96,8 @@ not supported.
 
 Systrace\cite{DBLP:conf/uss/Provos03} supports fine-grained process confinement
 via system call monitoring and an associated policy language.The policy language
-consists of a set rules and triggers - triggers are executed once a rule
+consists of a set of rules and triggers.
+Triggers are executed once a rule
 evaluates to true. Rules are checked against only one system call at a time.
 Systrace intercepts each system call prior to execution, therefore this system
 can also be used for fault injection in various testing scenarios.
@@ -97,16 +126,26 @@ sequence of system calls are seen.
 
 \subsection{Event Stream Processing Languages and Algorithms}
 
-A streaming application is a computer program that consumes and
-produces streams. A stream processing language is a domain-specific language
+A streaming application
+is a computer program
+that consumes and
+produces
+a sequence of messages that each document that action has been performed.
+A stream processing language is a domain-specific language
 designed for expressing streaming applications\cite{DBLP:journals/sigmod/HirzelBBVSV18}. CSlang clearly
-fits within the definition of a streaming processing language. Therefore, in this
+fits within the definition of a streaming processing language.
+Therefore, in this
 section we look at work related to stream processing languages.
 
 Pattern matching
-over events streams is a paradigm where continuously arriving events are matched
-against complex patterns and the events used to match each pattern are
-transformed into new events for output. Languages for pattern matching over event
+over events streams is a paradigm
+where it is decided if a stream of continuously arriving events
+contains a particular sequence by evaluating whether or not
+the events meet the requirements of a set of rules describing
+the pattern being matched.
+The events that meet these requirements are
+transformed into new events for output.
+Languages for pattern matching over event
 streams are significantly richer than languages for regular expression
 matching\cite{DBLP:conf/sigmod/AgrawalDGI08}. Stream processing languages typically provide automatic
 support for naming, type checking, filtering, aggregating, classifying and
