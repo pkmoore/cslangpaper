@@ -11,8 +11,8 @@ processing streams of system calls, RPC invocations or
 web-browser events for the purpose of intrusion detection, fault-injection, or
 other program-level testing.
 In developing the language and its potential uses,
-we examine
-earlier work system call processing applications,
+we examined
+earlier work in the area of system call processing applications,
 and event stream processing languages and algorithms.
 
 \subsection{System Call Stream Processing Applications}
@@ -24,12 +24,12 @@ CrashSimulator~\cite{DBLP:conf/issre/MooreCFW19}.
 There is a rich history of system call pattern
 matching in the area of intrusion detection.  Broadly speaking, there are two
 different types of system call based intrusion detection systems - misuse
-intrusion detection and anomaly are two. In misuse intrusion
+intrusion detection and anomaly. In misuse intrusion
 detection known patterns of application-specific malicious system call
 sequences(intrusion signatures) are explicitly searched
 for.~\cite{GARCIATEODORO200918}
 In anomaly
-detection it is assumed that the intrusion signatures are two, but deviation
+detection it is assumed that the intrusion signatures are unknown, but deviation
 from “normally observed” system call sequences are flagged as
 malicious~\cite{DBLP:conf/sp/ForrestHSL96}.
 
@@ -131,9 +131,9 @@ sequence of system calls are seen.
 
 A streaming application
 is a computer program
-that consumes and
+that consumes and/or
 produces
-a sequence of messages that each document that action has been performed.
+a stream of events (messages or other form of application-specific data).
 A stream processing language is a domain-specific language
 designed for expressing streaming applications~\cite{DBLP:journals/sigmod/HirzelBBVSV18}. CSlang clearly
 fits within the definition of a streaming processing language.
@@ -142,12 +142,9 @@ section we look at work related to stream processing languages.
 
 Pattern matching
 over events streams is a paradigm
-where it is decided if a stream of continuously arriving events
-contains a particular sequence by evaluating whether or not
-the events meet the requirements of a set of rules describing
-the pattern being matched.
-The events that meet these requirements are
-transformed into new events for output.
+wherein a stream of continuously arriving events are examined for 
+possible matches against a previously defined set of rules which, collectively, form at pattern.
+The matched events can then optionally be transformed into new events for additional pattern matching or output.
 Languages for pattern matching over event
 streams are significantly richer than languages for regular expression
 matching~\cite{DBLP:conf/sigmod/AgrawalDGI08}.
@@ -170,7 +167,7 @@ sequences of raw events and then generates a composite event for each
 match~\cite{DBLP:journals/ibmrd/HirzelAGJKKMNSSW13}.
 
 Queries and transforms written for CEP systems are
-typically compiled to a “systems” language (C, C++, etc.) to allow for fast
+frequently compiled to a “systems” language (C, C++, etc.) to allow for fast
 processing of the stream. During the compilation process automata are typically
 built to recognize the patterns specified by the queries. Agrawal et
 al.~\cite{DBLP:conf/sigmod/AgrawalDGI08} describes how patterns written in the SASE+ stream
@@ -178,9 +175,9 @@ processing language are converted to non-deterministic finite automata and
 optimized.
 
 MatchRegex~\cite{DBLP:conf/debs/Hirzel12} is a CEP engine for IBM’s Stream Processing
-Language. Predicates defined on the various elements(raw events) in the event
+Language. Predicates defined on the individual events appearing in the event
 stream can be utilized in the regular expression-based pattern matching
-engine.MatchRegex supports regular expression operators such as “Kleene star”
+engine. MatchRegex supports regular expression operators such as “Kleene star”
 and “Kleene plus” over patterns consisting of predicates (boolean expressions).
 Standard regular expression semantics apply over these predicate-based patterns.
 The non-deterministic finite automata generated from these patterns are free of
