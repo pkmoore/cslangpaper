@@ -12,10 +12,15 @@ of the decisions that went into their design and operation.
 \label{SEC:architecture}
 
 \begin{figure}
-  \includegraphics[scale=.08]{images/architecture}
+  \includegraphics[scale=.9]{images/architecture}
   \caption{The CSLang compiler produces a mutator that operates over a
-  generic internal data format that contains the contents of an application
-  recording.}
+  generic intermediate data format that contains the contents of an application
+  recording.  This is facilitated by an executor program provides each
+  event in the input stream to the mutator in turn.  The mutator updates
+  its own internal state based on the contents of each event and, if
+  appropriate, produces a modified output event.  At the end of processing,
+  the mutator either accepts or rejects the input stream based on whether
+  or not its pattern was found.
   \label{fig:architecture}
 \end{figure}
 
@@ -47,7 +52,7 @@ activity representations beyond system calls.
 This required a method to cleanly separate the details of how
 an application's activity was recorded from the representation that will be
 processed by a mutator.
-Our solution was twofold.  First, we developed an internal data format
+Our solution was twofold.  First, we developed an intermediate data format
 (IDF) that
 could store the key components, such as parameter and return values,
 for application activities like function
@@ -78,7 +83,7 @@ that cannot run by itself.  Instead, a component we refer to as the
 required to analyze an application recording with a mutator.
 These tasks include deserializing a stored mutator from a disk,
 converting the selected input stream
-to CSlang's internal data format
+to CSlang's intermediate data format
 using an appropriate transformer,
 translating the output stream back to the original activity representation,
 and reporting whether the input sequence was
