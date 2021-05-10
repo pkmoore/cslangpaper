@@ -127,6 +127,8 @@ tested. Only single system call matching is done - there is no facility to creat
 more elaborate fault-injection tests that are triggered after a specific
 sequence of system calls are seen.
 
+Christakis, et al.~\cite{DBLP:conf/icse/ChristakisEG017} describe a domain-specific language and runtime to allow developers to intercept and modify a Windows applications’ dynamic link library function calls (which includes system calls). The domain-specific language provides a mechanism to identify which function call or, by using pattern matching, set of function calls, should be intercepted by the runtime. Once intercepted, code written in the domain-specific language (which, in part, is a subset of the C programming language) can be executed. This system allows one to test for and simulate application errors in a language agnostic manner as the runtime operates at the level of the application binary. Note that the domain-specific language is only meant to match and intercept single function calls and was not designed to only trigger a code injection upon matching a specific sequence of function calls in a call stream. 
+
 \subsection{Event Stream Processing Languages and Algorithms}
 
 A streaming application
