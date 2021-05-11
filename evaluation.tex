@@ -239,42 +239,55 @@ int main() {
 \label{lst:Cross-DiskMovePython}
 \end{figure}
 
-\subsection{Working with other formats}
+\subsection{Extending CSlang}
 
 While the above results are encouraging, we wanted to ensure that CSlang's
 usefulness was not limited to system call manipulation.
 A logical next step would be to test CSlang's capabilities when working
-with a higher level, but similarly structured, activity stream format.
+with a higher level, but similarly structured, activity representation.
 After some consideration we settled on JSONRPC and XMLRPC.  These formats
 were ideal because they are well defined, popular, and both have well
 supported parsing libraries or modules.
 
-\preston{I'm not sure if this timing information stays in.}
-With this decision made we set about implementing the modules necessary
-to translate
-both formats to and from CSlang's internal data representation as
-discussed in Section XXX.  To get a rough idea of the amount of effort
-involved we timed our work on XMLRPC support and found our initial
-implementation took 3 hours and 32 minutes to complete.
+To evaluate CSlang's ability to work with these representations we
+constructed transformer modules that could convert these formats into our
+intermediate data format.
+We tested our implementation by writing CSlang programs that could modify
+activity streams similar to the examples presented in the JSONRPC
+2.0~\cite{jsonspec} and XMLRPC~\cite{xmlspec}
+specifications.  One such program is shown in
+listing~\ref{lst:JSONProgram}.  This program matches a pattern of ``test''
+and ``update'' calls and, if the pattern is found, the final update call's
+parameters are replaced with the contents of two registers.
 
-\preston{I don't know if this ``Google as a popularity oracle'' idea is
-going to fly...}
-To see how well our new formats worked we decided to test applications that
-used them in the spirit of the SEA technique.  We identified a set of
-candidate popular applications by searching for the terms ``XMLRPC API''
-and ``JSONRPC API'' using Google\footnote{Insert date and time here}.  Our
-final set of test applications were chosen by ordering the results by search
-ranking and removing entries that depended on special hardware or
-commercial software.
+JSONRPC support required handful of hours of effort and XMLRPC
+support, whose implementation we precisely timed, was completed in three
+hours and thirty-two minutes.  Based on the ease and speed with which we
+ere able to complete these additions we are confident that CSlang can be
+quickly adapted to support new activity representations as required.
 
-\preston{Make some calls
-pick some calls
-Capture results
-Run results through CSlang programs that do transformations
-Run calls again
-Capture with proxy
-modify results based on output from cslang programs
-see how application responds}
+\begin{figure}[H]
+\centering
+\begin{tabular}{c}
+\begin{lstlisting}
+type update {up1: Numeric@0, up2: Numeric@1};
+type test {tp1: Numeric@0, tp2: String@1};
+num <- 45;
+str <- "alpha";
+update({up1: !pone, up2: !ptwo});
+outone <- 999;
+outtwo <- 888;
+test({tp1: ?num, tp2: ?str});
+update({up1: ->outone, up2: ->outtwo});
+\end{lstlisting}
+\end{tabular}
+\caption{This CSlang program matches a pattern of JSONRPC calls to
+  ``update'' and ``test.''  If the pattern is identified, the final call to
+  update is modified so that its first two parameter values are replaced
+  with the values stored in the outone and outtwo registers.}
+\label{lst:JSONProgram}
+\end{figure}
+
 
 \subsection{Utilizing CSlang's Flexibility}
 In addition to novel formats, we wanted to see if CSlang could be used to
