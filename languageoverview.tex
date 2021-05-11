@@ -1,14 +1,14 @@
 \section{Language Overview}
 \label{sec:Overview}
 
-\begin{figure*}[h]
+\begin{figure}[h]
   \centering
-  \includegraphics[scale=.9]{images/processing}
+  \includegraphics[scale=.6]{images/processing}
   \caption{A mutator individually processes each item in an input
   sequence, updating it's internal state and producing output according
   to the rules described in its program.}
   \label{fig:Processing}
-\end{figure*}
+\end{figure}
 
 The purpose
 of a CSlang program is to completely describe a mutator
@@ -94,32 +94,30 @@ exhausted.
 \subsection{Preamble and Body}
 \label{sub:PreambleAndBody}
 
-\begin{figure*}[h]
+\begin{figure}[h]
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-
 ########## Preamble ##########
 type statbuf {dev: String@0, stino: String@1, mode: String@2};
-type fstat {filedesc: Numeric@0, statstruct: statbuf@1};
+type fstat {fd: Numeric@0, st: statbuf@1};
 ##############################
 
 ##########   Body   ##########
 finddev <- "st_dev=makedev(0, 4)";
 findino <- "st_ino=4026532069";
-obvious1 <- "foo";
-obvious2 <- "bar";
-fstat({statstruct: {dev: ?finddev, stino: ?findino}});
-fstat({statstruct: {dev: !finddev2, stino: !findino2}});
-fstat({statstruct: {dev: ->obvious2, stino: ->obvious2}});
+out1 <- "foo";
+out2 <- "bar";
+fstat({st: {dev: ?finddev, stino: ?findino}});
+fstat({st: {dev: !finddev2, stino: !findino2}});
+fstat({st: {dev: ->out2, stino: ->out2}});
 ##############################
-
 \end{lstlisting}
 \end{tabular}
 \caption{An example CSlang program with its preamble and body sections
   labeled.}
 \label{lst:PreambleBody}
-\end{figure*}
+\end{figure}
 
 
 
@@ -163,30 +161,29 @@ In CSlang, a match requires satisfying three rules:
 Figure~\ref{lst:SyntaxGrammar} contains a simplified
 version of CSlang's grammar.
 
-\begin{figure*}[h]
+\begin{figure}[h]
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-
 S: statementlist
 statementlist: statement*
 statement: eventdefinition
            | variantdefinition
            | assignment
            | dataword
-eventdefinition: id (id\_1, t\_1, l\_1), ..., (id\_n, t\_n, l\_n)
-variantdefinition: var\_id ed\_1, ..., ed\_n
+eventdefinition: id (id_1, t_1, l_1), ..., (id_n, t_n, l_n)
+variantdefinition: var_id ed_1, ..., ed_n
 assignment: x <- e
 dataword: id paramexp predexp outputexp
-paramexp: (pid\_1, op\_1, regid\_1), ..., (pid\_n, op\_n, regid\_n)
-predexp: (lhs\_1, cmp\_1, rhs\_1), ..., (lhs\_n, cmp\_n, rhs\_n)
+paramexp: (pid_1, op_1, regid_1), ..., (pid_n, op_n, regid_n)
+predexp: (lhs_1, cmp_1, rhs_1), ..., (lhs_n, cmp_n, rhs_n)
 outputexp: id paramexp
-e \in Expr := e\_1 + e\_2 | e\_1 - e\_2 | ...
+e \in Expr := e_1 + e_2 | e_1 - e_2 | ...
 \end{lstlisting}
 \end{tabular}
 \caption{Grammer of CSlang's syntax}
 \label{lst:SyntaxGrammar}
-\end{figure*}
+\end{figure}
 
 
 \begin{quote}
@@ -227,10 +224,8 @@ be present in order for an event to match or as values to be output.
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-
 type statbuf {dev: String@0, stino: String@1, mode: String@2};
 type fstat {filedesc: Numeric@0, statstruct: statbuf@1};
-
 \end{lstlisting}
 \end{tabular}
 \end{figure}
@@ -285,11 +280,9 @@ either a {\tt read()} or {\tt recv()} system call.
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-
 fstat({statstruct: {dev: !finddev2, stino: !findino2}})
 with filedesc == 4 and statstruct.dev == "st_dev=makedev(0, 4)"
 -> fstat({filedesc: ->fdout2});
-
 \end{lstlisting}
 \end{tabular}
 \end{figure}
