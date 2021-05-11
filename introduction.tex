@@ -65,7 +65,7 @@ we introduce a tool
 that utilizes event processing techniques
 to identify
 behaviors carried out by an application
-that could interfere with its successful operation.
+that may cause it to fail.
 What makes this possible is CSlang,
 a new domain specific language
 created to describe these behaviors.
@@ -73,16 +73,12 @@ These descriptions are then used
 to search a recording of an application's actions
 across a variety of ``activity representations'',
 such as system calls,
-or remote procedure calls
-to determine if it has
-the described action was
-performed.
+or remote procedure calls.
 This capability is useful
 for ensuring an application executed a desired behavior
-or avoided an undesired one,
-depending on the user's need.
-Further, CSlang permits
-its user to describe a set of modifications
+or avoided an undesired one.
+Further, CSlang can describe
+a set of modifications
 that should be made
 if a particular activity sequence is encountered.
 By combining passive monitoring and active modification
@@ -90,17 +86,16 @@ of an application's activity,
 CSlang can aid in identifying bugs
 that may be missed by other testing strategies.
 
-This combined approach is made possible
+CSlang's passive and active capabilities are made possible
 by compiling a CSlang program
 into a mutator
 that operates on principles similar
-to a standard finite-state mutator.
+to a standard finite-state transducer.
 That is,
-according to the rules laid down in its CSlang program,
+according to the rules laid down in its source program,
 the mutator will consume an input sequence of activity
 to determine if a particular pattern is present,
 while simultaneously producing an output stream.
-The results of this process are twofold.
 If the mutator accepts the input sequence
 it means the described activity is present.
 In some cases,
@@ -111,9 +106,7 @@ the pattern may
 indicate an opportunity
 for more detailed testing
 where the modified output sequence is used
-to in drive a simulation (as with the earlier SEA work on environmental bugs)
-to evaluate an application's response to the simulated scenario
-or to populate a test suite.
+to evaluate an application's response to a simulated scenario.
 
 We first evaluated the effectiveness of the above technique
 by creating a prototype implementation of CSlang
@@ -121,16 +114,12 @@ and using it to
 reimplement the ``anomalies''
 described in earlier work on the SEA technique~\cite{DBLP:conf/issre/MooreCFW19}.
 This technique used system call recordings
-to identify environmental features that
-exposed bugs in one application
-and imposed these conditions on other applications
-to determine if they would also fail.
+to expose an application to situations that had caused another to fail.
 Side-by-side comparison shows that our new
-descriptions are dramatically more concise (up to XXX\% in some cases)
+descriptions are more concise,
+readable,
+and maintainable
 than their original counterparts.
-This makes them
-more readable
-and maintainable.
 As an added benefit,
 CSlang can expand the use of the SEA technique,
 which has already been proven
@@ -152,11 +141,10 @@ because they are popular,
 well supported, and
 used by many major applications.
 Taking advantage of these new activity representations,
-we wrote programs
-that could identify opportunities
-to modify the results of RPC calls.
-The output from these programs was used to populate a test suite
-for each application.
+we wrote programs that could operate on activity sequences such as those
+used as examples in the formats respective specifications.  This effort
+showed that CSlang is both quick and easy to extend largely thanks to its
+use of a generic intermediate data format.
 
 The main contributions in this work can be summarized as follows:
 
