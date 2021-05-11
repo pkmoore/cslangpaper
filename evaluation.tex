@@ -434,14 +434,21 @@ web server as well as the total number of system calls in each trace.
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-\\ This is absolutely a fake listing that will be changed out for a real
-\\ one!!  Preston -> Don't forget to do this!
-#include "stdio.h"
+type accept { accept fd: Numeric@ret} | { accept4 fd: Numeric@ret};
+type anyrecv { recvfrom fd: Numeric@0} |
+  { read fd: Numeric@0} |
+  { recv fd: Numeric@0};
 
-int main() {
-    printf("Hello world!\n");
-    return 0;
-};
+type anysend {sendto fd: Numeric@0}
+  | { write fd: Numeric@0}
+  | { send fd: Numeric@0};
+
+type close {fd: Numeric@0};
+
+accept({fd: !storefd});
+anyrecv({fd: ?storefd});
+anysend({fd: ?storefd});
+close({fd: ?storefd});
 \end{lstlisting}
 \end{tabular}
 \caption{This CSlang program matches patterns where a server application
