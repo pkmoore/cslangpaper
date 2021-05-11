@@ -79,7 +79,8 @@ that contains a call to either {\tt stat()},
 {\tt fstat()},
 or {\tt lstat()}
 and modify the call's result data structure such
-that its {\tt ST\_MODE} member will contain one of the values from
+that its {\tt ST\_MODE} member will contain a value
+that indicates an unusual filetype.
 Table~\ref{tbl:ST_MODEValues}.  As can be seen in
 Figure~\ref{lst:UnusualFiletypeCSlang}, CSlang's semantics mean such an
 operation can be captured with only a handful of lines of code.  In the
@@ -91,17 +92,6 @@ system call with a modified value in the return structure's {\tt st\_mode}
 field.  Such output can then be used to modify the results of a running
 application's system calls in order to carry out the remaining steps of the
 SEA technique.
-
-%\begin{figure}
-%  \begin{tabular}{|c|c}
-%  Value    & Meaning          \\
-%  IF\_BLK  & Block Device     \\
-%  IF\_CHR  & Character Device \\
-%  IF\_SOCK & Socket           \\
-%\end{tabular}
-%\caption{ST\_MODE values}
-%\label{tbl:ST_MODEValues}
-%\end{figure}
 
 CSlang's advantages are made even more obvious when the CSlang Unusual
 Filetype mutator is compared to a program that implements the same
@@ -398,10 +388,10 @@ is focused on the time required
 to identify specific
 patterns within real world system call traces.
 We recorded test traces
-from three popular network applications -
+from two popular network applications -
 NCat,
-Python's http.server,
-and Nginx.
+and
+Python's http.server.
 These
 were chosen because they are widely used and
 offer increasing levels of complexity against which we can evaluate
@@ -426,7 +416,7 @@ web server as well as the total number of system calls in each trace.
   http.server   & 0.104 Sec.   & 297   \\
   NCat          & 0.092 Sec.   & 43      \\
 \end{tabular}
-\caption{Time in seconds to process the specified number of events of each format.}
+\caption{Time in seconds to process the listed number of events of each format.}
 \label{tbl:RealWorldPerformance}
 \end{figure}
 
