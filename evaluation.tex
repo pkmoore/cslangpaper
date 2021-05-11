@@ -398,7 +398,8 @@ Our test operated as follows.  The applications were configured to service
 a simple piece of content (a single string in the case of NCat) and were
 recorded using {\tt strace} while handling a request from a remote client.
 The strace
-recordings were then processed using the CSlang program from
+recordings\footnote{Recordings were pre-processed to remove system calls
+related to executable loading and process creation} were then processed using the CSlang program from
 Figure~\ref{lst:RealWorldPerformance},  which
 identified the sequence of system calls that implement
 a server's request handling
@@ -409,9 +410,8 @@ web server as well as the total number of system calls in each trace.
 \begin{figure}
   \begin{tabular}{|c|c|c}
                 & Time in Sec. & Num. Syscalls.\\
-  http.server   & 1.7 sec FAKE & 1700 FAKE      \\
-  NCat          & 2.3 sec FAKE & 2300 FAKE      \\
-  wget          & 0.9 sec FAKE & 850  FAKE      \\
+  http.server   & 0.104 Sec.   & 297   \\
+  NCat          & 0.092 Sec.   & 43      \\
 \end{tabular}
 \caption{Time in seconds to process the specified number of events of each format.}
 \label{tbl:RealWorldPerformance}
