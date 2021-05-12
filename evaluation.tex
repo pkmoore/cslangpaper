@@ -350,8 +350,8 @@ in CSlang as shown in Figure~\ref{lst:CSlangOpenReg}.
 \begin{tabular}{c}
 \begin{lstlisting}
  open {RegOpenKeyA ...}
-    | {NtOpenKey ... }
     | {RegOpenKeyW ...}
+    ... further varients omitted
 
   type NtOpenKey {...};
 
@@ -387,7 +387,23 @@ stored in the ``regkey'' register.
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-Program goes here
+  variant open {RegOpenKeyA ...}
+          |    {RegOpenKeyW ...}
+     ... further variants omitted ...
+  type NtOpenKey {...};
+  variant set {RegSetValueExA ...}
+          |   {RegSetValueExW ...}
+     ... further variants omitted ...
+  type NtSetValueKey {...};
+  type close {RegCloseKey ...};
+  type NtClose {...};
+
+  open({...});
+  NtOpenKey({...});
+  set({...});
+  NtSetValueKey({...});
+  close({...});
+  NtClose({...});
 \end{lstlisting}
 \end{tabular}
   \caption{This listing shows an abstract CSlang program (with parameters
