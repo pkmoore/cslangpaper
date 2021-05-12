@@ -53,17 +53,19 @@ by providing a structured way to modify and output system call sequences.
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-\\ This is absolutely a fake listing that will be changed out for a real
-\\ one!!  Preston -> Don't forget to do this!
-#include "stdio.h"
-
-int main() {
-    printf("Hello world!\n");
-    return 0;
-};
+type statbuf {mode: String@2};
+type anystat {stat sb: statbuf@1}
+           | {lstat sb: statbuf@1}
+           | {fstat sb: statbuf@1};
+newmode <- "st\_mode=S\_IFBLK";
+stat({}) -> stat({sb: {mode: ->newmode}});
 \end{lstlisting}
 \end{tabular}
-\caption{Unusual filetype mutator in CSlang}
+\caption{This program identifies a stat, lstat, or fstat call and modifies
+  the ST\_MODE member of its statbuf output parameter to contain the value
+  "S\_IFBLK."  This indicates that the file being examined is a block device
+  rather than a regular file.  The value used in modifying ST\_MODE is
+  controlled by changing the value stored in the newmode register.}
 \label{lst:UnusualFiletypeCSlang}
 \end{figure}
 
@@ -85,9 +87,9 @@ Table~\ref{tbl:ST_MODEValues}.  As can be seen in
 Figure~\ref{lst:UnusualFiletypeCSlang}, CSlang's semantics mean such an
 operation can be captured with only a handful of lines of code.  In the
 figure
-lines XX-XX define what {\tt stat()}, {\tt fstat()}, and {\tt
+lines 1 through 4 define what {\tt stat()}, {\tt fstat()}, and {\tt
 lstat()} calls look like and which parameter contains the result buffer.
-Line YY generates an accepting state that, when entered, produces an output
+Line 6 generates an accepting state that, when entered, produces an output
 system call with a modified value in the return structure's {\tt st\_mode}
 field.  Such output can then be used to modify the results of a running
 application's system calls in order to carry out the remaining steps of the
@@ -96,9 +98,9 @@ SEA technique.
 CSlang's advantages are made even more obvious when the CSlang Unusual
 Filetype mutator is compared to a program that implements the same
 functionality in a general purpose programming language like Python.
-Figure~\ref{lst:UnusualFiletypePython} shows an excerpt from a XX line
+Figure~\ref{lst:UnusualFiletypePython} shows an excerpt from a 55 line
 Python program taken from the SEA paper's CrashSimulator that performs the
-above operation.  Comparing this listing to
+same mutation described above.  Comparing this listing to
 Figure~\ref{lst:UnusualFiletypeCSlang} shows several key differences:
 
 \textit{Minimal boilerplate code:} The CSlang program lacks the boilerplate
@@ -129,17 +131,39 @@ to achieve the same effect.
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-\\ This is absolutely a fake listing that will be changed out for a real
-\\ one!!  Preston -> Don't forget to do this!
-#include "stdio.h"
+... 3 lines omitted ...
+class UnusualFiletypeMutator(GenericMutator):
+  def \_\_init\_\_(self, filetype='S\_IFREG', name=None, file\_descriptor=None):
+  ... 6 lines omitted ...
 
-int main() {
-    printf("Hello world!\n");
-    return 0;
-};
+  def mutate\_syscalls(self, syscalls):
+    index = self.\_find\_index(syscalls)
+    for i in range(len(syscalls[index].args)):
+      if 'st\_mode' in str(syscalls[index].args[i].value):
+        syscalls[index].args[i].value=re.sub(r'S\_IF(\w*)', self.filetype, syscalls[index].args[i].value)
+
+... 13 lines omitted ...
+
+  def identify\_lines(self, tm, que, thread\_condition):
+    while True:
+      ... 3 lines omitted ...
+      if syscall\_trace['syscall'].name.startswith('fstat'):
+        if self.file\_descriptor:
+          if self.file\_descriptor != syscall\_trace.args[0].value:
+            continue
+        self.opportunity\_identified(syscall\_trace, self.mutator\_name, que)
+      if syscall\_trace['syscall'].name.startswith('stat') or syscall\_trace['syscall'].name.startswith('lstat'):
+        if self.name:
+          if self.name != syscall\_trace.args[0].value:
+            continue
+        self.opportunity\_identified(syscall\_trace, self.mutator\_name, que)
 \end{lstlisting}
 \end{tabular}
-\caption{Python code that implements the unusual filetype mutator}
+\caption{This is a Python module taken from SEA's CrashSimulator that
+  implements the ``Unusual Filetype'' anomaly.  This listing has been
+  shortened by removing CrashSimulator specific-code so that a fair
+  comparison can be drawn between it and the same mutator implemented in
+  CSlang.}
 \label{lst:UnusualFiletypePython}
 \end{figure}
 
