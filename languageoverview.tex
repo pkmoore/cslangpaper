@@ -99,8 +99,8 @@ exhausted.
 \begin{tabular}{c}
 \begin{lstlisting}
 ########## Preamble ##########
-type statbuf {dev: String@0, stino: String@1, mode: String@2};
-type fstat {fd: Numeric@0, st: statbuf@1};
+event statbuf {dev: String@0, stino: String@1, mode: String@2};
+event fstat {fd: Numeric@0, st: statbuf@1};
 ##############################
 
 ##########   Body   ##########
@@ -225,8 +225,8 @@ be present in order for an event to match or as values to be output.
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-type statbuf {dev: String@0, stino: String@1, mode: String@2};
-type fstat {filedesc: Numeric@0, statstruct: statbuf@1};
+event statbuf {dev: String@0, stino: String@1, mode: String@2};
+event fstat {filedesc: Numeric@0, statstruct: statbuf@1};
 \end{lstlisting}
 \end{tabular}
 \end{figure}
@@ -258,7 +258,7 @@ The first line in the above defines statstruct's layout.
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-type bothread {read filedesc: Numeric@0} | {recv filedesc: Numeric@0};
+event bothread {read filedesc: Numeric@0} | {recv filedesc: Numeric@0};
 \end{lstlisting}
 \end{tabular}
 \end{figure}

@@ -155,12 +155,12 @@ last year alone!
 \subsection{Why a New Domain Specific Language?}
 \begin{figure}
   \begin{lstlisting}
-    type open {filename: String@0,
+    event open {filename: String@0,
                    filedesc: Numeric@ret};
 
-    type read {filedesc: Numeric@0};
+    event read {filedesc: Numeric@0};
 
-    type close {filedesc: Numeric@0,
+    event close {filedesc: Numeric@0,
                     retval: Numeric@ret};
 
     # Register initialization.

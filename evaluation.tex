@@ -53,8 +53,8 @@ by providing a structured way to modify and output system call sequences.
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-type statbuf {mode: String@2};
-type anystat {stat sb: statbuf@1}
+event statbuf {mode: String@2};
+event anystat {stat sb: statbuf@1}
            | {lstat sb: statbuf@1}
            | {fstat sb: statbuf@1};
 newmode <- "st\_mode=S\_IFBLK";
@@ -284,8 +284,8 @@ quickly adapted to support new activity representations as required.
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-type update {up1: Numeric@0, up2: Numeric@1};
-type test {tp1: Numeric@0, tp2: String@1};
+event update {up1: Numeric@0, up2: Numeric@1};
+event test {tp1: Numeric@0, tp2: String@1};
 num <- 45;
 str <- "alpha";
 update({up1: !pone, up2: !ptwo});
@@ -353,7 +353,7 @@ in CSlang as shown in Figure~\ref{lst:CSlangOpenReg}.
     | {RegOpenKeyW ...}
     ... further varients omitted
 
-  type NtOpenKey {...};
+  event NtOpenKey {...};
 
   open({...});
   NtOpenKey({...});
@@ -390,13 +390,13 @@ stored in the ``regkey'' register.
   variant open {RegOpenKeyA ...}
           |    {RegOpenKeyW ...}
      ... further variants omitted ...
-  type NtOpenKey {...};
+  event NtOpenKey {...};
   variant set {RegSetValueExA ...}
           |   {RegSetValueExW ...}
      ... further variants omitted ...
-  type NtSetValueKey {...};
-  type close {RegCloseKey ...};
-  type NtClose {...};
+  event NtSetValueKey {...};
+  event close {RegCloseKey ...};
+  event NtClose {...};
 
   open({...});
   NtOpenKey({...});
@@ -465,16 +465,16 @@ web server as well as the total number of system calls in each trace.
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-type accept { accept fd: Numeric@ret} | { accept4 fd: Numeric@ret};
-type anyrecv { recvfrom fd: Numeric@0} |
+event accept { accept fd: Numeric@ret} | { accept4 fd: Numeric@ret};
+event anyrecv { recvfrom fd: Numeric@0} |
   { read fd: Numeric@0} |
   { recv fd: Numeric@0};
 
-type anysend {sendto fd: Numeric@0}
+event anysend {sendto fd: Numeric@0}
   | { write fd: Numeric@0}
   | { send fd: Numeric@0};
 
-type close {fd: Numeric@0};
+event close {fd: Numeric@0};
 
 accept({fd: !storefd});
 anyrecv({fd: ?storefd});
