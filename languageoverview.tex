@@ -158,31 +158,25 @@ In CSlang, a match requires satisfying three rules:
 \subsection{Syntax and Semantics}
 \label{sub:SyntaxAndSemantics}
 
-Figure~\ref{lst:SyntaxGrammar} contains a simplified
-version of CSlang's grammar.
+Figure~\ref{lst:SyntaxGrammar} shows the grammar of CSlang's core language.
 
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
-\begin{tabular}{c}
-\begin{lstlisting}
-S: statementlist
-statementlist: statement*
-statement: eventdefinition
-           | variantdefinition
-           | assignment
-           | dataword
-eventdefinition: id (id_1, t_1, l_1), ..., (id_n, t_n, l_n)
-variantdefinition: var_id ed_1, ..., ed_n
-assignment: x <- e
-dataword: id paramexp predexp outputexp
-paramexp: (pid_1, op_1, regid_1), ..., (pid_n, op_n, regid_n)
-predexp: (lhs_1, cmp_1, rhs_1), ..., (lhs_n, cmp_n, rhs_n)
-outputexp: id paramexp
-e \in Expr := e_1 + e_2 | e_1 - e_2 | ...
-\end{lstlisting}
-\end{tabular}
-\caption{This is a listing of CSlang's grammar with some implementation
-  details omitted in order to improve readability.}
+\begin{align*}
+\mathsf{program} ::= {} & \mathsf{preamble} \; \mathsf{body}\\
+\mathsf{preamble} ::= {} & (\mathsf{typedef} \mid \mathsf{eventdef})^*\\
+\mathsf{typedef} ::= {} & \mathtt{type}\; \mathit{id} \texttt{\{}\mathit{id} \texttt{:}\, t\, \texttt{@}\, n \; (\texttt{,} \mathit{id}\texttt{:} t\,\texttt{@}\,n)^*\texttt{\}}\\
+\mathsf{eventdef} ::= {} & \mathtt{event}\; \mathit{id} \texttt{\{}\mathit{id}\texttt{:}\, t\,\texttt{@}\,n \; (\texttt{,} \mathit{id}\texttt{:}\, t\,\texttt{@}\,n)^*\texttt{\}}\\
+\mathsf{body} ::= {} & \mathsf{statement}^*\\
+\mathsf{statement} ::= {} & \mathsf{assignment} \mid \mathsf{eventexp}\\
+\mathsf{assignment} ::= {} & \mathit{regid} \texttt{ <- } e\\
+\mathsf{eventexp} ::= {} & \mathit{id}\,(p) \;\mathtt{with}\; b \texttt{ -> } \mathit{id}\,(e)\\
+p \in \mathsf{pexp} ::= {} & \texttt{\{} \mathit{id}\texttt{:}\, p \; (\texttt{,} \mathit{id}\texttt{:}\, p)^*\texttt{\}} \mid \texttt{?} \mathit{regid} \mid \texttt{!} \mathit{regid} \mid c \\
+e \in \mathsf{vexp} ::= {} & \mathit{regid} \mid c \mid e \,\texttt{+}\, e \mid e \,\texttt{-}\, e \mid \dots\\
+b \in \mathsf{bexp} ::= {} & \mathtt{true} \mid \mathtt{false} \mid e == e \mid \dots \mid p \;\mathtt{and}\; p \mid \dots\\
+t \in \mathsf{texp} ::= {} & \mathtt{String} \mid \mathtt{Number} \mid \mathit{id} \mid \dots
+\end{align*}
+\caption{Grammar of CSlang's core language.}
 \label{lst:SyntaxGrammar}
 \end{figure}
 
@@ -378,3 +372,8 @@ complex operation.
 %%%% We need to talk about how we are different from other
 %%%% languages that are regular-expression like here
 %\subsection{Inspiration from Regular Expressions}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:
