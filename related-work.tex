@@ -4,15 +4,13 @@
 CSlang is a declarative domain-specific language designed to
 assist developers in creating
 applications that need to pattern match and perform
-transformations on a single stream of possibly infinite events.
-Potential applications
-of CSlang could include
+transformations on a (possibly infinite) stream of events.
+Applications
+of CSlang include
 processing streams of system calls, RPC invocations or
 web-browser events for the purpose of intrusion detection, fault-injection, or
-other program-level testing.
-In developing the language and its potential uses,
-we examined
-earlier work in the area of system call processing applications,
+other program-level testing. In the following, we discuss
+related work in the area of system call processing applications,
 and event stream processing languages and algorithms.
 
 \subsection{System Call Stream Processing Applications}
@@ -23,18 +21,18 @@ CrashSimulator~\cite{DBLP:conf/issre/MooreCFW19}.
 
 There is a rich history of system call pattern
 matching in the area of intrusion detection.  Broadly speaking, there are two
-different types of system call based intrusion detection systems - misuse
-intrusion detection and anomaly. In misuse intrusion
-detection known patterns of application-specific malicious system call
-sequences(intrusion signatures) are explicitly searched
-for.~\cite{GARCIATEODORO200918}
+different types of system call based intrusion detection systems: misuse
+intrusion detection and anomaly detection. In misuse intrusion
+detection, known patterns of application-specific malicious system call
+sequences (intrusion signatures) are explicitly searched
+for~\cite{GARCIATEODORO200918}.
 In anomaly
 detection it is assumed that the intrusion signatures are unknown, but deviation
 from “normally observed” system call sequences are flagged as
 malicious~\cite{DBLP:conf/sp/ForrestHSL96}.
 
-As misuse-based intrusion detection systems are only
-effective against previously known intrusion signatures they are rarely used in
+As misuse intrusion detection systems are only
+effective against previously known intrusion signatures, they are rarely used in
 isolation and are typically combined with anomaly-based systems.
 Intrusion
 detection systems also vary in the way in which they examine the system call
@@ -51,13 +49,12 @@ Forrest et al.~\cite{DBLP:conf/sp/ForrestHSL96} describe
 an anomaly detection system based on the premise that small deviations from
 an application's previously exhibited system call execution pattern are likely
 malicious. An application to be protected using this mechanism is first
-“exercised” on various inputs. This training phase is intended to expose the
+``exercised'' on various inputs. This training phase is intended to expose the
 sequence of system calls found in valid uses of the application.
 Using a sliding
-window on the system call stream,
-each witnessed pattern of six (this number can
-be changed) contiguous system calls are cataloged in a database. After the
-training phase the application's system call stream
+window of fixed size, 
+each witnessed pattern of contiguous system calls appearing in the system call stream is cataloged in a database. After the
+training phase, the application's system call stream
 is monitored and any detected
 deviation from the expected system call patterns (stored in the database) are
 acted upon in accordance with a predefined security policy.
@@ -65,60 +62,35 @@ A hidden Markov model
 based implementation of this same system
 is described in~\cite{DBLP:conf/sp/WarrenderFP99}.
 
-Sekar et al.\cite{DBLP:conf/sp/SekarBDB01} extend the work
-of~\cite{DBLP:conf/sp/ForrestHSL96} by proposing
-an algorithm and associated optimizations
-to create a finite state automaton that
-learns the valid system call sequences of an application.
-The automaton is not
-limited to recognizing the small system call sequence sizes proposed in
-~\cite{DBLP:conf/sp/ForrestHSL96}.
-Instead,
-the automaton learns the entire
-sequence of system calls produced by each
-run of the application.
-To help minimize the size
-of the automaton
-the authors incorporate program counter information to recognize
-loops.
-In addition,
-system calls made within standard libraries (such as libc)
-are excluded from the automaton
-as the authors felt that these system calls do not
-necessarily help capture the unique nature of system call behavior within the
-program.
+Sekar et al.\cite{DBLP:conf/sp/SekarBDB01} extend the work of~\cite{DBLP:conf/sp/ForrestHSL96} by proposing an algorithm and associated optimizations to create a finite state automaton that learns the valid system call sequences of an application.
+The automaton is not limited to recognizing the small system call sequence sizes proposed in~\cite{DBLP:conf/sp/ForrestHSL96}.
+Instead, the automaton learns the entire sequence of system calls produced by each run of the application.
+To help minimize the size of the automaton, the authors incorporate program counter information to recognize loops.
+%In addition, system calls made within standard libraries (such as libc) are excluded from the automaton as the authors felt that these system calls do not necessarily help capture the unique nature of system call behavior within the program.
 
 Ko et al.~\cite{DBLP:conf/acsac/KoFL94} describe a real-time intrusion detection system
-based on simple predicate logic and regular expressions.Each system call in the
+based on simple predicate logic and regular expressions. Each system call in the
 steam is converted to a standard audit-policy record format which is then
-matched against program policy. For example, the rule ‘exec “/bin/(sh | csh)” ’
-allows a new shell to be invoked and the rule“~read(‘/etc/passed’)” prevents the
+matched against program policy. For example, the rule \lstinline+exec "/bin/(sh | csh)"+
+allows a new shell to be invoked and the rule \lstinline+~read("/etc/passed")+ prevents the
 password file from being read. The audit-policy can only be applied to one
-system call at a time - rules to recognize specific chains of system calls are
+system call at a time, rules to recognize specific chains of system calls are
 not supported.
 
-Systrace~\cite{DBLP:conf/uss/Provos03} supports fine-grained process confinement
-via system call monitoring and an associated policy language.The policy language
-consists of a set of rules and triggers.
-Triggers are executed once a rule
-evaluates to true. Rules are checked against only one system call at a time.
-Systrace intercepts each system call prior to execution, therefore this system
-can also be used for fault injection in various testing scenarios.
+Systrace~\cite{DBLP:conf/uss/Provos03} supports fine-grained process confinement via system call monitoring and an associated policy language.
+The policy language consists of a set of rules and triggers.
+Triggers are executed once a rule evaluates to true. Rules are checked against only one system call at a time.
+Systrace intercepts each system call prior to execution, therefore this system can also be used for fault injection in various testing scenarios.
 
-Similar to system calls, remote procedure calls can also be abused for malicious
-intent. Examining and acting upon a remote procedure call stream can help
-mitigate or prevent such attacks. The remote procedure call protection mechanism
-described in~\cite{DBLP:conf/uss/GiffinJM02} uses a finite-state machine and push-down automata
-to model the possible valid remote call streams that can be generated in a
-particular application. The model is created by static binary analysis
-and modification of the application to be protected. The application's incoming
-remote procedure call stream is vetted against the previously created model to
-determine whether particular calls are valid and therefore
-executable.
+Similar to system calls, remote procedure calls can also be abused for malicious intent.
+Examining and acting upon a remote procedure call stream can help mitigate or prevent such attacks.
+The remote procedure call protection mechanism described in~\cite{DBLP:conf/uss/GiffinJM02} uses push-down automata to model the possible valid remote call streams that can be generated in a particular application.
+The model is created by static binary analysis and modification of the application to be protected.
+The application's incoming remote procedure call stream is vetted against the previously created model to determine whether particular calls are valid and therefore executable.
 
 Phoebe~\cite{DBLP:journals/corr/abs-2006-04444} is a fault-injection framework that examines
 the system call stream of an application to determine which system calls fail
-naturally (during normal program execution). Based on this failure pattern
+naturally (during normal program execution). Based on this failure pattern,
 Phoebe generates fault-injection experiments designed to test the reliability of
 an application when a failure occurs. These experiments are meant to magnify the
 frequency of rarely occurring system call failures and to introduce them at
@@ -127,7 +99,7 @@ tested. Only single system call matching is done - there is no facility to creat
 more elaborate fault-injection tests that are triggered after a specific
 sequence of system calls are seen.
 
-Christakis, et al.~\cite{DBLP:conf/icse/ChristakisEG017} describe a domain-specific language and runtime to allow developers to intercept and modify a Windows applications’ dynamic link library function calls (which includes system calls). The domain-specific language provides a mechanism to identify which function call or, by using pattern matching, set of function calls, should be intercepted by the runtime. Once intercepted, code written in the domain-specific language (which, in part, is a subset of the C programming language) can be executed. This system allows one to test for and simulate application errors in a language agnostic manner as the runtime operates at the level of the application binary. Note that the domain-specific language is only meant to match and intercept single function calls and was not designed to only trigger a code injection upon matching a specific sequence of function calls in a call stream. 
+In~\cite{DBLP:conf/icse/ChristakisEG017}, Christakis et al. describe a domain-specific language and runtime to allow developers to intercept and modify a Windows applications’ dynamic link library function calls (which includes system calls). The domain-specific language provides a mechanism to identify which function call or, by using pattern matching, set of function calls, should be intercepted by the runtime. Once intercepted, code written in the domain-specific language (which, in part, is a subset of the C programming language) can be executed. This system allows one to test for and simulate application errors in a language agnostic manner as the runtime operates at the level of the application binary. Note that the domain-specific language is only meant to match and intercept single function calls and was not designed to only trigger a code injection upon matching a specific sequence of function calls in a call stream, as supported by CSLang. 
 
 \subsection{Event Stream Processing Languages and Algorithms}
 
@@ -145,7 +117,7 @@ section we look at work related to stream processing languages.
 Pattern matching
 over events streams is a paradigm
 wherein a stream of continuously arriving events are examined for 
-possible matches against a previously defined set of rules which, collectively, form at pattern.
+possible matches against a previously defined set of rules which, collectively, form a pattern.
 The matched events can then optionally be transformed into new events for additional pattern matching or output.
 Languages for pattern matching over event
 streams are significantly richer than languages for regular expression
@@ -156,12 +128,12 @@ annotation of incoming events - providing many benefits over the traditional
 stream-based text processing languages such as sed~\cite{Mcmahon1979sed} and
 awk~\cite{DBLP:journals/spe/AhoKW79}.
 
-Although CSlang is a stream processing language it does not
-require all of the features provided by many stream processing systems. Features
+Although CSlang is a stream processing language, it does not
+require all of the features provided by many other stream processing systems. Features
 such as combining multiple stream sources, out of order data retrieval, methods
 for handling data loss, time window based event aggregation, database
 integration, etc. are found in a number of modern stream processing
-systems~\cite{DBLP:journals/csur/DayarathnaP18}.   Rather CSlang seems to fit within the special case of
+systems~\cite{DBLP:journals/csur/DayarathnaP18}. Rather CSlang fits within the special case of
 stream processing known as complex event processing (CEP). CEP terminology refers
 to data items in input streams as raw events and to data items in output streams
 as composite (or derived) events. A CEP system uses patterns to inspect
@@ -169,11 +141,11 @@ sequences of raw events and then generates a composite event for each
 match~\cite{DBLP:journals/ibmrd/HirzelAGJKKMNSSW13}.
 
 Queries and transforms written for CEP systems are
-frequently compiled to a “systems” language (C, C++, etc.) to allow for fast
-processing of the stream. During the compilation process automata are typically
-built to recognize the patterns specified by the queries. Agrawal et
-al.~\cite{DBLP:conf/sigmod/AgrawalDGI08} describes how patterns written in the SASE+ stream
-processing language are converted to non-deterministic finite automata and
+frequently compiled to a low-level general purpose language (C, C++, etc.) to allow for fast
+processing of the stream. During the compilation process, automata are typically
+built to recognize the patterns specified by the queries. For instance, Agrawal et
+al.~\cite{DBLP:conf/sigmod/AgrawalDGI08} describe how patterns written in the SASE+ stream
+processing language are converted to non-deterministic finite automata, which are then
 optimized.
 
 MatchRegex~\cite{DBLP:conf/debs/Hirzel12} is a CEP engine for IBM’s Stream Processing
@@ -182,5 +154,10 @@ stream can be utilized in the regular expression-based pattern matching
 engine. MatchRegex supports regular expression operators such as “Kleene star”
 and “Kleene plus” over patterns consisting of predicates (boolean expressions).
 Standard regular expression semantics apply over these predicate-based patterns.
-The non-deterministic finite automata generated from these patterns are free of
-epsilon-transitions.
+%The non-deterministic finite automata generated from these patterns are free of
+%epsilon-transitions.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:
