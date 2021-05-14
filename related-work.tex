@@ -1,12 +1,12 @@
 \section{Related Work}
 \label{SEC:related-work}
 
-CSlang is a declarative domain-specific language designed to
+PORT is a declarative domain-specific language designed to
 assist developers in creating
 applications that need to pattern match and perform
-transformations on a (possibly infinite) stream of events.
-Applications
-of CSlang include
+transformations on a single stream of possibly infinite events.
+Potential applications
+of PORT could include
 processing streams of system calls, RPC invocations or
 web-browser events for the purpose of intrusion detection, fault-injection, or
 other program-level testing. In the following, we discuss
@@ -15,7 +15,7 @@ and event stream processing languages and algorithms.
 
 \subsection{System Call Stream Processing Applications}
 The
-initial motivation for the development of CSlang was to create a tool to help
+initial motivation for the development of PORT was to create a tool to help
 developers express match and transformation rules for system call patterns in
 CrashSimulator~\cite{DBLP:conf/issre/MooreCFW19}.
 
@@ -52,7 +52,7 @@ malicious. An application to be protected using this mechanism is first
 ``exercised'' on various inputs. This training phase is intended to expose the
 sequence of system calls found in valid uses of the application.
 Using a sliding
-window of fixed size, 
+window of fixed size,
 each witnessed pattern of contiguous system calls appearing in the system call stream is cataloged in a database. After the
 training phase, the application's system call stream
 is monitored and any detected
@@ -99,7 +99,7 @@ tested. Only single system call matching is done - there is no facility to creat
 more elaborate fault-injection tests that are triggered after a specific
 sequence of system calls are seen.
 
-In~\cite{DBLP:conf/icse/ChristakisEG017}, Christakis et al. describe a domain-specific language and runtime to allow developers to intercept and modify a Windows applications’ dynamic link library function calls (which includes system calls). The domain-specific language provides a mechanism to identify which function call or, by using pattern matching, set of function calls, should be intercepted by the runtime. Once intercepted, code written in the domain-specific language (which, in part, is a subset of the C programming language) can be executed. This system allows one to test for and simulate application errors in a language agnostic manner as the runtime operates at the level of the application binary. Note that the domain-specific language is only meant to match and intercept single function calls and was not designed to only trigger a code injection upon matching a specific sequence of function calls in a call stream, as supported by CSLang. 
+In~\cite{DBLP:conf/icse/ChristakisEG017}, Christakis et al. describe a domain-specific language and runtime to allow developers to intercept and modify a Windows applications’ dynamic link library function calls (which includes system calls). The domain-specific language provides a mechanism to identify which function call or, by using pattern matching, set of function calls, should be intercepted by the runtime. Once intercepted, code written in the domain-specific language (which, in part, is a subset of the C programming language) can be executed. This system allows one to test for and simulate application errors in a language agnostic manner as the runtime operates at the level of the application binary. Note that the domain-specific language is only meant to match and intercept single function calls and was not designed to only trigger a code injection upon matching a specific sequence of function calls in a call stream, as supported by CSLang.
 
 \subsection{Event Stream Processing Languages and Algorithms}
 
@@ -109,14 +109,14 @@ that consumes and/or
 produces
 a stream of events (messages or other form of application-specific data).
 A stream processing language is a domain-specific language
-designed for expressing streaming applications~\cite{DBLP:journals/sigmod/HirzelBBVSV18}. CSlang clearly
+designed for expressing streaming applications~\cite{DBLP:journals/sigmod/HirzelBBVSV18}. PORT clearly
 fits within the definition of a streaming processing language.
 Therefore, in this
 section we look at work related to stream processing languages.
 
 Pattern matching
 over events streams is a paradigm
-wherein a stream of continuously arriving events are examined for 
+wherein a stream of continuously arriving events are examined for
 possible matches against a previously defined set of rules which, collectively, form a pattern.
 The matched events can then optionally be transformed into new events for additional pattern matching or output.
 Languages for pattern matching over event
@@ -128,12 +128,12 @@ annotation of incoming events - providing many benefits over the traditional
 stream-based text processing languages such as sed~\cite{Mcmahon1979sed} and
 awk~\cite{DBLP:journals/spe/AhoKW79}.
 
-Although CSlang is a stream processing language, it does not
-require all of the features provided by many other stream processing systems. Features
+Although PORT is a stream processing language it does not
+require all of the features provided by many stream processing systems. Features
 such as combining multiple stream sources, out of order data retrieval, methods
 for handling data loss, time window based event aggregation, database
 integration, etc. are found in a number of modern stream processing
-systems~\cite{DBLP:journals/csur/DayarathnaP18}. Rather CSlang fits within the special case of
+systems~\cite{DBLP:journals/csur/DayarathnaP18}.   Rather PORT seems to fit within the special case of
 stream processing known as complex event processing (CEP). CEP terminology refers
 to data items in input streams as raw events and to data items in output streams
 as composite (or derived) events. A CEP system uses patterns to inspect

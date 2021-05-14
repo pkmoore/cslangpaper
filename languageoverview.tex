@@ -11,7 +11,7 @@
 \end{figure}
 
 The purpose
-of a CSlang program is to completely describe a mutator
+of a PORT program is to completely describe a mutator
 that both
 accepts a chosen stream if it contains a particular
 activity sequence and can produce a modified
@@ -25,7 +25,7 @@ the associated output of those states,
 and the transition
 relation that ties them all together.
 Simply enumerating every aspect of a mutator could be very verbose
-so we intentionally tailored CSlang's semantics to allow its users to
+so we intentionally tailored PORT's semantics to allow its users to
 describe complex configurations in a concise manner.
 In this Section we cover the design decisions we made
 to achieve this goal.
@@ -41,12 +41,12 @@ detailed look at important operators.
 
 \subsection{Processing and Event Streams}
 \label{sub:ProcessingEventStreams}
-CSlang was written to
+PORT was written to
 apply event processing
 techniques to application activity
 in order to catch bugs and drive further
 testing.
-To accomplish this, a CSlang program maps this activity onto an
+To accomplish this, a PORT program maps this activity onto an
 event stream
 made up of a chronological listing of the function calls, library
 calls, system calls, or other structured requests made by the program.
@@ -61,11 +61,11 @@ an identifier and a set of parameter value
 constraints.  For example, an unsuccessful {\tt close()} call could be
 found by looking for events with the identifier {\tt close} and a return
 value of -1.  This pairing of an identifier and a set of parameter
-constraints, known as a dataword, forms the primary mechanism in CSlang for
+constraints, known as a dataword, forms the primary mechanism in PORT for
 selecting specific events out of an activity stream.
 
 Building on this, we can use datawords to implement the method by which
-a CSlang program is able to
+a PORT program is able to
 identify a  pattern of activity.
 The general process, illustrated in Figure~\ref{fig:Processing}, goes like
 this.  A pattern is encoded as a list of datawords, and compared against
@@ -88,7 +88,7 @@ exhausted.
 %Datawords without an output clause are simply output without modification.
 %
 %In the following sections we discuss how these elements may be written as a
-%CSlang program and transformed into a working mutator.
+%PORT program and transformed into a working mutator.
 
 
 \subsection{Preamble and Body}
@@ -114,34 +114,34 @@ fstat({st: {dev: ->out2, stino: ->out2}});
 ##############################
 \end{lstlisting}
 \end{tabular}
-\caption{An example CSlang program with its preamble and body sections
+\caption{An example PORT program with its preamble and body sections
   labeled.}
 \label{lst:PreambleBody}
 \end{figure}
 
 
 
-A CSlang program can be divided into two sections: the preamble and the body.
+A PORT program can be divided into two sections: the preamble and the body.
 Figure~\ref{lst:PreambleBody} shows an example program with these sections
 labeled.
 The preamble defines the sorts of events
 expected
 to appear in an input event stream and the set of parameters
 under which future datawords will operate.  Specifying this information
-up-front configures a CSlang mutator to
+up-front configures a PORT mutator to
 automatically ignore extraneous information from the incoming stream.  This
 means that subsequent body statements only have to deal with events and
 parameters pertinent to the goal of the program.
 
-The body of a CSlang program consists of a list of datawords that
+The body of a PORT program consists of a list of datawords that
 are responsible for configuring the states and transitions
-that will be included in the mutator a CSlang program describes.
+that will be included in the mutator a PORT program describes.
 Each dataword (excluding usages of the NOT operator, discussed further
 in~\ref{subsub:NOT}) configures a single
 state and the rules that govern transitioning into it.
 In order for a mutator to transition into a new state
 the current event must ``match'' the requirements of the destination state.
-In CSlang, a match requires satisfying three rules:
+In PORT, a match requires satisfying three rules:
 
 \begin{itemize}
 \item{The event's identifier must match the destination state's identifier}
@@ -158,7 +158,7 @@ In CSlang, a match requires satisfying three rules:
 \subsection{Syntax and Semantics}
 \label{sub:SyntaxAndSemantics}
 
-Figure~\ref{lst:SyntaxGrammar} shows the grammar of CSlang's core language.
+Figure~\ref{lst:SyntaxGrammar} shows the grammar of PORT's core language.
 
 \begin{figure}[t]
 \centering
@@ -291,7 +291,7 @@ individually.
 \textit{id paramexp}
 
 The parameter expression offers an opportunity to examine and store
-parameter values from the current event.  CSlang supports two operators
+parameter values from the current event.  PORT supports two operators
 that may be applied to parameter expression members.  The match operator
 (!) allows for the rejection of otherwise matching events
 by enforcing a required value on a
@@ -320,7 +320,7 @@ original, unmodified event.
 \subsection{Dataword Operators}
 \label{sub:DatawordOperators}
 
-CSlang supports two operators that may be applied to a dataword's
+PORT supports two operators that may be applied to a dataword's
 parameters: Match and Store.  These operators are central components in
 the description of a mutator.  Each operator is associated with a dataword
 parameter and a register or literal value.
@@ -336,7 +336,7 @@ entry requirements to a state, or used in output expressions.
 \subsubsection{Match Operator (?)}
 
 The match operator, ``\textit{?}'',
-allows CSlang's user
+allows PORT's user
 to provide additional conditions
 that an event's parameter values must meet
 in order to match a dataword.

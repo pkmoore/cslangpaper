@@ -74,7 +74,7 @@ Moore et al. accomplish this manually
 by writing a script
 for each anomaly
 to process system call traces.
-CSlang allows us to describe
+PORT allows us to describe
 the pattern of interest
 and modifications
 to the system call recording
@@ -182,11 +182,11 @@ last year alone!
     close({retval: ->retval, filedesc: ?fd});
 
   \end{lstlisting}
-  \caption{A listing of a CSlang program.  This program finds situations
+  \caption{A listing of a PORT program.  This program finds situations
   where a program opens a file and closes it without reading from it.  In
   such instances, it modifies the return value close call to be -1,
   indicating failure.}
-  \label{fig:CSlangListing}
+  \label{fig:PORTListing}
 \end{figure}
 
 \begin{figure}
@@ -234,7 +234,7 @@ However, many patterns contain a dependency
 between activities
 across time,
 as shown in
-in Figure~\ref{fig:CSlangListing}.
+in Figure~\ref{fig:PORTListing}.
 The {\tt open()} call produces a file descriptor that a subsequent {\tt
 read()} call may match.
 Matching patterns with this sort of dependency is beyond the capability
@@ -270,7 +270,7 @@ our needs would require
 falling back on the fully-featured nature of a host language -- a situation
 we hoped to avoid.
 
-In the initial stages of CSlang's development we also
+In the initial stages of PORT's development we also
 evaluated several event processing tools to see if
 they could meet our needs.
 Specifically,
@@ -316,8 +316,8 @@ summary statistics over specified fields in the event stream.
 
 As a concrete demonstration of the differences between a CEP
 program we have included the code from two small programs, written in
-CSlang and OpenCEP, a CEP module for the Python programming language.
-Figure~\ref{fig:CSlangListing}
+PORT and OpenCEP, a CEP module for the Python programming language.
+Figure~\ref{fig:PORTListing}
 which shows a CSLang program that matches sequences wherein an
 application opens and closes a file without reading from it. When such a
 sequence is identified by the matching engine, the return code of the
@@ -325,7 +325,7 @@ sequence is identified by the matching engine, the return code of the
 The main work of this
 program is performed in just four lines of CSLang code.  Figure 2 contains
 an OpenCEP\cite{open_cep_website} pattern that implements an approximation
-of the same program as seen in Figure~\ref{fig:CSlangListing}.
+of the same program as seen in Figure~\ref{fig:PORTListing}.
 This program is only
 an approximation because the OpenCEP pattern does not modify the return
 value of the "close" call and forces the user to specify a time window
@@ -339,10 +339,10 @@ within which the pattern matching will take place.
 % focused on letting its users get a lot of work done
 % with a small amount of easily-readable code should be self-evident.
 
-% The second front involves CSlang's programming paradigm.
+% The second front involves PORT's programming paradigm.
 % While other event processing languages tend toward functional or
 % declarative programming,
-% CSlang programs more closely follow an imperative programming style.
+% PORT programs more closely follow an imperative programming style.
 % We came to this decision because studies
 % have shown that developers are more likely to be familiar and comfortable
 % with such a paradigm~\cite{XXXX}.  We believe this will make it easier for
