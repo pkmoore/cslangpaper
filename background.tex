@@ -156,12 +156,12 @@ last year alone!
 \begin{figure}
   \begin{lstlisting}
     event open {filename: String@0,
-                   filedesc: Numeric@ret};
+                   filedesc: Number@ret};
 
-    event read {filedesc: Numeric@0};
+    event read {filedesc: Number@0};
 
-    event close {filedesc: Numeric@0,
-                    retval: Numeric@ret};
+    event close {filedesc: Number@0,
+                    retval: Number@ret};
 
     # Register initialization.
     # Registers do not have to be initialized

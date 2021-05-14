@@ -284,8 +284,8 @@ quickly adapted to support new activity representations as required.
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-event update {up1: Numeric@0, up2: Numeric@1};
-event test {tp1: Numeric@0, tp2: String@1};
+event update {up1: Number@0, up2: Number@1};
+event test {tp1: Number@0, tp2: String@1};
 num <- 45;
 str <- "alpha";
 update({up1: !pone, up2: !ptwo});
@@ -465,16 +465,16 @@ web server as well as the total number of system calls in each trace.
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-event accept { accept fd: Numeric@ret} | { accept4 fd: Numeric@ret};
-event anyrecv { recvfrom fd: Numeric@0} |
-  { read fd: Numeric@0} |
-  { recv fd: Numeric@0};
+event accept { accept fd: Number@ret} | { accept4 fd: Number@ret};
+event anyrecv { recvfrom fd: Number@0} |
+  { read fd: Number@0} |
+  { recv fd: Number@0};
 
-event anysend {sendto fd: Numeric@0}
-  | { write fd: Numeric@0}
-  | { send fd: Numeric@0};
+event anysend {sendto fd: Number@0}
+  | { write fd: Number@0}
+  | { send fd: Number@0};
 
-event close {fd: Numeric@0};
+event close {fd: Number@0};
 
 accept({fd: !storefd});
 anyrecv({fd: ?storefd});

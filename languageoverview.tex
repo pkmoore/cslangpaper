@@ -100,7 +100,7 @@ exhausted.
 \begin{lstlisting}
 ########## Preamble ##########
 event statbuf {dev: String@0, stino: String@1, mode: String@2};
-event fstat {fd: Numeric@0, st: statbuf@1};
+event fstat {fd: Number@0, st: statbuf@1};
 ##############################
 
 ##########   Body   ##########
@@ -206,7 +206,7 @@ register on the mutator being described.
 If the register does not exist,
 it is created;
 otherwise its stored value is overwritten.
-Registers may contain Numeric or String values.  Register contents
+Registers may contain Number or String values.  Register contents
 may be used in subsequent statements to specify parameter values that must
 be present in order for an event to match or as values to be output.
 
@@ -220,7 +220,7 @@ be present in order for an event to match or as values to be output.
 \begin{tabular}{c}
 \begin{lstlisting}
 event statbuf {dev: String@0, stino: String@1, mode: String@2};
-event fstat {filedesc: Numeric@0, statstruct: statbuf@1};
+event fstat {filedesc: Number@0, statstruct: statbuf@1};
 \end{lstlisting}
 \end{tabular}
 \end{figure}
@@ -252,7 +252,7 @@ The first line in the above defines statstruct's layout.
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-event bothread {read filedesc: Numeric@0} | {recv filedesc: Numeric@0};
+event bothread {read filedesc: Number@0} | {recv filedesc: Number@0};
 \end{lstlisting}
 \end{tabular}
 \end{figure}
