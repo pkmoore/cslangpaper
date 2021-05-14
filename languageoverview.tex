@@ -99,9 +99,8 @@ exhausted.
 \begin{tabular}{c}
 \begin{lstlisting}
 ########## Preamble ##########
-event statbuf {dev: String@0, stino: String@1, mode: String@2};
+type statbuf {dev: String@0, stino: String@1, mode: String@2};
 event fstat {fd: Number@0, st: statbuf@1};
-##############################
 
 ##########   Body   ##########
 finddev <- "st_dev=makedev(0, 4)";
@@ -111,7 +110,6 @@ out2 <- "bar";
 fstat({st: {dev: ?finddev, stino: ?findino}});
 fstat({st: {dev: !finddev2, stino: !findino2}});
 fstat({st: {dev: ->out2, stino: ->out2}});
-##############################
 \end{lstlisting}
 \end{tabular}
 \caption{An example PORT program with its preamble and body sections
