@@ -268,11 +268,7 @@ our needs would require
 falling back on the fully-featured nature of a host language (e.g. Java) -- a situation
 we hoped to avoid.
 
-<<<<<<< HEAD
-In the initial stages of PORT's development we also
-=======
-In the initial stages of CSlang's development, we also
->>>>>>> 2e01b50 (background)
+In the initial stages of PORT's development, we also
 evaluated several event processing tools to see if
 they could meet our needs.
 Specifically,
@@ -318,7 +314,7 @@ summary statistics over specified fields in the event stream.
 
 To demonstrate these points concretely, we consider the example task of recognizing a system call sequence wherein an
 application opens and closes a file without reading from it, and then modifying the return value of the matched close system call to -1, indicating failure.
-We compare the PORT program implementing this task (Figure~\ref{fig:CSlangListing}) with a corresponding program written in OpenCEP~\cite{open_cep_website}, a CEP module for the Python programming language.
+We compare the PORT program implementing this task (Figure~\ref{fig:PORTListing}) with a corresponding program written in OpenCEP~\cite{open_cep_website}, a CEP module for the Python programming language.
 The PORT program encompasses just four lines of actual code (excluding the definitions of the relevant event patterns, which can be shared across all such tasks).
 Figure~\ref{fig:OpenCEPListing} shows an approximation of the PORT program in
 OpenCEP.
