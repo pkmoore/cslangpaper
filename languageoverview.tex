@@ -34,7 +34,7 @@ with small examples.
 Section~\ref{sub:DatawordOperators} takes a more
 detailed look at important operators.
 
-\subsection{Processing and Event Streams}
+\subsection{High-Level Overview}
 \label{sub:ProcessingEventStreams}
 PORT was written to
 apply event processing
@@ -47,11 +47,13 @@ a single library, system, or remote procedure call. It consists of
 a unique identifier (e.g. the name of the function being called) and a list of parameter values (e.g. the argument and return values of the called function).
 Parameter values are drawn from a set of basic data values such as strings and numbers as well as user-definable record types.
 
-The language allows the user to define a mapping of concrete events to abstract events by hiding parameter values that are irrelevant for the particular processing task at hand, and by grouping events that are semantically related but have different event identifiers together into a single abstract event. The actual description of the transducer then refers to these abstract events.
+The language allows the user to define a mapping of concrete events to abstract events by hiding parameter values that are irrelevant for the particular processing task at hand, and by grouping together events that are semantically related but have different event identifiers, into a single abstract event. The actual description of the transducer then refers to these abstract events.
 
-The transducer itself is described by a finite sequence of \emph{actions}. A state of the transducer keeps track of the next action to be executed, as well as a valuation of a finite number of \emph{registers} that hold data values. The registers of the transducers are implicitly defined by the actions. 
+The transducer itself is described by a finite sequence of \emph{actions}. A state of the transducer keeps track of the next action to be executed, as well as a valuation of a finite number of \emph{registers} that hold data values. These registers are implicitly defined by the actions. The execution of an action involves reading the next event from the input stream, which may update some of the data registers, and writing the next event in the output stream. The parameter values in the output event may be computed from the (updated) registers. This process is illustrated in
+Figure~\ref{fig:Processing}. We next describe the syntax and semantics of the language in detail.
 
-
+\iffalse
+Each action either processes a single event from the input stream, possibly additionally updating some registers of the transducer.
 
 This arrangement allows a user to find
 a specific category of events
@@ -151,7 +153,7 @@ In PORT, a match requires satisfying three rules:
   current event}
 \end{itemize}
 
-
+\fi
 
 
 \subsection{Syntax and Semantics}
@@ -162,17 +164,17 @@ Figure~\ref{lst:SyntaxGrammar} shows the grammar of PORT's core language.
 \begin{figure}[t]
 \centering
 \begin{align*}
-\mathsf{program} ::= {} & \mathsf{preamble} \; \mathsf{body}\\
-\mathsf{preamble} ::= {} & (\mathsf{typedef} \mid \mathsf{eventdef})^*\\
+\mathsf{program} ::= {} &  (\mathsf{typedef} \mid \mathsf{eventdef})^* \; \mathsf{action}^*\\
 \mathsf{typedef} ::= {} & \mathtt{type}\; \mathit{id} \texttt{\{}\mathit{id} \texttt{:}\, t\, \texttt{@}\, n \; (\texttt{,} \mathit{id}\texttt{:} t\,\texttt{@}\,n)^*\texttt{\}}\\
 \mathsf{eventdef} ::= {} & \mathtt{event}\; \mathit{id} \texttt{\{}\mathit{id}\texttt{:}\, t\,\texttt{@}\,n \; (\texttt{,} \mathit{id}\texttt{:}\, t\,\texttt{@}\,n)^*\texttt{\}}\\
-\mathsf{body} ::= {} & \mathsf{action}^*\\
-\mathsf{action} ::= {} & \mathsf{assignment} \mid \mathsf{event}\\
-\mathsf{assignment} ::= {} & \mathit{regid} \texttt{ <- } e\\
-\mathsf{event} ::= {} & \mathit{id}\,(p) \;\mathtt{with}\; b \texttt{ -> } \mathit{id}\,(e)\\
-p \in \mathsf{pexp} ::= {} & \texttt{\{} \mathit{id}\texttt{:}\, p \; (\texttt{,} \mathit{id}\texttt{:}\, p)^*\texttt{\}} \mid \texttt{?} \mathit{regid} \mid \texttt{!} \mathit{regid} \mid c \\
+%\mathsf{body} ::= {} & \mathsf{action}^*\\
+%\mathsf{action} ::= {} & \mathsf{assignment} \mid \mathsf{event}\\
+%\mathsf{assignment} ::= {} & \mathit{regid} \texttt{ <- } e\\
+\mathsf{action} ::= {} & \mathsf{pattern} \texttt{ -> } \mathit{id}\,(e) \mid \mathtt{not} \; \mathsf{pattern}\\
+\mathsf{pattern} ::= {} & \mathit{id}\,(p) \;\mathtt{with}\; b\\
+p \in \mathsf{pexp} ::= {} & \texttt{\{} \mathit{id}\texttt{:}\, p \; (\texttt{,} \mathit{id}\texttt{:}\, p)^*\texttt{\}} \mid \mathit{regid} \mid c \\
 e \in \mathsf{vexp} ::= {} & \mathit{regid} \mid c \mid e \,\texttt{+}\, e \mid e \,\texttt{-}\, e \mid \dots\\
-b \in \mathsf{bexp} ::= {} & \mathtt{true} \mid \mathtt{false} \mid e == e \mid \dots \mid p \;\mathtt{and}\; p \mid \dots\\
+b \in \mathsf{bexp} ::= {} & \mathtt{true} \mid \mathtt{false} \mid e == e \mid \ldots \mid p \;\mathtt{and}\; p \mid \dots\\
 t \in \mathsf{texp} ::= {} & \mathtt{String} \mid \mathtt{Number} \mid \mathit{id} \mid \dots
 \end{align*}
 \caption{Grammar of CSlang's core language.}
