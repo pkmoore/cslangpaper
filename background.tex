@@ -7,7 +7,7 @@
 % How SEA showed success using system calls
 
 The initial impetus for this work came from a review
-of earlier efforts by Moore et al.
+of earlier efforts by Moore et al.~\cite{DBLP:conf/issre/MooreCFW19}
 that lead to the creation of
 the Simulating Environmental Anomalies (SEA) technique.
 This effort centered on the key insight
@@ -31,11 +31,11 @@ modifying the results of these calls such that a desired anomaly
 was present,
 and then observing the application to see whether or not it
 responded correctly to the anomaly.
-Using this strategy, the authors were able to identify numerous bugs
-in major applications~\cite{DBLP:conf/issre/MooreCFW19}.
+Using this strategy, the authors were able to identify a number of bugs
+in major applications.
 
 As a concrete example of the above
-consider the ``Unusual Filetypes'' anomaly
+consider the ``Unusual File types'' anomaly
 discussed in the SEA paper's evaluation.
 This anomaly may be problematic
 when an application running under Linux
@@ -249,28 +249,30 @@ and be able to
 manipulate them for
 reuse in subsequent operations.
 
-One possibility is to describe a register automaton,
-though this model also has disqualifying limitations.
-Chief among these is that it does not allow for modified output to be
-produced during processing.
+One possibility is to deploy more expressive automata models such as register automata~\cite{DBLP:journals/tcs/KaminskiF94} or session automata~\cite{DBLP:journals/corr/BolligHLM14}. Though, these models are still too limited.
+In particular, they do not allow for modified output to be
+produced during processing of events.
 Our review of the work on the SEA technique has shown that the ability to
 {\textit modify} activity is central to forcing
 an application into situations where
 it can fail rather than only passively monitoring to see if it performs
 problematic sequences.
-This level of complexity is similar to what is offered by
-the feature-rich nature of several event processing
+These capabilities are offered by several feature-rich event processing
 languages and libraries.
 Unfortunately, we found that, while it was possible to modify and output
 incoming events with several of these languages,
 it is by no means a straightforward
 and ergonomic experience.
-In many cases producing an output stream that met
+In many cases, producing an output stream that met
 our needs would require
-falling back on the fully-featured nature of a host language -- a situation
+falling back on the fully-featured nature of a host language (e.g. Java) -- a situation
 we hoped to avoid.
 
+<<<<<<< HEAD
 In the initial stages of PORT's development we also
+=======
+In the initial stages of CSlang's development, we also
+>>>>>>> 2e01b50 (background)
 evaluated several event processing tools to see if
 they could meet our needs.
 Specifically,
@@ -308,30 +310,24 @@ of a
 program must be fluent in this host language.
 Finally,
 these languages include features and optimizations
-that would likely not be useful to the CSLang feature set.
+that would likely not be useful for our application domain.
 These include time-based event windows,
 merging multiple event streams,
 and the calculation of
 summary statistics over specified fields in the event stream.
 
-As a concrete demonstration of the differences between a CEP
-program we have included the code from two small programs, written in
-PORT and OpenCEP, a CEP module for the Python programming language.
-Figure~\ref{fig:PORTListing}
-which shows a CSLang program that matches sequences wherein an
-application opens and closes a file without reading from it. When such a
-sequence is identified by the matching engine, the return code of the
-"close" event is changed to -1, indicating failure.
-The main work of this
-program is performed in just four lines of CSLang code.  Figure 2 contains
-an OpenCEP\cite{open_cep_website} pattern that implements an approximation
-of the same program as seen in Figure~\ref{fig:PORTListing}.
+To demonstrate these points concretely, we consider the example task of recognizing a system call sequence wherein an
+application opens and closes a file without reading from it, and then modifying the return value of the matched close system call to -1, indicating failure.
+We compare the PORT program implementing this task (Figure~\ref{fig:CSlangListing}) with a corresponding program written in OpenCEP~\cite{open_cep_website}, a CEP module for the Python programming language.
+The PORT program encompasses just four lines of actual code (excluding the definitions of the relevant event patterns, which can be shared across all such tasks).
+Figure~\ref{fig:OpenCEPListing} shows an approximation of the PORT program in
+OpenCEP.
 This program is only
 an approximation because the OpenCEP pattern does not modify the return
 value of the "close" call and forces the user to specify a time window
 within which the pattern matching will take place.
 
-% A domain specific language like CSLang provides a more
+% A domain specific language like PORT provides a more
 % concise syntax that makes it easier for all individuals to read and
 % write relevant programs in.
 % In light of this, we believe the benefits of a
@@ -351,3 +347,8 @@ within which the pattern matching will take place.
 
 
 
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:
