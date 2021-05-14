@@ -13,28 +13,23 @@
 The purpose
 of a PORT program is to completely describe a mutator
 that both
-accepts a chosen stream if it contains a particular
+accepts a given event stream if it contains a particular
 activity sequence and can produce a modified
-output stream
+output event stream
 for application testing.
-Because a mutator is essentially a
+Such a mutator is essentially a
 transducer enhanced to operate over complex data structures
-rather than symbols in a string
-this description must cover all states,
-the associated output of those states,
-and the transition
-relation that ties them all together.
-Simply enumerating every aspect of a mutator could be very verbose
-so we intentionally tailored PORT's semantics to allow its users to
-describe complex configurations in a concise manner.
-In this Section we cover the design decisions we made
+rather than symbols in a string.
+The transducer consists of states and transitions that match and transform the input stream.
+We designed PORT to allow its users to
+describe complex transducers in a concise manner.
+In this section, we cover the design decisions we made
 to achieve this goal.
 Section~\ref{sub:ProcessingEventStreams} describes how executing a program works
 while
 in Sections~\ref{sub:PreambleAndBody}~and~\ref{sub:SyntaxAndSemantics},
 we discuss the
-language's syntax and semantics and illustrate the details
-of these properties
+language's syntax and semantics, and illustrate them
 with small examples.
 Section~\ref{sub:DatawordOperators} takes a more
 detailed look at important operators.
@@ -46,12 +41,18 @@ apply event processing
 techniques to application activity
 in order to catch bugs and drive further
 testing.
-To accomplish this, a PORT program maps this activity onto an
-event stream
-made up of a chronological listing of the function calls, library
-calls, system calls, or other structured requests made by the program.
-Within this stream each element consists of two pieces: a unique
-identifier and a set of parameters.
+To accomplish this, a PORT program maps this activity onto a
+stream of \emph{events}. An event represents a single interaction between the program and its environment, e.g.,
+a single library, system, or remote procedure call. It consists of
+a unique identifier (e.g. the name of the function being called) and a list of parameter values (e.g. the argument and return values of the called function).
+Parameter values are drawn from a set of basic data values such as strings and numbers as well as user-definable record types.
+
+The language allows the user to define a mapping of concrete events to abstract events by hiding parameter values that are irrelevant for the particular processing task at hand, and by grouping events that are semantically related but have different event identifiers together into a single abstract event. The actual description of the transducer then refers to these abstract events.
+
+The transducer itself is described by a finite sequence of \emph{actions}. A state of the transducer keeps track of the next action to be executed, as well as a valuation of a finite number of \emph{registers} that hold data values. The registers of the transducers are implicitly defined by the actions. 
+
+
+
 This arrangement allows a user to find
 a specific category of events
 in a stream
@@ -61,7 +62,7 @@ an identifier and a set of parameter value
 constraints.  For example, an unsuccessful {\tt close()} call could be
 found by looking for events with the identifier {\tt close} and a return
 value of -1.  This pairing of an identifier and a set of parameter
-constraints, known as a dataword, forms the primary mechanism in PORT for
+constraints, referred to as an \emph{event pattern}, forms the primary mechanism in PORT for
 selecting specific events out of an activity stream.
 
 Building on this, we can use datawords to implement the method by which
@@ -99,7 +100,7 @@ exhausted.
 \begin{tabular}{c}
 \begin{lstlisting}
 ########## Preamble ##########
-type statbuf {dev: String@0, stino: String@1, mode: String@2};
+type statbuf {dev: String@0, stino: String@1};
 event fstat {fd: Number@0, st: statbuf@1};
 
 ##########   Body   ##########
@@ -165,10 +166,10 @@ Figure~\ref{lst:SyntaxGrammar} shows the grammar of PORT's core language.
 \mathsf{preamble} ::= {} & (\mathsf{typedef} \mid \mathsf{eventdef})^*\\
 \mathsf{typedef} ::= {} & \mathtt{type}\; \mathit{id} \texttt{\{}\mathit{id} \texttt{:}\, t\, \texttt{@}\, n \; (\texttt{,} \mathit{id}\texttt{:} t\,\texttt{@}\,n)^*\texttt{\}}\\
 \mathsf{eventdef} ::= {} & \mathtt{event}\; \mathit{id} \texttt{\{}\mathit{id}\texttt{:}\, t\,\texttt{@}\,n \; (\texttt{,} \mathit{id}\texttt{:}\, t\,\texttt{@}\,n)^*\texttt{\}}\\
-\mathsf{body} ::= {} & \mathsf{statement}^*\\
-\mathsf{statement} ::= {} & \mathsf{assignment} \mid \mathsf{eventexp}\\
+\mathsf{body} ::= {} & \mathsf{action}^*\\
+\mathsf{action} ::= {} & \mathsf{assignment} \mid \mathsf{event}\\
 \mathsf{assignment} ::= {} & \mathit{regid} \texttt{ <- } e\\
-\mathsf{eventexp} ::= {} & \mathit{id}\,(p) \;\mathtt{with}\; b \texttt{ -> } \mathit{id}\,(e)\\
+\mathsf{event} ::= {} & \mathit{id}\,(p) \;\mathtt{with}\; b \texttt{ -> } \mathit{id}\,(e)\\
 p \in \mathsf{pexp} ::= {} & \texttt{\{} \mathit{id}\texttt{:}\, p \; (\texttt{,} \mathit{id}\texttt{:}\, p)^*\texttt{\}} \mid \texttt{?} \mathit{regid} \mid \texttt{!} \mathit{regid} \mid c \\
 e \in \mathsf{vexp} ::= {} & \mathit{regid} \mid c \mid e \,\texttt{+}\, e \mid e \,\texttt{-}\, e \mid \dots\\
 b \in \mathsf{bexp} ::= {} & \mathtt{true} \mid \mathtt{false} \mid e == e \mid \dots \mid p \;\mathtt{and}\; p \mid \dots\\
@@ -217,7 +218,7 @@ be present in order for an event to match or as values to be output.
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-event statbuf {dev: String@0, stino: String@1, mode: String@2};
+type statbuf {dev: String@0, stino: String@1, mode: String@2};
 event fstat {filedesc: Number@0, statstruct: statbuf@1};
 \end{lstlisting}
 \end{tabular}
