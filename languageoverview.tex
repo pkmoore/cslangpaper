@@ -164,14 +164,14 @@ Figure~\ref{lst:SyntaxGrammar} shows the grammar of PORT's core language.
 \begin{figure}[t]
 \centering
 \begin{align*}
-\mathsf{program} ::= {} &  (\mathsf{typedef} \mid \mathsf{eventdef})^* \; \mathsf{action}^*\\
-\mathsf{typedef} ::= {} & \mathtt{type}\; \mathit{id} \texttt{\{}\mathit{id} \texttt{:}\, t\, \texttt{@}\, n \; (\texttt{,} \mathit{id}\texttt{:} t\,\texttt{@}\,n)^*\texttt{\}}\\
-\mathsf{eventdef} ::= {} & \mathtt{event}\; \mathit{id} \texttt{\{}\mathit{id}\texttt{:}\, t\,\texttt{@}\,n \; (\texttt{,} \mathit{id}\texttt{:}\, t\,\texttt{@}\,n)^*\texttt{\}}\\
-%\mathsf{body} ::= {} & \mathsf{action}^*\\
-%\mathsf{action} ::= {} & \mathsf{assignment} \mid \mathsf{event}\\
-%\mathsf{assignment} ::= {} & \mathit{regid} \texttt{ <- } e\\
-\mathsf{action} ::= {} & \mathsf{pattern} \texttt{ -> } \mathit{id}\,(e) \mid \mathtt{not} \; \mathsf{pattern}\\
-\mathsf{pattern} ::= {} & \mathit{id}\,(p) \;\mathtt{with}\; b\\
+\mathit{program} ::= {} &  (\mathit{typedef} \mid \mathit{eventdef})^* \; \mathit{action}^*\\
+\mathit{typedef} ::= {} & \mathtt{type}\; \mathit{id} \texttt{\{}\mathit{id} \texttt{:}\, t\, \texttt{@}\, n \; (\texttt{,} \mathit{id}\texttt{:} t\,\texttt{@}\,n)^*\texttt{\}}\\
+\mathit{eventdef} ::= {} & \mathtt{event}\; \mathit{id} \texttt{\{}\mathit{id}\texttt{:}\, t\,\texttt{@}\,n \; (\texttt{,} \mathit{id}\texttt{:}\, t\,\texttt{@}\,n)^*\texttt{\}}\\
+%\mathit{body} ::= {} & \mathit{action}^*\\
+%\mathit{action} ::= {} & \mathit{assignment} \mid \mathit{event}\\
+%\mathit{assignment} ::= {} & \mathit{regid} \texttt{ <- } e\\
+\mathit{action} ::= {} & \mathit{pattern} \texttt{ -> } \mathit{id}\,(e) \mid \mathtt{not} \; \mathit{pattern}\\
+\mathit{pattern} ::= {} & \mathit{id}\,(p) \;\mathtt{with}\; b\\
 p \in \mathsf{pexp} ::= {} & \texttt{\{} \mathit{id}\texttt{:}\, p \; (\texttt{,} \mathit{id}\texttt{:}\, p)^*\texttt{\}} \mid \mathit{regid} \mid c \\
 e \in \mathsf{vexp} ::= {} & \mathit{regid} \mid c \mid e \,\texttt{+}\, e \mid e \,\texttt{-}\, e \mid \dots\\
 b \in \mathsf{bexp} ::= {} & \mathtt{true} \mid \mathtt{false} \mid e == e \mid \ldots \mid p \;\mathtt{and}\; p \mid \dots\\
