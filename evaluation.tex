@@ -80,7 +80,7 @@ or {\tt lstat()}
 and modify the call's result data structure such
 that its {\tt ST\_MODE} member will contain a value
 that indicates an unusual filetype.
-Table~\ref{tbl:ST_MODEValues}.  As can be seen in
+As can be seen in
 Figure~\ref{lst:UnusualFiletypePORT}, PORT's semantics mean such an
 operation can be captured with only a handful of lines of code.  In the
 figure
@@ -92,13 +92,13 @@ field.  Such output can then be used to modify the results of a running
 application's system calls in order to carry out the remaining steps of the
 SEA technique.
 
-PORT's advantages are made even more obvious when the PORT Unusual
-Filetype mutator is compared to a program that implements the same
-functionality in a general purpose programming language like Python.
-Figure~\ref{lst:UnusualFiletypePython} shows an excerpt from a 55 line
-Python program taken from the SEA paper's CrashSimulator that performs the
-same mutation described above.  Comparing this listing to
-Figure~\ref{lst:UnusualFiletypePORT} shows several key differences:
+For Moore et al.'s original work on SEA this mutator consisted of 55 lines
+of Python code.
+When we compared our PORT mutator to this original mutator
+several major advantages
+of writing a mutator using
+PORT rather than a general purpose programming language
+became apparent:
 
 \textit{Minimal boilerplate code:} The PORT program lacks the boilerplate
 code associated with
@@ -122,47 +122,6 @@ parameters.
 This is a far cry
 from the Python program which relies on manual, fragile string manipulation
 to achieve the same effect.
-
-
-\begin{figure}[H]
-\centering
-\begin{tabular}{c}
-\begin{lstlisting}[language=python]
-... 3 lines omitted ...
-class UnusualFiletypeMutator(GenericMutator):
-  def \_\_init\_\_(self, filetype='S\_IFREG', name=None, file\_descriptor=None):
-  ... 6 lines omitted ...
-
-  def mutate\_syscalls(self, syscalls):
-    index = self.\_find\_index(syscalls)
-    for i in range(len(syscalls[index].args)):
-      if 'st\_mode' in str(syscalls[index].args[i].value):
-        syscalls[index].args[i].value=re.sub(r'S\_IF(\w*)', self.filetype, syscalls[index].args[i].value)
-
-... 13 lines omitted ...
-
-  def identify\_lines(self, tm, que, thread\_condition):
-    while True:
-      ... 3 lines omitted ...
-      if syscall\_trace['syscall'].name.startswith('fstat'):
-        if self.file\_descriptor:
-          if self.file\_descriptor != syscall\_trace.args[0].value:
-            continue
-        self.opportunity\_identified(syscall\_trace, self.mutator\_name, que)
-      if syscall\_trace['syscall'].name.startswith('stat') or syscall\_trace['syscall'].name.startswith('lstat'):
-        if self.name:
-          if self.name != syscall\_trace.args[0].value:
-            continue
-        self.opportunity\_identified(syscall\_trace, self.mutator\_name, que)
-\end{lstlisting}
-\end{tabular}
-\caption{This is a Python module taken from SEA's CrashSimulator that
-  implements the ``Unusual Filetype'' anomaly.  This listing has been
-  shortened by removing CrashSimulator specific-code so that a fair
-  comparison can be drawn between it and the same mutator implemented in
-  PORT.}
-\label{lst:UnusualFiletypePython}
-\end{figure}
 
 \subsubsection{Supporting Cross-Disk Move Checkers}
 
@@ -192,10 +151,13 @@ checker which
 that ensures {\tt fstat} is used after a file is opened but
 before it is moved.  This pattern indicates that an application may be
 storing the {\tt inode} number of the file -- a step necessary to prevent a race
-condition where the file is replaced during the move process.  When
-we compare this checker to the Python version in
-Figure~\ref{lst:FileReplacedPython} many of the qualities we discussed
-above are apparent.  The PORT version is much more concise and its meaning is
+condition where the file is replaced during the move process.
+Comparing this checker to the
+to the original SEA checker,
+which consisted of 45 lines of Python,
+shows that many of the same deficiencies that effected the Unusual Filetype
+mutator above are present.
+The PORT version is much more concise and its meaning is
 less obscured by boilerplate and state management code that makes up the
 bulk of the Python version.
 
@@ -231,68 +193,6 @@ fstat({fildesc: ?fd});
 \end{tabular}
 \caption{File Replaced During Copy Checker implemented in PORT}
 \label{lst:FileReplacedPORT}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\begin{tabular}{c}
-\begin{lstlisting}
-class FileReplacedDuringCopyChecker:
-    def __init__(self, filename):
-        self.filename = filename
-        self.source_automaton = StatOpenFstatAutomaton(self.filename)
-    def transition(self, syscall_object):
-        self.source_automaton.transition(syscall_object)
-    def is_accepting(self):
-        return self.source_automaton.is_accepting()
-
-class StatOpenFstatAutomaton:
-    def __init__(self, filename):
-        self.filename = filename
-        self.fd_register = None
-        self.states = [{'id': 0,
-                        'comment': 'stat64/lstat64 not yet called on {}'
-                                   .format(self.filename),
-                        'accepting': False},
-                       {'id': 1,
-                        'comment': 'open not yet called on {}'
-                                   .format(self.filename),
-                        'accepting': False},
-                       {'id': 2,
-                        'comment': 'fstat64 not yet called on {}'
-                            .format(self.filename),
-                        'accepting': False},
-                       {'id': 3,
-                        'comment': 'expected calls have been made',
-                        'accepting': True}]
-        self.current_state = self.states[0]
-    def transition(self, syscall_object):
-        if self.current_state['id'] == 0:
-            if syscall_object.name == 'stat64' \
-                    or syscall_object.name == 'lstat64':
-                if self.filename in syscall_object.args[0].value:
-                    self.current_state = self.states[1]
-        elif self.current_state['id'] == 1:
-            if syscall_object.name == 'open':
-                if self.filename in syscall_object.args[0].value:
-                    self.fd_register = int(syscall_object.ret[0])
-                    self.current_state = self.states[2]
-        elif self.current_state['id'] == 2:
-            if syscall_object.name == 'fstat64':
-                if self.fd_register == int(syscall_object.args[0].value):
-                    self.current_state = self.states[3]
-        elif self.current_state['id'] == 3:
-            pass
-        else:
-            raise RuntimeError('StatOpenFstatAutomaton for {} tried to '
-                               'transition with an illegal current state'
-                               .format(self.filename))
-    def is_accepting(self):
-        return self.current_state['accepting']
-\end{lstlisting}
-\end{tabular}
-\caption{Python version of the File Replaced During copy checker}
-\label{lst:FileReplacedPython}
 \end{figure}
 
 \subsection{Extending PORT to Other Activity Representations}
