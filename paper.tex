@@ -9,12 +9,10 @@
 \usepackage{float}
 \usepackage[T1]{fontenc}
 
-%\usepackage{inconsolata} % For cleaner fonts in code listings
+\usepackage{inconsolata} % For cleaner fonts in code listings
 \usepackage{bm}
 \usepackage{bold-extra}
 
-% Format code
-\lstset{breaklines=true,basicstyle=\small\ttfamily,columns=fullflexible}
 
 %\usepackage{graphicx}
 %\usepackage[export]{adjustbox}
@@ -50,19 +48,24 @@
 
 \input{annotations}
 
+% Format code
+\lstdefinelanguage{PORT}{
+  keywords={event,type,with,and,not},
+  morecomment=[l][\color{green!60!black}]{\#}
+}
 \lstset{
+language=PORT,
+breaklines=true,
 backgroundcolor=\color{white},
-%%language=ML,
 numbers=left,
 xleftmargin=1.1em,
-numbersep=3pt,
+numbersep=5pt,
 %escapeinside={@}{@},
-numberstyle=\scriptsize\color{gray},
-basicstyle=\scriptsize\ttfamily,
+numberstyle=\tiny\color{gray},
+basicstyle=\small\ttfamily,
 columns=flexible,
 mathescape=true,
-morecomment=*[s][\color{green!60!black}]{(*}{*)},
-moredelim=**[is][\color{purple}]{|<}{>|},
+showspaces=false,
 }
 
 

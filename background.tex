@@ -154,14 +154,12 @@ last year alone!
 
 \subsection{Why a New Domain Specific Language?}
 \begin{figure}
-  \begin{lstlisting}
-    event open {filename: String@0,
-                   filedesc: Number@ret};
+  \begin{lstlisting}[gobble=4,xleftmargin=.8em]
+    event open {filename: String@0, filedesc: Number@ret};
     event read {filedesc: Number@0};
-    event close {filedesc: Number@0,
-                    retval: Number@ret};
-    open({filename: fn, filedesc: !fd});
-    NOT read({filedesc: ?fd});
+    event close {filedesc: Number@0, retval: Number@ret};
+    open({filename: fn, filedesc: fd});
+    not read({filedesc: ?fd});
     close({filedesc: ?fd});
   \end{lstlisting}
   \caption{A listing of a PORT program.  This program finds situations
@@ -170,7 +168,7 @@ last year alone!
 \end{figure}
 
 \begin{figure}
-  \begin{lstlisting}
+  \begin{lstlisting}[gobble=4]
     # Before Modification
     35388 open("example.txt", O_RDWR, 0) = 3
     35388 fstat(3, {...}) = 0

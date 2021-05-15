@@ -55,17 +55,14 @@ by providing a structured way to modify and output system call sequences.
 \begin{lstlisting}
 event statbuf {mode: String@2};
 event anystat {stat sb: statbuf@1}
-           | {lstat sb: statbuf@1}
-           | {fstat sb: statbuf@1};
-newmode <- "st\_mode=S\_IFBLK";
-stat({}) -> stat({sb: {mode: ->newmode}});
+        | {lstat sb: statbuf@1} | {fstat sb: statbuf@1};
+anystat({sb: {mode: ->"st\_mode=S\_IFBLK"}});
 \end{lstlisting}
 \end{tabular}
 \caption{This program identifies a stat, lstat, or fstat call and modifies
   the ST\_MODE member of its statbuf output parameter to contain the value
   "S\_IFBLK."  This indicates that the file being examined is a block device
-  rather than a regular file.  The value used in modifying ST\_MODE is
-  controlled by changing the value stored in the newmode register.}
+  rather than a regular file.}
 \label{lst:UnusualFiletypePORT}
 \end{figure}
 
@@ -130,7 +127,7 @@ to achieve the same effect.
 \begin{figure}[H]
 \centering
 \begin{tabular}{c}
-\begin{lstlisting}
+\begin{lstlisting}[language=python]
 ... 3 lines omitted ...
 class UnusualFiletypeMutator(GenericMutator):
   def \_\_init\_\_(self, filetype='S\_IFREG', name=None, file\_descriptor=None):
@@ -219,7 +216,7 @@ future.
 \begin{figure}[H]
 \centering
 \begin{tabular}{c}
-\begin{lstlisting}
+\begin{lstlisting}[language=c,showstringspaces=false]
 \\ This is absolutely a fake listing that will be changed out for a real
 \\ one!!  Preston -> Don't forget to do this!
 #include "stdio.h"
@@ -227,7 +224,7 @@ future.
 int main() {
     printf("Hello world!\n");
     return 0;
-};
+}
 \end{lstlisting}
 \end{tabular}
 \caption{One of the cross disk move checkers implemented in PORT}
@@ -238,7 +235,7 @@ int main() {
 \begin{figure}[H]
 \centering
 \begin{tabular}{c}
-\begin{lstlisting}
+\begin{lstlisting}[language=c,showstringspaces=false]
 \\ This is absolutely a fake listing that will be changed out for a real
 \\ one!!  Preston -> Don't forget to do this!
 #include "stdio.h"
@@ -246,7 +243,7 @@ int main() {
 int main() {
     printf("Hello world!\n");
     return 0;
-};
+}
 \end{lstlisting}
 \end{tabular}
 \caption{One of the cross disk move checkers implemented in Python}
@@ -286,13 +283,9 @@ quickly adapted to support new activity representations as required.
 \begin{lstlisting}
 event update {up1: Number@0, up2: Number@1};
 event test {tp1: Number@0, tp2: String@1};
-num <- 45;
-str <- "alpha";
-update({up1: !pone, up2: !ptwo});
-outone <- 999;
-outtwo <- 888;
-test({tp1: ?num, tp2: ?str});
-update({up1: ->outone, up2: ->outtwo});
+update({up1: pone, up2: ptwo});
+test({tp1: 45, tp2: "alpha"});
+update({up1: ->999, up2: ->888});
 \end{lstlisting}
 \end{tabular}
 \caption{This PORT program matches a pattern of JSONRPC calls to
@@ -346,19 +339,14 @@ in PORT as shown in Figure~\ref{lst:PORTOpenReg}.
 
 
 \begin{figure}[H]
-\centering
-\begin{tabular}{c}
-\begin{lstlisting}
- open {RegOpenKeyA ...}
-    | {RegOpenKeyW ...}
-    ... further varients omitted
-
+\begin{lstlisting}[gobble=2]
+  event open {RegOpenKeyA ...} | {RegOpenKeyW ...};
+    # ... further varients omitted
   event NtOpenKey {...};
 
   open({...});
   NtOpenKey({...});
 \end{lstlisting}
-\end{tabular}
   \caption{Abstract PORT program (with parameters
   omitted) that groups the Windows API calls responsible for opening or
   creating a Windows registry key into an open operation.  It also shows
@@ -386,14 +374,12 @@ stored in the ``regkey'' register.
 \begin{figure}[H]
 \centering
 \begin{tabular}{c}
-\begin{lstlisting}
-  variant open {RegOpenKeyA ...}
-          |    {RegOpenKeyW ...}
-     ... further variants omitted ...
+\begin{lstlisting}[gobble=2]
+  event open {RegOpenKeyA ...} | {RegOpenKeyW ...} | ...;
+    # further variants omitted
   event NtOpenKey {...};
-  variant set {RegSetValueExA ...}
-          |   {RegSetValueExW ...}
-     ... further variants omitted ...
+  event set {RegSetValueExA ...} | {RegSetValueExW ...}
+            | ...;  # further variants omitted
   event NtSetValueKey {...};
   event close {RegCloseKey ...};
   event NtClose {...};
@@ -506,3 +492,8 @@ A condition with varying disk
 speeds could be designed to confirm this suspicion.  As a whole, our
 results indicate that PORT's performance is not a limiting factor to its
 usage in real-world situations.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:
