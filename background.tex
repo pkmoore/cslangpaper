@@ -173,6 +173,19 @@ last year alone!
 
 \begin{figure}
   \begin{lstlisting}
+    35388 open("example.txt", O_RDWR, 0) = 3
+    35388 fstat(3, {...}) = 0
+    35388 getpid() = 34355
+    35388 write(3, "Hello World!\n", 13) = 13
+    35388 close(3) = 0
+  \end{lstlisting}
+  \caption{A strace listing of a program that opens, writes to, and closes
+  a file.}
+  \label{fig:StraceListing}
+\end{figure}
+
+\begin{figure}
+  \begin{lstlisting}
 pattern = Pattern(
   SeqOperator(
      PrimitiveEventStructure("OPEN", "a"),
