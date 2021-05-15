@@ -164,45 +164,48 @@ class UnusualFiletypeMutator(GenericMutator):
 \label{lst:UnusualFiletypePython}
 \end{figure}
 
-\subsubsection{Creating the Cross-Disk Move Checkers}
+\subsubsection{Supporting Cross-Disk Move Checkers}
 
-The second phase of this work involved the recreation of a set of
-``checkers'' that could examine an application as it moved a file from one
-disk to another and report whether or not the operation was carried
-out correctly.  These checkers took advantage of the fact that the Linux
+In the second phase of this work we wanted to see if PORT could be used to
+implement the ``checkers'' used in the SEA work to determine if an
+application could correctly move  a file from one disk to another.
+These checkers were necessary because the Linux
 {\tt rename()} system call does not support moving files from one disk to
-another.  This means applications have to perform this complex
-operation manually.  Earlier work on the SEA technique
-identified XX steps required to
+another leaving
+applications to perform this complex
+operation manually.
+Moore et al.
+identified the steps required to
 correctly perform such a move by examining the source code of the ``mv''
-command.  With this knowledge, they
-implemented a set of checkers to identify situations where one
-or more of these steps were not carried out correctly.
+command and
+to implement a set of checkers to identify situations where one
+or more of these procedures were not carried out correctly.
 When applied to real world applications,
 these checkers were able to identify bugs
 in many popular applications and libraries that offered file movement
 capabilities.
 
-Similar to the Unusual Filetype described in
-Section~\ref{subsub:UnusualFiletype},
-we first implemented the
-set of checkers in PORT.  Figure~\ref{lst:Cross-DiskMovePORT} shows one
-such checker that ensures {\tt fstat} is used after a file is opened but
+We evaluated each of the checkers and decided that the ``File Replaced
+During Copy'' checker was a good candidate.
+Figure~\ref{lst:FileReplacedPORT} shows our PORT implementation of this
+checker which
+that ensures {\tt fstat} is used after a file is opened but
 before it is moved.  This pattern indicates that an application may be
 storing the {\tt inode} number of the file -- a step necessary to prevent a race
 condition where the file is replaced during the move process.  When
 we compare this checker to the Python version in
-Figure~\ref{lst:Cross-DiskMovePython} many of the qualities we discussed
-above are apparent.  The PORT version is more concise and its meaning is
+Figure~\ref{lst:FileReplacedPython} many of the qualities we discussed
+above are apparent.  The PORT version is much more concise and its meaning is
 less obscured by boilerplate and state management code that makes up the
 bulk of the Python version.
 
-This exercise did expose one of PORT's shortcomings.
-The Python checker in Figure~\ref{lst:XattrsPython},
-which ensures an application
+This exercise did expose one of PORT's shortcomings.  Specifically,
+we found that PORT cannot currently implement the ``Extended File
+Attributes'' checker.
+This checker ensures that an application
 preserves all of a file's extended attributes and re-applies them the
 destination file after the move.
-The difficulty creting this checker
+The difficulty creating this checker
 in PORT was due to two factors.
 First, PORT does not support looping with a
 runtime-defined number of iterations.  This is necessary to capture all
@@ -216,38 +219,80 @@ future.
 \begin{figure}[H]
 \centering
 \begin{tabular}{c}
-\begin{lstlisting}[language=c,showstringspaces=false]
-\\ This is absolutely a fake listing that will be changed out for a real
-\\ one!!  Preston -> Don't forget to do this!
-#include "stdio.h"
+\begin{lstlisting}
+type fstat {filedesc: Numeric@0};
+type stat {filename: String@0};
+type open {filename: String@0, filedesc: Numeric@ret};
 
-int main() {
-    printf("Hello world!\n");
-    return 0;
-}
+stat({filename: !fn});
+open({filename: ?fn, filedesc: !fd});
+fstat({fildesc: ?fd});
 \end{lstlisting}
 \end{tabular}
-\caption{One of the cross disk move checkers implemented in PORT}
-\label{lst:Cross-DiskMovePORT}
+\caption{File Replaced During Copy Checker implemented in PORT}
+\label{lst:FileReplacedPORT}
 \end{figure}
-
 
 \begin{figure}[H]
 \centering
 \begin{tabular}{c}
-\begin{lstlisting}[language=c,showstringspaces=false]
-\\ This is absolutely a fake listing that will be changed out for a real
-\\ one!!  Preston -> Don't forget to do this!
-#include "stdio.h"
+\begin{lstlisting}
+class FileReplacedDuringCopyChecker:
+    def __init__(self, filename):
+        self.filename = filename
+        self.source_automaton = StatOpenFstatAutomaton(self.filename)
+    def transition(self, syscall_object):
+        self.source_automaton.transition(syscall_object)
+    def is_accepting(self):
+        return self.source_automaton.is_accepting()
 
-int main() {
-    printf("Hello world!\n");
-    return 0;
-}
+class StatOpenFstatAutomaton:
+    def __init__(self, filename):
+        self.filename = filename
+        self.fd_register = None
+        self.states = [{'id': 0,
+                        'comment': 'stat64/lstat64 not yet called on {}'
+                                   .format(self.filename),
+                        'accepting': False},
+                       {'id': 1,
+                        'comment': 'open not yet called on {}'
+                                   .format(self.filename),
+                        'accepting': False},
+                       {'id': 2,
+                        'comment': 'fstat64 not yet called on {}'
+                            .format(self.filename),
+                        'accepting': False},
+                       {'id': 3,
+                        'comment': 'expected calls have been made',
+                        'accepting': True}]
+        self.current_state = self.states[0]
+    def transition(self, syscall_object):
+        if self.current_state['id'] == 0:
+            if syscall_object.name == 'stat64' \
+                    or syscall_object.name == 'lstat64':
+                if self.filename in syscall_object.args[0].value:
+                    self.current_state = self.states[1]
+        elif self.current_state['id'] == 1:
+            if syscall_object.name == 'open':
+                if self.filename in syscall_object.args[0].value:
+                    self.fd_register = int(syscall_object.ret[0])
+                    self.current_state = self.states[2]
+        elif self.current_state['id'] == 2:
+            if syscall_object.name == 'fstat64':
+                if self.fd_register == int(syscall_object.args[0].value):
+                    self.current_state = self.states[3]
+        elif self.current_state['id'] == 3:
+            pass
+        else:
+            raise RuntimeError('StatOpenFstatAutomaton for {} tried to '
+                               'transition with an illegal current state'
+                               .format(self.filename))
+    def is_accepting(self):
+        return self.current_state['accepting']
 \end{lstlisting}
 \end{tabular}
-\caption{One of the cross disk move checkers implemented in Python}
-\label{lst:Cross-DiskMovePython}
+\caption{Python version of the File Replaced During copy checker}
+\label{lst:FileReplacedPython}
 \end{figure}
 
 \subsection{Extending PORT to Other Activity Representations}
