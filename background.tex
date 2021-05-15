@@ -160,7 +160,7 @@ last year alone!
     event read {filedesc: Number@0};
     event close {filedesc: Number@0,
                     retval: Number@ret};
-    open({filename: !fn, filedesc: !fd});
+    open({filename: fn, filedesc: !fd});
     NOT read({filedesc: ?fd});
     close({filedesc: ?fd});
   \end{lstlisting}
@@ -171,11 +171,19 @@ last year alone!
 
 \begin{figure}
   \begin{lstlisting}
+    # Before Modification
     35388 open("example.txt", O_RDWR, 0) = 3
     35388 fstat(3, {...}) = 0
     35388 getpid() = 34355
     35388 write(3, "Hello World!\n", 13) = 13
     35388 close(3) = 0
+
+    # After Modification
+    35388 open("example.txt", O_RDWR, 0) = 3
+    35388 fstat(3, {...}) = 0
+    35388 getpid() = 34355
+    35388 write(3, "Hello World!\n", 13) = 13
+    35388 close(3) = -1
   \end{lstlisting}
   \caption{A strace listing of a program that opens, writes to, and closes
   a file.}
@@ -305,26 +313,35 @@ merging multiple event streams,
 and the calculation of
 summary statistics over specified fields in the event stream.
 
-To demonstrate these points concretely, we consider the example task of recognizing a system call sequence wherein an
+
+To demonstrate these points concretely,
+we consider a program that recognizes a system call sequence wherein an
 application opens and closes a file
-without reading from it, and then modifying the return value of the matched close system call to -1, indicating failure.
-We compare the PORT program implementing this task (Figure~\ref{fig:PORTListing})
+without reading from it.
+Figure~\ref{fig:PORTListing} shows a PORT program that implements this
+task.  The first three statements in this program define the events (i.e.
+system calls) and parameters relevant to opening, reading from, and closing
+a file.  The final three statements describe the order in which the
+{\tt open()}, {\tt read()}, and {\tt close()} are expected.
+The {\tt read()} event is preceded by NOT indicating that a sequence
+should be rejected if this event is encountered at any point between the
+{\tt open()} and {\tt close()} events.
+We compare this program
 with a corresponding program written in OpenCEP~\cite{open_cep_website},
 a CEP module for the Python programming language.
-The PORT program encompasses just three lines of actual code
-(excluding the definitions of the relevant event patterns,
-which can be shared across all such tasks).
 Figure~\ref{fig:OpenCEPListing} shows the same program written in
 OpenCEP.
+The PORT program is both more concise with its main work being done in just
+three lines of code and more readable because it is not constrained by the
+requirements of a host programming language.
 PORT further differentiates itself from OpenCEP and similar languages by
 offering the ability to modify and output an event.
-For example,
-the program in Figure~\ref{fig:PORTListing} could be
-re-purposed to not only identify the appropriate pattern but also modify the
+That is, the program in Figure~\ref{fig:PORTListing} could be
+re-purposed to not only find the appropriate pattern but also modify the
 results of the {\tt close} call to simulate a failure.
 This would be achieved
 by editing line 8 of the program to contain an output
-clause as follows: {\tt close({filedesc: ?fd}) -> close({retval: -1});
+clause as follows: {\tt close({filedesc: ?fd}) -> close({retval: -1});}.
 
 % A domain specific language like PORT provides a more
 % concise syntax that makes it easier for all individuals to read and
