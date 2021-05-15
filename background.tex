@@ -157,30 +157,12 @@ last year alone!
   \begin{lstlisting}
     event open {filename: String@0,
                    filedesc: Number@ret};
-
     event read {filedesc: Number@0};
-
     event close {filedesc: Number@0,
                     retval: Number@ret};
-
-    # Register initialization.
-    # Registers do not have to be initialized
-    # before use
-    retval <- "-1";
-
-    # Match an open call, store the file name
-    # and returned file descriptors
-    # to the 'filename' and 'filedesc'
-    # registers respectively
     open({filename: !fn, filedesc: !fd});
-
     NOT read({filedesc: ?fd});
-
-    # Match a close call its the value
-    # in 'filedesc' as the file descriptor
-    # being closed
-    close({retval: ->retval, filedesc: ?fd});
-
+    close({retval: -> -1, filedesc: ?fd});
   \end{lstlisting}
   \caption{A listing of a PORT program.  This program finds situations
   where a program opens a file and closes it without reading from it.  In
