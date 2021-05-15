@@ -48,7 +48,7 @@ The actual description of the transducer then refers to these abstract events.
 
 The transducer itself is described by a finite sequence of \emph{actions}. A state of the transducer keeps track of the next action to be executed, as well as a valuation of a finite number of \emph{registers} that hold data values.
 These registers are implicitly defined by the actions.
-The execution of an action involves reading the next event from the input stream, which may update some of the data registers, and writing the next event in the output stream.
+The execution of an action involves reading the next event from the input stream, which may update some of the registers, and writing the next event in the output stream.
 The parameter values in the output event may be computed from the (updated) registers. This process is illustrated in Figure~\ref{fig:Processing}.
 We next describe the syntax and semantics of the language in more detail.
 
@@ -183,60 +183,94 @@ t \in \mathsf{texp} ::= {} & \mathtt{String} \mid \mathtt{Number} \mid \mathit{i
 \label{lst:SyntaxGrammar}
 \end{figure}
 
-\paragraph{Preamble.}
+\paragraph*{Preamble}
 
+An event definition describes a mapping of a concrete event in the input stream to an abstract event that can then be processed by actions. The abstract event consists of a name and a record of named fields that hold data values of interest. The event definition consists of the name of the defined abstract event, followed by a list of variants. Each variant defines the mapping of the parameter values of one concrete event to the record of the abstract event. As an example, consider the event definition:
 \begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2,columns=strict]
-  event bothread {read filedesc: Number@0}
-                    | {recv filedesc: Number@0};
+  event rd {read fdesc: Number@0}
+          | {recv fdesc: Number@0};
+\end{lstlisting}
+This definition maps the concrete events named \lstinline+read+ and \lstinline+recv+ to the abstract event \lstinline+rd+. The parameter values of the concrete events are abstracted to a record consisting of a single field \lstinline+fdesc+ that holds a value of type \lstinline+Number+. The notation \lstinline+fdesc: Number@0+ in each variant indicates that the value of \lstinline+fdesc+ is the 0th parameter of the corresponding concrete event. Note that all variants must map their parameters to the same record type.
+
+If an event definition defines an abstract event in terms of a single variant whose concrete event name coincides with the name of the abstract event, then the concrete event name can be omitted in the variant.
+
+Event definitions enable a PORT program to abstract from irrelevant parameter values in concrete events and map semantically-related concrete events to the same abstract event, even if the values tracked by the abstract event occur at different positions in the parameter lists of the concrete events. An event definition also provides the necessary information to map modifications of record fields in abstract events back to corresponding modifications of the underlying concrete events.
+
+The abstraction mechanism used for the parameter lists of concrete events also extends to parameter values themselves. For instance, the 1st parameter of an \lstinline+fstat+ system call is a status buffer that itself consists of a list of values. \emph{Type definitions} can be used to abstract such compound values into records. The following PORT code defines an abstract \lstinline+fstat+ event that tracks only the device identifier, inode number, and mode of the status buffer:
+\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
+  type SB {dev: String@0, ino: String@1, mode: String@2};
+  event fstat {fdesc: Number@0, sbuf: SB@1};
 \end{lstlisting}
 
-A variant definition allows several event definitions to be combined under
-a single identifier.  This identifier may then be used in a dataword
-statement to match any of the collected events.  This feature arose as a
-result of situations where one of several system calls could be used to
-perform the same operation (e.g. {\tt read()} and {\tt recv()}).  The
-concrete syntax necessary to achieve this pairing is shown in the example
-above where the variant ``bothread'' is defined such that it will match
-either a {\tt read()} or {\tt recv()} system call.
-
-
-\begin{figure}[H]
-\centering
-\begin{tabular}{c}
-\begin{lstlisting}
-type statbuf {dev: String@0, stino: String@1, mode: String@2};
-event fstat {filedesc: Number@0, statstruct: statbuf@1};
-\end{lstlisting}
-\end{tabular}
-\end{figure}
-
-An event definition statement describes an event that could appear in an input
-stream.  Each statement specifies an event ``variety'' and a list of
+\iffalse
+Each statement specifies an event ``variety'' and a list of
 parameters that should be accessible in later dataword statements.
 An event's variety will correspond
 with the system call name, RPC call name, or, in the case of other activity
 representations, a unique identifier that allows events of the same
 variety to be picked out of a stream.
 
-The second line in the above example shows an event
-definition for
-the {\tt fstat()} system call
-with two parameters:
-a numeric file descriptor, the system call's first parameter,
-and structure named statstruct
-which is the system call's second parameter.
-The first line in the above defines statstruct's layout.
+A variant definition allows several event definitions to be combined under
+a single identifier.  This identifier may then be used in a dataword
+statement to match any of the collected events.
+
+  This feature arose as a
+result of situations where one of several system calls could be used to
+perform the same operation (e.g. {\tt read()} and {\tt recv()}).  The
+concrete syntax necessary to achieve this pairing is shown in the example
+above where the variant ``bothread'' is defined such that it will match
+either a {\tt read()} or {\tt recv()} system call.
+\fi
 
 
 
+\paragraph*{Body}
+The actions in the body of PORT program describe how the input event stream is transformed to the output event stream. An individual input event is matched and transformed by an action of the form
+\[\mathit{id}_1(p) \;\mathtt{with}\; b \texttt{ -> } \mathit{id}_2\,(e)\texttt{;}\]
+This action matches the next (abstract) input event against the \emph{pattern} $\mathit{id}_1(p)$ subject to the constraint $b$. The action is triggered if the name of the matched event is $\mathit{id}_1$ and its record satisfies the constrains imposed by $p$ and $b$. The semantics of pattern matching is similar to that of pattern matching expressions commonly found in functional programming languages. In particular, a variable occurring in a pattern refers to a register of the transducer. If the pattern matches the event, then the register is assigned to the corresponding value. For example, consider the pattern:
+\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
+  fstat({fdesc: fd2, sbuf: {dev:rdev, stino: rino2}})
+\end{lstlisting}
+When matched against the event
+\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
+  fstat({fdesc: 4, sbuf: {dev:"st_dev=makedev(0, 4)",
+                             ino: 42, mode="S_IFCHR|0666"}})
+\end{lstlisting}
+the match would succeed and assign the value \lstinline+4+ to register \lstinline+fd2+, \lstinline+"st_dev=makedev(0, 4)"+ to register \lstinline+rdev+, and \lstinline+"S_IFCHR|0666"+ to register \lstinline+rino2+.
+
+The Boolean expression $b$ is evaluated after the initial match of $\mathit{id}_1(p)$ succeeds. If $b$ evaluates to \lstinline+true+ then the action takes effect. Otherwise, the match fails and the registers are reset to their original values before $\mathit{id}_1(p)$ was matched.
+
+When an action takes effect, the matched input event is consumed and an output event is appended to the output stream. This output event is described by $\mathit{id}_2\,(e)$ in the \emph{output clause} of the action. If $\mathit{id}_2=\mathit{id}_1$, then $e$ can be a \emph{partial} record expression, describing only those parts of the input record that should be modified by the action. Record fields that are not specified by $e$ are copied from the input event to the output event. If the record types of the input and output events differ, $e$ must describe the output record completely.
+
+For example, consider the action:
+\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
+  fstat({fdesc: rfd2, sbuf: {dev:rdev, ino: rino2}})
+    with rfd2 == rfd and rdev == "st_dev=makedev(0, 4)"
+    -> fstat({sbuf:{ino: rino}});
+\end{lstlisting}
+This action matches the \lstinline+fstat+ event given above, assuming the register \lstinline+rfd+ has value \lstinline+4+ before the match. Moreover, if the register \lstinline+rino+ has value \lstinline+43+ before the action is executed, then the action produces the output event:
+\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
+  fstat({fdesc: 4, sbuf: {dev:"st_dev=makedev(0, 4)",
+                             ino: 43, mode="S_IFCHR|0666"}})
+\end{lstlisting}
+
+We introduce syntactic short-hands that allow one to express common kinds of patterns more compactly. First, one often needs to express that the value of a matched record field is equal to the current value of a register. For instance, in the action above, the field \lstinline+fdesc+ of the matched \lstinline+fstat+ event must be equal to \lstinline+rfd+ for the match to succeed. This constraint can be expressed more succinctly by replacing \lstinline+rfd2+ with \lstinline+?rfd+ in the pattern of the action. This pattern ensures that the matched value is equal to \lstinline+rfd+ without changing the value of \lstinline+rfd+. The equality \lstinline+rsd2 == rsd+ can then be omitted from the \lstinline+with+ clause.
+
+Next, the \lstinline+with+ clause can also be omitted altogether from an action, in which case $b$ defaults to \lstinline+true+. Likewise, the output clause can be omitted, in which case the matched input event is simply copied to the output stream. Finally, if the intend of an action is to copy the input event, replacing only the value of a field and the action does not depend on the old value of that field, then the modified field value can be specified directly in the pattern using the notation \lstinline+->$e$+. Here, the expression $e$ determines the new value to be stored in the field.
+
+Using these syntactic short-hands, the action given above can be expressed more compactly as:
+\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
+  fstat({fdesc: ?rfd, sbuf: {dev:"st_dev=makedev(0, 4)",
+                                ino: ->rino}});
+\end{lstlisting}
 
 
+\paragraph*{Implicit repetition and negated patterns}
+In our design of PORT we have decided against the inclusion of the general repetition and choice constructs supported by general-purpose stream processing languages. This design decision greatly simplifies the transducer construction as we do not have to deal with elimination of epsilon transitions expressing nondeterministic choice. In order to support processing of unbounded input streams, the semantics of a PORT program is such that if the current event in the input stream is not matched by the current action, then the event is simply copied to the output stream and the transducer proceeds by attempting to match the next input event against the current action.
 
-\begin{quote}
-\centering
-\textbf{S: statementlist}
-\end{quote}
+Sometimes, it is necessary to constrain this implicit repetition mechanism by disallowing certain events to appear in the input stream before an event that is matched by the current action is encountered. This can be done by \emph{negated patterns} which take the form \lstinline+not id$(p)$ with $b$+. If an event that matches the pattern \lstinline+id$(p)$ with $b$+ is encountered before the next positive action in the program takes effect, then the transducer aborts. For instance, the program in Fig.~\ref{fig:PORTListing} uses a negated pattern to ensure that no \lstinline+read+ system call is executed on the opened file with file descriptor \lstinline+fd+ before the file is closed.
 
+\iffalse
 This production triggers the creation of a mutator with only a starting
 state.  This state is accepting in two situations:
 \begin{itemize}
@@ -246,6 +280,7 @@ state.  This state is accepting in two situations:
     which reject sequences they match}
 \end{itemize}
 In all other cases this is a rejecting state that produces no output.
+
 
 \begin{quote}
 \centering
@@ -268,16 +303,6 @@ be present in order for an event to match or as values to be output.
 \textbf{dataword: id paramexp predexp outputexp}
 \end{quote}
 
-\begin{figure}[H]
-\centering
-\begin{tabular}{c}
-\begin{lstlisting}
-fstat({statstruct: {dev: !finddev2, stino: !findino2}})
-with filedesc == 4 and statstruct.dev == "st_dev=makedev(0, 4)"
--> fstat({filedesc: ->fdout2});
-\end{lstlisting}
-\end{tabular}
-\end{figure}
 
 Dataword statements are responsible for adding new states to the
 mutator.  This means they must specify any register operations,
@@ -365,6 +390,7 @@ complex operation.
 
 
 
+\fi
 
 %%%% We need to talk about how we are different from other
 %%%% languages that are regular-expression like here
