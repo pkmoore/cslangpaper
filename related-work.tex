@@ -99,7 +99,14 @@ tested. Only single system call matching is done - there is no facility to creat
 more elaborate fault-injection tests that are triggered after a specific
 sequence of system calls are seen.
 
-In~\cite{DBLP:conf/icse/ChristakisEG017}, Christakis et al. describe a domain-specific language and runtime to allow developers to intercept and modify a Windows applications’ dynamic link library function calls (which includes system calls). The domain-specific language provides a mechanism to identify which function call or, by using pattern matching, set of function calls, should be intercepted by the runtime. Once intercepted, code written in the domain-specific language (which, in part, is a subset of the C programming language) can be executed. This system allows one to test for and simulate application errors in a language agnostic manner as the runtime operates at the level of the application binary. Note that the domain-specific language is only meant to match and intercept single function calls and was not designed to only trigger a code injection upon matching a specific sequence of function calls in a call stream, as supported by CSLang.
+In~\cite{DBLP:conf/icse/ChristakisEG017}, Christakis et al. describe a domain-specific language and runtime to allow developers to intercept and modify a Windows applications’ dynamic link library function calls (which includes system calls). The domain-specific language provides a mechanism to identify which function call or, by using pattern matching, set of function calls, should be intercepted by the runtime. Once intercepted, code written in the domain-specific language (which, in part, is a subset of the C programming language) can be executed. This system allows one to test for and simulate application errors in a language agnostic manner as the runtime operates at the level of the application binary. The domain-specific language is only meant to match and intercept single function calls and was not designed to trigger a code injection only when a specific sequence of function calls are matched.
+
+Intrusion detection via system calls is one area where we believe PORT might be useful.  
+The systems outlined above were built to solve one particular problem (intrusion detection via system calls) well and
+therefore lack the extensibility that we sought with the creation of PORT.
+For example, these systems were not designed to be easily retargeted
+to a different type of event stream or allow transformations on the event stream.
+
 
 \subsection{Event Stream Processing Languages and Algorithms}
 
@@ -118,7 +125,6 @@ Pattern matching
 over events streams is a paradigm
 wherein a stream of continuously arriving events are examined for
 possible matches against a previously defined set of rules which, collectively, form a pattern.
-The matched events can then optionally be transformed into new events for additional pattern matching or output.
 Languages for pattern matching over event
 streams are significantly richer than languages for regular expression
 matching~\cite{DBLP:conf/sigmod/AgrawalDGI08}.
@@ -154,8 +160,16 @@ stream can be utilized in the regular expression-based pattern matching
 engine. MatchRegex supports regular expression operators such as “Kleene star”
 and “Kleene plus” over patterns consisting of predicates (boolean expressions).
 Standard regular expression semantics apply over these predicate-based patterns.
-%The non-deterministic finite automata generated from these patterns are free of
-%epsilon-transitions.
+
+The CEP systems described in this subsection are capable 
+of recognizing the same stream patterns that PORT can. 
+However, these CEP systems do not incorporate the 
+stream transformation primitives required for the applications
+envisioned for PORT. Although CEP systems do allow for the
+generation of composite events from raw events these composite events
+are meant to be utilized solely for recognition of additional patterns. 
+It is the combination and interplay of pattern matching and transformation
+primitives that distinguishes PORT from CEP systems.   
 
 %%% Local Variables:
 %%% mode: latex
