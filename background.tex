@@ -162,12 +162,10 @@ last year alone!
                     retval: Number@ret};
     open({filename: !fn, filedesc: !fd});
     NOT read({filedesc: ?fd});
-    close({retval: -> -1, filedesc: ?fd});
+    close({filedesc: ?fd});
   \end{lstlisting}
   \caption{A listing of a PORT program.  This program finds situations
-  where a program opens a file and closes it without reading from it.  In
-  such instances, it modifies the return value close call to be -1,
-  indicating failure.}
+  where a program opens a file and closes it without reading from it.}
   \label{fig:PORTListing}
 \end{figure}
 
@@ -308,15 +306,25 @@ and the calculation of
 summary statistics over specified fields in the event stream.
 
 To demonstrate these points concretely, we consider the example task of recognizing a system call sequence wherein an
-application opens and closes a file without reading from it, and then modifying the return value of the matched close system call to -1, indicating failure.
-We compare the PORT program implementing this task (Figure~\ref{fig:PORTListing}) with a corresponding program written in OpenCEP~\cite{open_cep_website}, a CEP module for the Python programming language.
-The PORT program encompasses just four lines of actual code (excluding the definitions of the relevant event patterns, which can be shared across all such tasks).
-Figure~\ref{fig:OpenCEPListing} shows an approximation of the PORT program in
+application opens and closes a file
+without reading from it, and then modifying the return value of the matched close system call to -1, indicating failure.
+We compare the PORT program implementing this task (Figure~\ref{fig:PORTListing})
+with a corresponding program written in OpenCEP~\cite{open_cep_website},
+a CEP module for the Python programming language.
+The PORT program encompasses just three lines of actual code
+(excluding the definitions of the relevant event patterns,
+which can be shared across all such tasks).
+Figure~\ref{fig:OpenCEPListing} shows the same program written in
 OpenCEP.
-This program is only
-an approximation because the OpenCEP pattern does not modify the return
-value of the "close" call and forces the user to specify a time window
-within which the pattern matching will take place.
+PORT further differentiates itself from OpenCEP and similar languages by
+offering the ability to modify and output an event.
+For example,
+the program in Figure~\ref{fig:PORTListing} could be
+re-purposed to not only identify the appropriate pattern but also modify the
+results of the {\tt close} call to simulate a failure.
+This would be achieved
+by editing line 8 of the program to contain an output
+clause as follows: {\tt close({filedesc: ?fd}) -> close({retval: -1});
 
 % A domain specific language like PORT provides a more
 % concise syntax that makes it easier for all individuals to read and
