@@ -62,23 +62,19 @@ when exposed to an unexpected file type.
 Even if a {\tt stat} call is present,
 the application may not respond correctly.
 In this situation,
-SEA simulates
-the behavior
-of the application
-when exposed
-to an unusual file type
-by modifying the return value
+SEA would
+modify
+the return value
 of the {\tt stat} call,
 thereby simulating the anomalous environment.
 Moore et al. accomplish this manually
 by writing a script
 for each anomaly
 to process system call traces.
-PORT allows us to describe
+PORT makes it easier to describe
 the pattern of interest
-and modifications
-to the system call recording
-more easily.
+and required modifications
+to the system call recording.
 
 Our takeaway
 from reading this study
@@ -90,16 +86,17 @@ The work described in this paper
 is based on our own key insight that the best way to extract this
 valuable data
 is to treat application activity
-as a sequence of events
-so that proven event processing techniques
-may be employed to analyze them.
+as a sequence of events,
+thus allowing us to use
+proven event processing techniques
+to analyze them.
 Two realizations followed shortly after this
 insight.
 First was that, with the correct tools,
 SEA's success in identifying environmental bugs using system calls
 could be expanded
-to encompass other activity types
-like calls to library functions
+to encompass other activity types,
+such as calls to library functions
 and remote procedure calls.
 And, the second was the understanding that existing
 stream processing tools
@@ -206,7 +203,12 @@ AndCondition(EqCondition(
 timedelta(minutes=10))
   \end{lstlisting}
   \caption{
-    A listing of an OpenCEP pattern to match an event stream consisting of an OPEN event followed, later in the event stream, by a CLOSE event such that a no intervening READ event occurs on the FILE HANDLE specified in the corresponding OPEN and CLOSE events.
+    A listing of an OpenCEP pattern to match an event stream consisting of
+    an {\tt open} event followed later in the event stream by a {\tt close}
+    event such
+    that a no intervening {\tt read} event occurs
+    on the file descriptor specified in the corresponding {\tt open}
+    and {\tt close} events.
 }
   \label{fig:OpenCEPListing}
 \end{figure}
@@ -268,29 +270,29 @@ falling back on the fully-featured nature of a host language (e.g. Java) -- a si
 we hoped to avoid.
 
 In the initial stages of PORT's development, we also
-evaluated several event processing tools to see if
-they could meet our needs.
-Specifically,
-we focused on
-complex event processing (CEP) languages because they
+evaluated several event processing tools
+including
+complex event processing (CEP) languages that
 could
 provide some of the pattern and predicate matching primitives
 that we wished to
 incorporate.
 Unfortunately,
-none of those we examined fit our purposes,
-either because it could not support the features
-we required, or because they where too complex
+none of them fit our purposes,
+due to a lack of
+support for the features
+we required,
+or because they were too complex
 to meet our
-goal of producing a system
+goal of a system
 that would be easy to understand and use.
 Typically,
 programs for these complex event processing engines are
 written in the engine's build or host language,
 such as Java,
 Scala or
-Python,
-which generally brings with it a great deal of boilerplate code,
+Python.
+These languages generally bring with them a great deal of boilerplate code,
 that can obscure or confuse
 the program's meaning.
 Recent studies
@@ -313,7 +315,7 @@ summary statistics over specified fields in the event stream.
 
 
 To demonstrate these points concretely,
-we consider a program that recognizes a system call sequence wherein an
+we consider two programs that recognize a system call sequence wherein an
 application opens and closes a file
 without reading from it.
 Figure~\ref{fig:PORTListing} shows a PORT program that implements this

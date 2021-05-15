@@ -34,31 +34,21 @@ is accurately describing what activity is important
 and what to do when you find it.
 % This paper covers our efforts to make this process easier.
 
-In addressing this difficulty,
-we drew inspiration from two sources.
-The first is
-the great amount of literature
-supporting the use of event
-processing techniques over large streams of data, such as
-industrial control system sensor readings,
-transaction processing software,
-and networking monitoring systems.
-We argue that the techniques these tools use
-to identify problems in a manufacturing environment,
-patterns in network outages,
-or customer behavior,
-can be applied
-to large application activity streams to accurately
-and efficiently recognize target sequences.
-The second is a recent successful effort
-to identify bugs by monitoring
-and modifying an application's interactions with its environment.
-This work demonstrated that specific properties
-visible in the results of system calls
-made by a failing application
-could be captured and applied
-to the results of other applications
-to see how it would fare under the same circumstances.
+In addressing this difficulty, we drew inspiration from two sources. The
+first is a recent study that confirmed the value of monitoring and
+modifying an application’s interactions with its environment. That study,
+which introduced the SEA technique, demonstrated that specific properties
+visible in the results of system calls made by a failing application could
+be captured and simulated for testing against other applications.  The
+second was the great amount of literature supporting the use of event
+processing techniques over large streams of data, such as industrial
+control system sensor readings, transaction processing software, and
+networking monitoring systems. We posited that the techniques these tools
+use to identify problems in a manufacturing environment, patterns in
+network outages, or customer behavior, could be applied to large
+application activity streams to accurately and efficiently recognize target
+sequences.
+
 
 Building upon these successes,
 we introduce a tool
@@ -73,7 +63,7 @@ a new domain specific language
 created to describe these behaviors.
 These descriptions are then used
 to search a recording of an application's actions
-across a variety of ``activity representations'',
+across a variety of ``activity representations,''
 such as system calls,
 or remote procedure calls.
 This capability is useful
