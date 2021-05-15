@@ -182,9 +182,9 @@ future.
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
-type fstat {filedesc: Numeric@0};
-type stat {filename: String@0};
-type open {filename: String@0, filedesc: Numeric@ret};
+event fstat {filedesc: Numeric@0};
+event stat {filename: String@0};
+evnt open {filename: String@0, filedesc: Numeric@ret};
 
 stat({filename: !fn});
 open({filename: ?fn, filedesc: !fd});
@@ -260,15 +260,12 @@ For example, the work proposes grouping the API calls that may be used to
 open a Windows registry key as is shown in Figure~\ref{lst:DornhacklOpen}.
 
 \begin{figure}[H]
-\centering
-\begin{tabular}{c}
 \begin{lstlisting}
 OPEN => RegOpenKeyA NtOpenKey
   | RegOpenKeyW NtOpenKey
   | RegOpenKeyExA NtOpenKey
   | RegOpenKeyExW NtOpenKey
 \end{lstlisting}
-\end{tabular}
 \caption{Grouping of Windows API calls for opening or creating a Windows
   registry key into an OPEN operation as per Dornhackl et al.}
 \label{lst:DornhacklOpen}
@@ -395,22 +392,19 @@ web server as well as the total number of system calls in each trace.
 \begin{figure}[H]
 \centering
 \begin{tabular}{c}
-\begin{lstlisting}
-event accept { accept fd: Number@ret} | { accept4 fd: Number@ret};
-event anyrecv { recvfrom fd: Number@0} |
-  { read fd: Number@0} |
-  { recv fd: Number@0};
+\begin{lstlisting}[gobble=2]
+  event accept { accept fd: Number@ret}
+             | { accept4 fd: Number@ret};
+  event anyrecv { recvfrom fd: Number@0}
+    | { read fd: Number@0} | { recv fd: Number@0};
+  event anysend {sendto fd: Number@0}
+    | { write fd: Number@0} | { send fd: Number@0};
+  event close {fd: Number@0};
 
-event anysend {sendto fd: Number@0}
-  | { write fd: Number@0}
-  | { send fd: Number@0};
-
-event close {fd: Number@0};
-
-accept({fd: !storefd});
-anyrecv({fd: ?storefd});
-anysend({fd: ?storefd});
-close({fd: ?storefd});
+  accept({fd: storefd});
+  anyrecv({fd: ?storefd});
+  anysend({fd: ?storefd});
+  close({fd: ?storefd});
 \end{lstlisting}
 \end{tabular}
 \caption{This PORT program matches patterns where a server application
