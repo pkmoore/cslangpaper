@@ -1,15 +1,6 @@
 \section{Language Overview}
 \label{sec:Overview}
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[scale=.6]{images/processing}
-  \caption{A mutator individually processes each item in an input
-  sequence, updating it's internal state and producing output according
-  to the rules described in its program.}
-  \label{fig:Processing}
-\end{figure}
-
 The purpose
 of a PORT program is to completely describe a mutator
 that both
@@ -51,6 +42,16 @@ These registers are implicitly defined by the actions.
 The execution of an action involves reading the next event from the input stream, which may update some of the registers, and writing the next event in the output stream.
 The parameter values in the output event may be computed from the (updated) registers. This process is illustrated in Figure~\ref{fig:Processing}.
 We next describe the syntax and semantics of the language in more detail.
+
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[scale=.6]{images/processing}
+  \caption{A transducer individually processes each item in an input
+  sequence, updating its internal state and producing output according
+  to the rules described in its program.}
+  \label{fig:Processing}
+\end{figure}
 
 \iffalse
 Each action either processes a single event from the input stream, possibly additionally updating some registers of the transducer.

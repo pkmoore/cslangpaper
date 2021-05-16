@@ -148,14 +148,34 @@ user applications~\cite{westerndigitalsymlink} and crucial security
 programs~\cite{sudocopy} in the
 last year alone!
 
+\begin{figure}
+  \begin{lstlisting}[gobble=4]
+    # Before Modification
+    open("example.txt", O_RDWR, 0) = 3
+    fstat(3, {...}) = 0
+    getpid() = 34355
+    write(3, "Hello World!\n", 13) = 13
+    close(3) = 0
+
+    # After Modification
+    open("example.txt", O_RDWR, 0) = 3
+    fstat(3, {...}) = 0
+    getpid() = 34355
+    write(3, "Hello World!\n", 13) = 13
+    close(3) = -1
+  \end{lstlisting}
+  \caption{A system call trace of a program that opens, writes to, and closes
+  a file before and after modifying the return value of the \texttt{close()} call.}
+  \label{fig:StraceListing}
+\end{figure}
 
 \subsection{Why a New Domain Specific Language?}
 \begin{figure}
   \begin{lstlisting}[gobble=4,xleftmargin=.8em]
-    event open {filename: String@0, filedesc: Number@ret};
+    event open {filedesc: Number@ret};
     event read {filedesc: Number@0};
     event close {filedesc: Number@0, retval: Number@ret};
-    open({filename: fn, filedesc: fd});
+    open({filedesc: fd});
     not read({filedesc: ?fd});
     close({filedesc: ?fd});
   \end{lstlisting}
@@ -164,26 +184,7 @@ last year alone!
   \label{fig:PORTListing}
 \end{figure}
 
-\begin{figure}
-  \begin{lstlisting}[gobble=4]
-    # Before Modification
-    35388 open("example.txt", O_RDWR, 0) = 3
-    35388 fstat(3, {...}) = 0
-    35388 getpid() = 34355
-    35388 write(3, "Hello World!\n", 13) = 13
-    35388 close(3) = 0
 
-    # After Modification
-    35388 open("example.txt", O_RDWR, 0) = 3
-    35388 fstat(3, {...}) = 0
-    35388 getpid() = 34355
-    35388 write(3, "Hello World!\n", 13) = 13
-    35388 close(3) = -1
-  \end{lstlisting}
-  \caption{A strace listing of a program that opens, writes to, and closes
-  a file.}
-  \label{fig:StraceListing}
-\end{figure}
 
 \begin{figure}
   \begin{lstlisting}
@@ -234,8 +235,7 @@ structures rather than symbols in a string.
 However, many patterns contain a dependency
 between activities
 across time,
-as shown in
-in Figure~\ref{fig:PORTListing}.
+as shown in Figure~\ref{fig:StraceListing}.
 The {\tt open()} call produces a file descriptor that a subsequent {\tt
 read()} call may match.
 Matching patterns with this sort of dependency is beyond the capability
@@ -321,11 +321,9 @@ without reading from it.
 Figure~\ref{fig:PORTListing} shows a PORT program that implements this
 task.  The first three statements in this program define the events (i.e.
 system calls) and parameters relevant to opening, reading from, and closing
-a file.  The final three statements describe the order in which the
-{\tt open()}, {\tt read()}, and {\tt close()} are expected.
-The {\tt read()} event is preceded by NOT indicating that a sequence
-should be rejected if this event is encountered at any point between the
-{\tt open()} and {\tt close()} events.
+a file.  The final three statements express that the event stream
+should contain an \texttt{open()} call followed by a \texttt{close()} call on the same file descriptor, with no intermittent \texttt{read()} call.
+
 We compare this program
 with a corresponding program written in OpenCEP~\cite{open_cep_website},
 a CEP module for the Python programming language.
@@ -341,7 +339,11 @@ re-purposed to not only find the appropriate pattern but also modify the
 results of the {\tt close} call to simulate a failure.
 This would be achieved
 by editing line 8 of the program to contain an output
-clause as follows: {\tt close({filedesc: ?fd}) -> close({retval: -1});}.
+clause as follows:
+\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2,columns=strict]
+  close({filedesc: ?fd}) -> close({retval: -1});
+\end{lstlisting}
+If the modified PORT program is executed on the system call trace shown in the upper half of Fig.~\ref{fig:StraceListing}, it will produce the modified system call trace shown in the bottom half.
 
 % A domain specific language like PORT provides a more
 % concise syntax that makes it easier for all individuals to read and
