@@ -212,12 +212,13 @@ We tested our implementation by writing PORT programs that could modify
 activity streams similar to the examples presented in the JSONRPC
 2.0~\cite{jsonspec} and XMLRPC~\cite{xmlspec}
 specifications.  One such program is shown in
-listing~\ref{lst:JSONProgram}.  This program matches a pattern of ``test''
+Figure~\ref{lst:JSONProgram}.  This program matches a pattern of ``test''
 and ``update'' calls and, if the pattern is found, the final update call's
 parameters are replaced with the contents of two registers.
 
-JSONRPC support required handful of hours of effort and XMLRPC
-support, whose implementation we precisely timed, was completed in three
+Support for JSONRPC required a handful of hours of effort, and our
+XMLRPC implemention,
+which we precisely timed, was completed in three
 hours and thirty-two minutes.  Based on the ease and speed with which we
 ere able to complete these additions we are confident that PORT can be
 quickly adapted to support new activity representations as required.
