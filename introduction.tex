@@ -100,7 +100,7 @@ for more detailed testing
 where the modified output sequence is used
 to evaluate an application's response to a simulated scenario.
 
-We first evaluated the effectiveness of the above technique
+We first evaluate the effectiveness of the above technique
 by creating a prototype implementation of PORT
 and using it to
 reimplement the ``anomalies''
@@ -117,11 +117,11 @@ PORT can expand the use of the SEA technique,
 which has already been proven
 to be an effective bug detector,
 by facilitating its use
-on a wider variety of applications.
+on a wider variety of applications and activity formats.
 
 Next, we
 deterined how well PORT
-could be used on activity streams
+supports activity streams
 other than system calls.
 To do so,
 we exploited the ease with which
@@ -129,34 +129,37 @@ PORT can be augmented
 to consume new activity representations
 by adding support for two remote procedure call formats -- JSONRPC and XMLRPC.
 Taking advantage of these new activity representations,
-we wrote programs that could operate on activity sequences such as those
+we wrote programs that operate on activity sequences such as those
 used as examples in the formats respective specifications.
 This effort
 showed that PORT is both quick and easy to extend largely thanks to its
 use of a generic intermediate data format.
 
-Finally,
-in order to explore how PORT could be useful outside the software testing
-domain, we developed a plan
-for implementing the model Dornhackl et al.~\cite{Dornhackl2014} used for
-detecting malicious behavior in Windows applications.
-This plan details how PORT could be used to
-implement each of the components required by their technique.
+Finally, we demonstrate that PORT can also be used for applications other than software testing.
+Specifically, we sketch how a model used for
+detecting malicious behavior in Windows applications due to Dornhackl et al.~\cite{Dornhackl2014} can be implemented in PORT.
+%This plan details how PORT could be used to
+%implement each of the components required by their technique.
 
 
 The main contributions in this work can be summarized as follows:
 
 \begin{itemize}
 
-\item{We create a new language, {\em PORT},
-  which allows for concise, but expressive, descriptions of
-    application activity and the action to take should this activity arise}
+\item We present a domain specific language, {\em PORT},
+  which allows for concise descriptions of checkers that can recognize patterns in
+  an application's activity stream as well as transformers of such activity streams that can aid software testing.
 
-\item{We show how PORT can be used to make employing the SEA technique
-  more widely applicable by finding bugs in more types of software}
+\item We show how PORT can be used to make employing the SEA technique
+  more widely applicable by finding bugs in more types of software.
 
-\item{We illustrate the ease with which PORT can be extended by modifying
-  it to accept a variety of ``activity representations''}
+\item We illustrate the ease with which PORT can be extended by modifying
+  it to accept a variety of ``activity representations''.
 
 \end{itemize}
 
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:
