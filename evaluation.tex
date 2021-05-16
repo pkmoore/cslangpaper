@@ -192,30 +192,27 @@ fstat({fildesc: ?fd});
 
 \subsection{Extending PORT to Other Activity Representations}
 
-While the above results are encouraging, we wanted to ensure that PORT's
-usefulness was not limited to system call manipulation.
-A logical next step would be to test PORT's capabilities when working
-with a higher level, but similarly structured, activity representation.
-After some consideration we settled on JSONRPC and XMLRPC.  These formats
-were ideal because they are well defined, popular, and both have well
+Our second experiment evaluates PORT's usability beyond system call manipulation.
+A logical next step is to test PORT's capabilities when working
+with a higher level, but similarly structured, activity representation such as remote procedure calls.
+We chose the JSONRPC and XMLRPC APIs for this purpose as they are widely used and have well
 supported parsing libraries or modules.
 
 To evaluate PORT's ability to work with these representations we
-constructed transformer modules that could convert these formats into our
+construct transformer modules that convert these formats into our
 intermediate data format.
-We tested our implementation by writing PORT programs that could modify
+We test our implementation by writing PORT programs that modify
 activity streams similar to the examples presented in the JSONRPC
 2.0~\cite{jsonspec} and XMLRPC~\cite{xmlspec}
 specifications.  One such program is shown in
 Figure~\ref{lst:JSONProgram}.  This program matches a pattern of ``test''
 and ``update'' calls and, if the pattern is found, the final update call's
-parameters are replaced with the contents of two registers.
+parameters are replaced with the constants 999 and 888, respectively.
 
-Support for JSONRPC required a handful of hours of effort, and our
-XMLRPC implemention,
+Adding support for JSONRPC required a handful of hours of effort, and implementing the XMLRPC transformer,
 which we precisely timed, was completed in three
 hours and thirty-two minutes.  Based on the ease and speed with which we
-ere able to complete these additions we are confident that PORT can be
+were able to complete these new input stream formats, we are confident that PORT can be
 quickly adapted to support new activity representations as required.
 
 \begin{figure}[H]
@@ -232,30 +229,29 @@ update({up1: ->999, up2: ->888});
 \caption{This PORT program matches a pattern of JSONRPC calls to
   ``update'' and ``test.''  If the pattern is identified, the final call to
   update is modified so that its first two parameter values are replaced
-  with the values stored in the outone and outtwo registers.}
+  with new constant values.}
 \label{lst:JSONProgram}
 \end{figure}
 
 
 \subsection{Utilizing PORT's Flexibility}
-In addition to novel formats, we wanted to see if PORT could be used to
-represent proven-useful models from other work.  One candidate for this
-effort is the work on describing malicious behavior done by Dornhackl et
-al. in 2014~\cite{Dornhackl2014}.  This work improves upon static malicious
-behavior detection using signatures by creating formal models that can
-detect misbehavior in an application's dynamic activity.  This is done
-using two models: one that describes malicious activity in the form of a
-series of tasks and a second that maps these tasks onto the concrete
-Windows API calls required to carry out these tasks.
+We further evaluate PORT's ability to replicate useful models from other work.  For this experiment, we selected the work on describing and detecting malicious behavior in Windows
+applications done by Dornhackl et al.~\cite{Dornhackl2014}.  This work
+improves upon static malicious behavior detection using signatures by
+creating formal models that can detect misbehavior in an application's
+dynamic activity.  This is done using two models: one that describes
+malicious activity in the form of a series of tasks and a second that
+maps these tasks onto the concrete Windows API calls required to carry
+out these tasks.
 
-PORT is particularly well suited to implementing the second model.  This
+PORT is particularly well suited to implement the second model.  This
 requires a mechanism for first grouping a set of similar API calls
 into a single operation and then describing a malicious task in terms of
 these aggregate operations.  PORT supports the former using variants.
-For example, the work proposes grouping the API calls that may be used to
+For example, \cite{Dornhackl2014} proposes to group the API calls that may be used to
 open a Windows registry key as is shown in Figure~\ref{lst:DornhacklOpen}.
 
-\begin{figure}[H]
+\begin{figure}
 \begin{lstlisting}
 OPEN => RegOpenKeyA NtOpenKey
   | RegOpenKeyW NtOpenKey
@@ -267,16 +263,14 @@ OPEN => RegOpenKeyA NtOpenKey
 \label{lst:DornhacklOpen}
 \end{figure}
 
-
-In the above grammar, each symbol beginning with ``Reg'' represents a user
-API that opens or creates a registry key.  {\tt NtOpenKey} always follows
+Each symbol beginning with ``Reg'' in Figure~\ref{lst:DornhacklOpen} represents a user
+API call that opens or creates a registry key.  {\tt NtOpenKey} always follows
 each of these calls because it is the underlying ``native'' call that
 Windows makes to actually perform the operation.
 The grouping and execution semantics for this operation can be expressed
 in PORT as shown in Figure~\ref{lst:PORTOpenReg}.
 
-
-\begin{figure}[H]
+\begin{figure}
 \begin{lstlisting}[gobble=2]
   event open {RegOpenKeyA ...} | {RegOpenKeyW ...};
     # ... further varients omitted
@@ -288,28 +282,27 @@ in PORT as shown in Figure~\ref{lst:PORTOpenReg}.
   \caption{Abstract PORT program (with parameters
   omitted) that groups the Windows API calls responsible for opening or
   creating a Windows registry key into an open operation.  It also shows
-  how the requirement that NtOpenKey follow any of these calls can be
+  how the requirement that \lstinline+NtOpenKey+ follow any of these calls can be
   captured.}
 \label{lst:PORTOpenReg}
 \end{figure}
 
-Dornhackl et al. used this strategy to describe a pattern that, if
-detected, would indicate
-a Windows registry key was being installed
-that would cause some malicious action
-the next time the machine was restarted.  We can use PORT to group the
-Windows API calls into the same operations as the original work and
-construct a program that could perform this detection (assuming PORT were
-extended to support Windows).  Such a program appears in
-Figure~\ref{lst:PORTRegDetect}.  This program groups API calls into OPEN,
-SET, and CLOSE operations and searches for a pattern that
+Dornhackl et al. use this strategy to describe a pattern that, if
+detected, indicates that
+a Windows registry key has been installed
+that can cause some malicious action
+the next time the machine is restarted.  We can use PORT to group the
+Windows API calls to a single abstract event in a similar fashion and
+construct a program that performs this detection.
+% (assuming PORT were extended to support Windows).
+The corresponding program is shown in Figure~\ref{lst:PORTRegDetect}.  The program groups API calls into \lstinline+OPEN+, \lstinline+SET+, and \lstinline+CLOSE+ operations and searches for a pattern that
 indicates
 an application is
-setting an autostart key.  The PORT program is further able to express
-that the pattern must appear for a specific registry key using the value
-stored in the ``regkey'' register.
+setting an autostart key.  PORT can also express
+that the pattern must appear for a specific registry key.
+%using the value stored in the ``regkey'' register.
 
-\begin{figure}[H]
+\begin{figure}
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}[gobble=2]
@@ -334,43 +327,41 @@ stored in the ``regkey'' register.
   omitted) that detects situations where an application is maliciously
   installing an ``autostart'' Windows registry key.  It does so by
   implementing the pattern described by Dornhackl et al.  Unimportant
-  parameters are omitted and the number of API calls in each group has been
-  reduced in order to save space.}
+  parameters are omitted and some API call variants in each group have been
+  eluded.}
 \label{lst:PORTRegDetect}
 \end{figure}
 
 
 \subsection{PORT's Performance}
 
-It doesn't matter how useful a tool may be
-if it takes too long to complete its work.
-Though our implementation is
-only a prototype, we wanted to make sure that its performance was not
-overly slow.
-Our performance evaluation
-is focused on the time required
+%It doesn't matter how useful a tool may be
+%if it takes too long to complete its work.
+%Though our implementation is
+%only a prototype, we wanted to make sure that its performance was not
+%overly slow.
+Our final experiment evaluates the performance of our prototype implementation.
+The experiment is focused on the time required
 to identify specific
-patterns within real world system call traces.
-We recorded test traces
+patterns within real-world system call traces.
+We record test traces
 from two popular network applications -
 NCat,
 and
-Python's http.server.
-These
+Python's http server.
+These applications
 were chosen because they are widely used and
-offer increasing levels of complexity against which we can evaluate
+offer a sufficient level of complexity to evaluate
 PORT's effectiveness.
 
-Our test operated as follows.  The applications were configured to service
-a simple piece of content (a single string in the case of NCat) and were
+Our experimental setup is as follows.  The applications are configured to service
+a simple piece of content (a single string in the case of NCat) and there system call activity is 
 recorded using {\tt strace} while handling a request from a remote client.
-The strace
-recordings\footnote{Recordings were pre-processed to remove system calls
-related to executable loading and process creation} were then processed using the PORT program from
+The strace recordings are then processed using the PORT program shown in
 Figure~\ref{lst:RealWorldPerformance},  which
-identified the sequence of system calls that implement
-a server's request handling
-loop.  Table~\ref{tbl:RealWorldPerformance}
+identifies the sequence of system calls that implement
+a server's request handling loop\footnote{Recordings are pre-processed to remove system calls
+related to executable loading and process creation.}.  Table~\ref{tbl:RealWorldPerformance}
 shows the times in seconds required to perform this identification on each
 web server as well as the total number of system calls in each trace.
 
@@ -385,7 +376,7 @@ web server as well as the total number of system calls in each trace.
 \label{tbl:RealWorldPerformance}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}[gobble=2]
@@ -403,28 +394,28 @@ web server as well as the total number of system calls in each trace.
   close({fd: ?storefd});
 \end{lstlisting}
 \end{tabular}
-\caption{This PORT program matches patterns where a server application
+\caption{A PORT program that matches patterns where a server application
   accepts a connection, receives a request, sends a response, and closes
   the connection.  The program uses variants to handle cases where
   applications use different system calls to perform some common action
-  (e.g. receiving data from a socket)}
+  (e.g. receiving data from a socket).}
 \label{lst:RealWorldPerformance}
 \end{figure}
 
-The results in Table~\ref{tbl:RealWorldPerformance} show that, as expected,
+The results in Table~\ref{tbl:RealWorldPerformance} show that
 PORT's
 processing time increases in line with the total number of system calls
 present in a recording.  We anticipate that much of this processing cost is
-associated with setting up a Python execution environment and that a more
+associated with setting up the Python execution environment and that a more
 optimized implementation could improve performance gains in this area.
 Further,
 it is likely that PORT's performance is closely tied to
 disk throughput,
-and that advancing the mutator
+and that advancing the transducer
 as each system call is evaluated
 adds little additional overhead.
-A condition with varying disk
-speeds could be designed to confirm this suspicion.  As a whole, our
+%A condition with varying disk speeds could be designed to confirm this suspicion.
+As a whole, our
 results indicate that PORT's performance is not a limiting factor to its
 usage in real-world situations.
 
