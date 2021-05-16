@@ -119,8 +119,8 @@ to be an effective bug detector,
 by facilitating its use
 on a wider variety of applications.
 
-Next, we wanted to
-show that PORT
+Next, we
+deterined how well PORT
 could be used on activity streams
 other than system calls.
 To do so,
@@ -128,15 +128,21 @@ we exploited the ease with which
 PORT can be augmented
 to consume new activity representations
 by adding support for two remote procedure call formats -- JSONRPC and XMLRPC.
-These formats were chosen
-because they are popular,
-well supported, and
-used by many major applications.
 Taking advantage of these new activity representations,
 we wrote programs that could operate on activity sequences such as those
-used as examples in the formats respective specifications.  This effort
+used as examples in the formats respective specifications.
+This effort
 showed that PORT is both quick and easy to extend largely thanks to its
 use of a generic intermediate data format.
+
+Finally,
+in order to explore how PORT could be useful outside the software testing
+domain, we developed a plan
+for implementing the model Dornhackl et al.~\cite{Dornhackl2014} used for
+detecting malicious behavior in Windows applications.
+This plan details how PORT could be used to
+implement each of the components required by their technique.
+
 
 The main contributions in this work can be summarized as follows:
 
