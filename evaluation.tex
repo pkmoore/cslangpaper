@@ -1,23 +1,21 @@
 \section{Evaluation}
 \label{SEC:evaluation}
 
-With our prototype in hand we organized a set of
-evaluations that would let us know if the PORT would be effective
-in real world situations.
-We designed our tests to answer the following questions:
+With our prototype in hand, we designed a set of experiments to evaluate
+whether PORT is effective in real world situations.
+Specifically, we aim to answer the following questions:
 
 \begin{itemize}
 
     % Re-implementing CS anomalies
-  \item{Can PORT express the sorts of anomalies used by SEA to identify
-    bugs?}
+  \item{Can PORT express the anomalies used by SEA to identify bugs?}
 
     % Extending to support RPC formats
   \item{How easy is it to extend PORT to support activity representations
     other than system calls?}
 
     % Dornhackl et al. defining maliciousness
-  \item{What sorts of problems can be addressed by employing PORT on
+  \item{What problems can be addressed by employing PORT on
   non-system-call activity representations?}
 
     % Performance information
@@ -28,73 +26,71 @@ We designed our tests to answer the following questions:
 
 \subsection{Expressing SEA Anomalies}
 \label{sub:SEAAnomalies}
-Given that this work was motivated
+Given that this work is motivated
 in large part
 by the effectiveness of the SEA technique,
-our first test of PORT was using it to reproduce the anomalies described
-in the original paper.
-We wanted to ensure that
-the language we developed
-would be sufficiently powerful
+our first experiment aims to reproduce the anomalies described
+in~\cite{DBLP:conf/issre/MooreCFW19}.
+We want to ensure that
+the language is sufficiently expressive
 to describe the anomalies the
 SEA research team used to
 find bugs.
 Specifically,
-we set out to test PORT's ability to recreate
-the study's Unusual Filetype mutator,
-and its Cross-disk file move checkers, which were used to identify
-the bulk of
-the bugs that were found.
-Our hope was that by using PORT we could eliminate boiler plate code,
-save effort by handling common tasks automatically, and improve reliability
-by providing a structured way to modify and output system call sequences.
+we test PORT's ability to recreate
+the study's unusual file type mutator,
+and its cross-disk file move checkers, which were used to identify
+the bulk of the bugs that were found.
+% Our hope was that by using PORT we could eliminate boiler plate code,
+% save effort by handling common tasks automatically, and improve reliability
+% by providing a structured way to modify and output system call sequences.
 
-\begin{figure}[H]
-\centering
-\begin{tabular}{c}
-\begin{lstlisting}
-event statbuf {mode: String@2};
-event anystat {stat sb: statbuf@1}
-        | {lstat sb: statbuf@1} | {fstat sb: statbuf@1};
-anystat({sb: {mode: ->"st\_mode=S\_IFBLK"}});
-\end{lstlisting}
-\end{tabular}
-\caption{This program identifies a stat, lstat, or fstat call and modifies
-  the ST\_MODE member of its statbuf output parameter to contain the value
-  "S\_IFBLK."  This indicates that the file being examined is a block device
-  rather than a regular file.}
-\label{lst:UnusualFiletypePORT}
-\end{figure}
 
-\subsubsection{Creating the Unusual Filetype Mutator}
+
+\subsubsection{Creating the Unusual File type Mutator}
 \label{subsub:UnusualFiletype}
-For the first phase of this work,
-we used PORT to implement an ``Unusual Filetype''
+For the first part of this experiment,
+we used PORT to implement an ``unusual file type''
 mutator.
 This mutator, presented in
 Figure~\ref{lst:UnusualFiletypePORT},
-should take an input trace
+takes an input trace
 that contains a call to either {\tt stat()},
 {\tt fstat()},
 or {\tt lstat()}
-and modify the call's result data structure such
+and modifies the call's result data structure such
 that its {\tt ST\_MODE} member will contain a value
-that indicates an unusual filetype.
+that indicates an unusual file type.
 As can be seen in
-Figure~\ref{lst:UnusualFiletypePORT}, PORT's semantics mean such an
-operation can be captured with only a handful of lines of code.  In the
-figure
+Figure~\ref{lst:UnusualFiletypePORT}, this task can be expressed with only a few lines of PORT code.  In the figure,
 lines 1 through 4 define what {\tt stat()}, {\tt fstat()}, and {\tt
 lstat()} calls look like and which parameter contains the result buffer.
 Line 6 generates an accepting state that, when entered, produces an output
 system call with a modified value in the return structure's {\tt st\_mode}
-field.  Such output can then be used to modify the results of a running
+field.  The output can then be used to modify the results of a running
 application's system calls in order to carry out the remaining steps of the
 SEA technique.
 
-For Moore et al.'s original work on SEA this mutator consisted of 55 lines
+\begin{figure}
+\centering
+\begin{tabular}{c}
+\begin{lstlisting}
+event Statbuf {mode: String@2};
+event anystat {stat sb: Statbuf@1}
+        | {lstat sb: Statbuf@1} | {fstat sb: Statbuf@1};
+anystat({sb: {mode: ->"st\_mode=S\_IFBLK"}});
+\end{lstlisting}
+\end{tabular}
+\caption{This program identifies a \texttt{stat}, \texttt{lstat}, or \texttt{fstat} call and modifies
+  the \lstinline+ST\_MODE+ member of its \lstinline+statbuf+ output parameter to contain the value
+  \lstinline+"S\_IFBLK"+. This indicates that the file being examined is a block device
+  rather than a regular file.}
+\label{lst:UnusualFiletypePORT}
+\end{figure}
+
+The original implementation of this mutator in~\cite{DBLP:conf/issre/MooreCFW19} consisted of 55 lines
 of Python code.
-When we compared our PORT mutator to this original mutator
+When we compared our PORT code to the original mutator,
 several major advantages
 of writing a mutator using
 PORT rather than a general purpose programming language
@@ -104,41 +100,40 @@ became apparent:
 code associated with
 reading an input trace, managing mutator state, and producing output.
 This is possible because PORT's capabilities are narrowly defined to
-only describe the states and operations of a mutator.  This means these
-functions can be generically implemented within PORT's core eliminating
+only describe the states and operations of a transducer.  This means these
+functions can be generically implemented within PORT's core, eliminating
 the need for users to do so manually.
 
 \textit{No code required to filter out uninteresting calls:}
-PORT's user does
-not need to write any code to exclude system
+In PORT, there is no
+need to write any code to exclude system
 calls outside of the desired set.  Each statement defines a new state with
 incoming and outgoing transitions configured such that any system calls not
 dealt with in the PORT program are ignored.
 
 \textit{Easy to modify call contents:}  PORT's operators make it
-trivial to change components of a system call
-and produce output without having to regenerate the remainder of its
+easy to change components of a system call
+and produce output without having to manually reassemble the remainder of its
 parameters.
 This is a far cry
-from the Python program which relies on manual, fragile string manipulation
+from the Python program, which relies on manual and fragile string manipulation
 to achieve the same effect.
 
 \subsubsection{Supporting Cross-Disk Move Checkers}
 
-In the second phase of this work we wanted to see if PORT could be used to
+In the second part of this experiment we test whether PORT can be used to
 implement the ``checkers'' used in the SEA work to determine if an
-application could correctly move  a file from one disk to another.
-These checkers were necessary because the Linux
+application can correctly move a file from one disk to another.
+This task is a common source of bugs in Linux applications as the
+Linux
 {\tt rename()} system call does not support moving files from one disk to
-another leaving
+another, leaving
 applications to perform this complex
-operation manually.
-Moore et al.
-identified the steps required to
+operation themselves.
+Moore et al. identified the steps required to
 correctly perform such a move by examining the source code of the ``mv''
-command and
-to implement a set of checkers to identify situations where one
-or more of these procedures were not carried out correctly.
+command and implemented a set of checkers to identify situations where one
+of these steps is not carried out correctly by an application.
 When applied to real world applications,
 these checkers were able to identify bugs
 in many popular applications and libraries that offered file movement
@@ -147,15 +142,15 @@ capabilities.
 We evaluated each of the checkers and decided that the ``File Replaced
 During Copy'' checker was a good candidate.
 Figure~\ref{lst:FileReplacedPORT} shows our PORT implementation of this
-checker which
-that ensures {\tt fstat} is used after a file is opened but
+checker, which
+ensures that {\tt fstat} is used after a file is opened but
 before it is moved.  This pattern indicates that an application may be
 storing the {\tt inode} number of the file -- a step necessary to prevent a race
 condition where the file is replaced during the move process.
 Comparing this checker to the
-to the original SEA checker,
+original SEA checker,
 which consisted of 45 lines of Python,
-shows that many of the same deficiencies that effected the Unusual Filetype
+shows that many of the same deficiencies that effected the unusual file type
 mutator above are present.
 The PORT version is much more concise and its meaning is
 less obscured by boilerplate and state management code that makes up the
@@ -178,7 +173,7 @@ corresponding call to {\tt setxattr()}.
 We are evaluating these deficiencies and plan to address them in the
 future.
 
-\begin{figure}[H]
+\begin{figure}
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
@@ -186,12 +181,12 @@ event fstat {filedesc: Numeric@0};
 event stat {filename: String@0};
 evnt open {filename: String@0, filedesc: Numeric@ret};
 
-stat({filename: !fn});
-open({filename: ?fn, filedesc: !fd});
+stat({filename: fn});
+open({filename: ?fn, filedesc: fd});
 fstat({fildesc: ?fd});
 \end{lstlisting}
 \end{tabular}
-\caption{File Replaced During Copy Checker implemented in PORT}
+\caption{PORT program for checking whether an application can detect whether a file was replaced during copying.}
 \label{lst:FileReplacedPORT}
 \end{figure}
 
