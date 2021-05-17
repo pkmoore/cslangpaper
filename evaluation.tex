@@ -139,11 +139,11 @@ these checkers were able to identify bugs
 in many popular applications and libraries that offered file movement
 capabilities.
 
-We evaluated each of the checkers and decided that the ``File Replaced
-During Copy'' checker was a good candidate.
-Figure~\ref{lst:FileReplacedPORT} shows our PORT implementation of this
-checker, which
-ensures that {\tt fstat} is used after a file is opened but
+We evaluated each of the four checkers listed in Moore et al.'s work and
+determined that PORT could be used to implement three of them.
+Figure~\ref{lst:FileReplacedPORT} shows our PORT implementation of
+the ``File Replaced During Copy'' checker
+that ensures {\tt fstat} is used after a file is opened but
 before it is moved.  This pattern indicates that an application may be
 storing the {\tt inode} number of the file -- a step necessary to prevent a race
 condition where the file is replaced during the move process.
@@ -235,7 +235,10 @@ update({up1: ->999, up2: ->888});
 
 
 \subsection{Utilizing PORT's Flexibility}
-We further evaluate PORT's ability to replicate useful models from other work.  For this experiment, we selected the work on describing and detecting malicious behavior in Windows
+We further evaluate PORT's ability to replicate useful strategies
+from other work.
+For this experiment, we selected the work on
+describing and detecting malicious behavior in Windows
 applications done by Dornhackl et al.~\cite{Dornhackl2014}.  This work
 improves upon static malicious behavior detection using signatures by
 creating formal models that can detect misbehavior in an application's
@@ -355,7 +358,7 @@ offer a sufficient level of complexity to evaluate
 PORT's effectiveness.
 
 Our experimental setup is as follows.  The applications are configured to service
-a simple piece of content (a single string in the case of NCat) and there system call activity is 
+a simple piece of content (a single string in the case of NCat) and there system call activity is
 recorded using {\tt strace} while handling a request from a remote client.
 The strace recordings are then processed using the PORT program shown in
 Figure~\ref{lst:RealWorldPerformance},  which
@@ -372,7 +375,7 @@ web server as well as the total number of system calls in each trace.
   http.server   & 0.104 Sec.   & 297   \\
   NCat          & 0.092 Sec.   & 43      \\
 \end{tabular}
-\caption{Time in seconds to process the listed number of events of each format.}
+\caption{Time in seconds to process the listed number of events.}
 \label{tbl:RealWorldPerformance}
 \end{figure}
 
@@ -415,9 +418,6 @@ and that advancing the transducer
 as each system call is evaluated
 adds little additional overhead.
 %A condition with varying disk speeds could be designed to confirm this suspicion.
-As a whole, our
-results indicate that PORT's performance is not a limiting factor to its
-usage in real-world situations.
 
 %%% Local Variables:
 %%% mode: latex
