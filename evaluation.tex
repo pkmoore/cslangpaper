@@ -241,13 +241,12 @@ For this experiment, we selected the work on
 describing and detecting malicious behavior in Windows
 applications done by Dornhackl et al.~\cite{Dornhackl2014}.  This work
 improves upon static malicious behavior detection using signatures by
-creating formal models that can detect misbehavior in an application's
-dynamic activity.  This is done using two models: one that describes
-malicious activity in the form of a series of tasks and a second that
-maps these tasks onto the concrete Windows API calls required to carry
-out these tasks.
-
-PORT is particularly well suited to implement the second model.  This
+creating formal descriptions of misbehavior in an application's
+dynamic activity.  This is done by first describing a malicious goal
+in terms of the tasks required to implement it and then
+mapping these tasks onto
+the concrete Windows API calls required to carry them out.
+Realizing this strategy
 requires a mechanism for first grouping a set of similar API calls
 into a single operation and then describing a malicious task in terms of
 these aggregate operations.  PORT supports the former using variants.
