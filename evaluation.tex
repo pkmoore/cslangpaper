@@ -179,7 +179,7 @@ future.
 \begin{lstlisting}
 event fstat {filedesc: Numeric@0};
 event stat {filename: String@0};
-evnt open {filename: String@0, filedesc: Numeric@ret};
+event open {filename: String@0, filedesc: Numeric@ret};
 
 stat({filename: fn});
 open({filename: ?fn, filedesc: fd});
@@ -275,7 +275,7 @@ in PORT as shown in Figure~\ref{lst:PORTOpenReg}.
 \begin{figure}
 \begin{lstlisting}[gobble=2]
   event open {RegOpenKeyA ...} | {RegOpenKeyW ...};
-    # ... further varients omitted
+    # ... further variants omitted
   event NtOpenKey {...};
 
   open({...});
