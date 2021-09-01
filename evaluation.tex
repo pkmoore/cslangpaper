@@ -163,15 +163,13 @@ This checker ensures that an application
 preserves all of a file's extended attributes and re-applies them the
 destination file after the move.
 The difficulty creating this checker
-in PORT was due to two factors.
-First, PORT does not support looping with a
-runtime-defined number of iterations.  This is necessary to capture all
-calls to {\tt getxattr()}.
-Further, PORT does not support a list data structure to store the values
-retrieved by such calls and ensure they have all been applied with a
+in PORT was due to a lack of a list data structure.
+A list is required to capture all values applied by {\tt getxattr()}
+and ensure they have all been applied with a
 corresponding call to {\tt setxattr()}.
-We are evaluating these deficiencies and plan to address them in the
-future.
+While such a data structure may be supported in the future,
+we do not currently support it because of the high degree of
+implementation complexity it would add to our tools.
 
 \begin{figure}
 \centering

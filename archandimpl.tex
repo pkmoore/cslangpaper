@@ -5,7 +5,7 @@ components that allow a program to be used to analyze a stream of
 application activity.
 In this section we discuss the most important of these components and some
 of the decisions that went into their design and operation.
-
+PORT is available for use at: \textit{Link Removed for Blinding Purposes}.
 \label{SEC:architecture}
 
 \begin{figure}
@@ -45,6 +45,7 @@ We wanted to make PORT flexible so the SEA technique
 could
 work with many different sorts of
 activity representations beyond system calls.
+Such flexibility would both prevent PORT from being tied to specific recording formats or activity representations and simplify the process of modifying parameter in a format-agnostic fashion.
 This required a method to cleanly separate the details of how
 an application's event activity is recorded from the representation of this event stream that is
 processed by a transducer.

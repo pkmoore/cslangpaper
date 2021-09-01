@@ -92,12 +92,16 @@ proven event processing techniques
 to analyze them.
 Two realizations followed shortly after this
 insight.
-First was that, with the correct tools,
-SEA's success in identifying environmental bugs using system calls
-could be expanded
+First was that, with the correct tool,
+SEA's success in identifying environmental bugs
+could be expanded 
+beyond strace and system calls
 to encompass other activity types,
 such as calls to library functions
 and remote procedure calls.
+This could be achieved by designing such a tool
+can operate in an agnostic fashion with respect to the way an application's activity has been recorded.
+in a format agnostic fashion.
 And, the second was the understanding that existing
 stream processing tools
 are not well suited to the
@@ -227,19 +231,20 @@ and why existing systems are not well suited for this domain.
 Our primary requirement was a language that could identify specific
 patterns as they appear in a recording of application activity.
 At first glance, it seems this could be met by a simple model,
-such as a deterministic finite automaton (DFA).
+such as a deterministic finite automaton (i.e. a DFA or a FSA).
 The description could be written
 in a language similar to
 regular expressions, but enhanced to operate on complex
 structures rather than symbols in a string.
-However, many patterns contain a dependency
+Unfortunately, such a model does not meet our needs.
+Many patterns contain a dependency
 between activities
 across time,
 as shown in Figure~\ref{fig:StraceListing}.
 The {\tt open()} call produces a file descriptor that a subsequent {\tt
 read()} call may match.
 Matching patterns with this sort of dependency is beyond the capability
-of a standard DFA.
+of a standard DFA or FSA.
 Instead we need a language
 that can easily capture
 the internal contents of events,
@@ -324,7 +329,8 @@ system calls) and parameters relevant to opening, reading from, and closing
 a file.  The final three statements express that the event stream
 should contain an \texttt{open()} call followed by a \texttt{close()} call on the same file descriptor, with no intermittent \texttt{read()} call.
 
-We compare this program
+We compare this program 
+(which can be executed using the code and tools available at: \textit{Link Removed for Blinding Purposes})
 with a corresponding program written in OpenCEP~\cite{open_cep_website},
 a CEP module for the Python programming language.
 Figure~\ref{fig:OpenCEPListing} shows the same program written in
