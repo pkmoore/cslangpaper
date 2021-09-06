@@ -8,10 +8,16 @@ accepts a given event stream if it contains a particular
 activity sequence and can produce a modified
 output event stream
 for application testing.
-Such a mutator is essentially a
+Such a functionality cannot be accomplished by a standard
+deterministic automaton or transducer.
+Intead, we use
 transducer enhanced to operate over complex data structures
 rather than symbols in a string.
 The transducer consists of states and transitions that match and transform the input stream.
+A transition is taken if an event's parameters match the transition requirements described
+by the PORT program from which the the transducer was built.
+These requirements consist of logical comparisons between an event's parameter values
+and values stored in the transducer's registers or literal values.
 We designed PORT to allow its users to
 describe complex transducers in a concise manner.
 In this section, we cover the design decisions we made
