@@ -164,7 +164,7 @@ preserves all of a file's extended attributes and re-applies them the
 destination file after the move.
 The difficulty creating this checker
 in PORT was due to a lack of a list data structure.
-A list is required to capture all values applied by {\tt getxattr()}
+A list is required to capture all values gathered by {\tt getxattr()}
 and ensure they have all been applied with a
 corresponding call to {\tt setxattr()}.
 While such a data structure may be supported in the future,

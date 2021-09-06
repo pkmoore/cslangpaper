@@ -236,37 +236,33 @@ The description could be written
 in a language similar to
 regular expressions, but enhanced to operate on complex
 structures rather than symbols in a string.
-Unfortunately, such a model does not meet our needs.
-Many patterns contain a dependency
+Unfortunately, we found such a model does not meet our needs, primarily because patterns contain dependencies
 between activities
 across time,
 as shown in Figure~\ref{fig:StraceListing}.
 The {\tt open()} call produces a file descriptor that a subsequent {\tt
 read()} call may match.
-Matching patterns with this sort of dependency is beyond the capability
-of a standard DFA or FSA.
+Yet, it is beyond the capability
+of a standard DFA or FSA to match patterns with this sort of dependency. 
 Instead we need a language
 that can easily capture
 the internal contents of events,
 like argument data,
 pointer addresses,
-and return values
-and be able to
-manipulate them for
+and return values that can be
+manipulated for
 reuse in subsequent operations.
 
-One possibility is to deploy more expressive automata models such as register automata~\cite{DBLP:journals/tcs/KaminskiF94} or session automata~\cite{DBLP:journals/corr/BolligHLM14}. Though, these models are still too limited.
-In particular, they do not allow for modified output to be
-produced during processing of events.
-Our review of the work on the SEA technique has shown that the ability to
-{\textit modify} activity is central to forcing
-an application into situations where
-it can fail rather than only passively monitoring to see if it performs
+One possibility is to deploy more expressive automata models, such as register automata~\cite{DBLP:journals/tcs/KaminskiF94} or session automata~\cite{DBLP:journals/corr/BolligHLM14}. Yet, these models are still too limited as
+they do not permit  the production of a modified output events  processing.
+We learned from the  SEA researchers that the ability to
+{\textit modify} activity allows researchers to create scenarios for the application that ensure
+failure rather than  waiting for it to possibly  perform
 problematic sequences.
-These capabilities are offered by several feature-rich event processing
+These capabilities are provided by several feature-rich event processing
 languages and libraries.
-Unfortunately, we found that, while it was possible to modify and output
-incoming events with several of these languages,
+Unfortunately, we found that, while some of these languages can modify and output
+incoming events,
 it is by no means a straightforward
 and ergonomic experience.
 In many cases, producing an output stream that met
@@ -275,7 +271,7 @@ falling back on the fully-featured nature of a host language (e.g. Java) -- a si
 we hoped to avoid.
 
 In the initial stages of PORT's development, we also
-evaluated several event processing tools
+evaluated several event processing tools,
 including
 complex event processing (CEP) languages that
 could
