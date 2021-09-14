@@ -109,63 +109,63 @@ task we had in mind.
 %%% try it at a larger scale.  We can avoid talk of "Augmenting" SEA or
 %%% whatever though
 
-\subsection{Explaining Environmental Bugs}
-
-Before we discuss the details of our bug-finding efforts it is necessary to
-draw a boundary around the types of bugs we are targeting.
-This work sets its sights on the bugs that occur when some external
-entity supplies unexpected or incorrect data to an
-application resulting in its failure.
-Such bugs may appear in simple situations like a library function that
-returns data in an unexpected format or in scenarios as complex
-as a request to a remote
-system returning bad data because of corruption on an intermediate network
-node.
-Both cases share the commonality that the symptoms of misbehavior
-can be found in a recording of the application's activity.
-These bugs, defined by Moore et al. as ``environmental bugs,''
-often cause applications to fail after deployment
-and occur with such frequency
-that the ``works on my machine'' phenomenon is a well known
-source of pain
-and frequent topic of discussion
-in software and project management
-literature~\cite{worksonmymachine}.
-Post-deployment bugs are a widespread problem
-and they come with significant costs
-both in financial terms and,
-in the worst cases,
-loss of life~\cite{WONG201768}.
-
-The impact of these bugs continues to be reinforced by the regular
-appearance of dangerous environmental bugs in major pieces of
-software~\cite{devzeroroot}.  And it appears that no class of application
-is safe with environmental bugs affecting operating
-systems~\cite{ubuntuappaport},
-user applications~\cite{westerndigitalsymlink} and crucial security
-programs~\cite{sudocopy} in the
-last year alone!
-
-\begin{figure}
-  \begin{lstlisting}[gobble=4]
-    # Before Modification
-    open("example.txt", O_RDWR, 0) = 3
-    fstat(3, {...}) = 0
-    getpid() = 34355
-    write(3, "Hello World!\n", 13) = 13
-    close(3) = 0
-
-    # After Modification
-    open("example.txt", O_RDWR, 0) = 3
-    fstat(3, {...}) = 0
-    getpid() = 34355
-    write(3, "Hello World!\n", 13) = 13
-    close(3) = -1
-  \end{lstlisting}
-  \caption{A system call trace of a program that opens, writes to, and closes
-  a file before and after modifying the return value of the \texttt{close()} call.}
-  \label{fig:StraceListing}
-\end{figure}
+%\subsection{Explaining Environmental Bugs}
+%
+%Before we discuss the details of our bug-finding efforts it is necessary to
+%draw a boundary around the types of bugs we are targeting.
+%This work sets its sights on the bugs that occur when some external
+%entity supplies unexpected or incorrect data to an
+%application resulting in its failure.
+%Such bugs may appear in simple situations like a library function that
+%returns data in an unexpected format or in scenarios as complex
+%as a request to a remote
+%system returning bad data because of corruption on an intermediate network
+%node.
+%Both cases share the commonality that the symptoms of misbehavior
+%can be found in a recording of the application's activity.
+%These bugs, defined by Moore et al. as ``environmental bugs,''
+%often cause applications to fail after deployment
+%and occur with such frequency
+%that the ``works on my machine'' phenomenon is a well known
+%source of pain
+%and frequent topic of discussion
+%in software and project management
+%literature~\cite{worksonmymachine}.
+%Post-deployment bugs are a widespread problem
+%and they come with significant costs
+%both in financial terms and,
+%in the worst cases,
+%loss of life~\cite{WONG201768}.
+%
+%The impact of these bugs continues to be reinforced by the regular
+%appearance of dangerous environmental bugs in major pieces of
+%software~\cite{devzeroroot}.  And it appears that no class of application
+%is safe with environmental bugs affecting operating
+%systems~\cite{ubuntuappaport},
+%user applications~\cite{westerndigitalsymlink} and crucial security
+%programs~\cite{sudocopy} in the
+%last year alone!
+%
+%\begin{figure}
+%  \begin{lstlisting}[gobble=4]
+%    # Before Modification
+%    open("example.txt", O_RDWR, 0) = 3
+%    fstat(3, {...}) = 0
+%    getpid() = 34355
+%    write(3, "Hello World!\n", 13) = 13
+%    close(3) = 0
+%
+%    # After Modification
+%    open("example.txt", O_RDWR, 0) = 3
+%    fstat(3, {...}) = 0
+%    getpid() = 34355
+%    write(3, "Hello World!\n", 13) = 13
+%    close(3) = -1
+%  \end{lstlisting}
+%  \caption{A system call trace of a program that opens, writes to, and closes
+%  a file before and after modifying the return value of the \texttt{close()} call.}
+%  \label{fig:StraceListing}
+%\end{figure}
 
 \subsection{Why a New Domain Specific Language?}
 \begin{figure}
