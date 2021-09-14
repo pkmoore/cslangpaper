@@ -1,161 +1,139 @@
 \section{Related Work}
 \label{SEC:related-work}
 
-PORT is a declarative domain-specific language designed to
-assist developers in creating
-applications that need to pattern match and perform
-transformations on a single stream of possibly infinite events.
-Potential applications
-of PORT could include
-processing streams of system calls, RPC invocations or
-web-browser events for the purpose of intrusion detection, fault-injection, or
-other program-level testing. In the following, we discuss
-related work in the area of system call processing applications,
-and event stream processing languages and algorithms.
+One of the goals of developing PORT
+was to make it easier for developers
+to process diverse streams of events.
+Our hope was that our work could help them
+create tools capable of detecting intrusion,
+performing fault injection,
+or conducting other program-level testing.
+To design a language that can meet this goal,
+we consulted
+previous work
+that processed sequences of events such as
+ system calls, RPC invocations or
+web-browser events
+Below, we discuss some of the more significant work in these areas.
+
 
 \subsection{System Call Stream Processing Applications}
-The
-initial motivation for the development of PORT was to create a tool to help
-developers express match and transformation rules for system call patterns in
-CrashSimulator~\cite{DBLP:conf/issre/MooreCFW19}.
 
-System call pattern
-is an established technique
-matching in intrusion detection.
-Broadly speaking, there are two
-different types of system call based intrusion detection systems: misuse
-intrusion detection and anomaly detection. Misuse intrusion
-detection systems,
-search for known patterns of application-specific malicious system call
+System call based intrusion detection systems
+can be categorized into two groups: misuse
+intrusion detection and anomaly detection.
+The former search for know patterns of application specific
+system call
 sequences known as intrusion signatures~\cite{GARCIATEODORO200918}.
 In anomaly
-detection that the intrusion signatures are unknown,
+detection, the intrusion signatures are unknown,
 but any deviation
-from “normally observed” system call sequences are flagged as
+from ``normally observed'' system call sequences are flagged as
 malicious~\cite{DBLP:conf/sp/ForrestHSL96}.
-As misuse intrusion detection systems are only
-effective against previously known intrusion signatures,
-they are typically combined with anomaly-based systems.
-
-Intrusion
-detection systems also vary in the way in which they examine the system call
-stream.
-Some examine each system call in isolation,
-without regard to previous
-execution context,
-looking for specific arguments that may imply malicious
-intent.
-Others look for fixed patterns or sequences of system calls executed
-within a certain window of instructions.  Some of the more prominent studies in
-this area are highlighted below.
+The two systems are typically used in tandem, and
+can vary in the way they examine the system call stream.
 
 Forrest et al.~\cite{DBLP:conf/sp/ForrestHSL96} describe
 an anomaly detection system based on the premise that small deviations from
 an application's previously exhibited system call execution pattern are likely
-malicious. An application to be protected using this mechanism is first
+malicious.
+In this instance, the application
+is first
 ``exercised'' on various inputs to expose the
-sequence of system calls found in valid uses of the application.
-Using a sliding
-window of fixed size,
-each witnessed pattern of contiguous system calls appearing in the system call stream is cataloged in a database. After the
+sequence of system calls found in valid situations.
+Each witnessed pattern of contiguous system calls in the stream
+is cataloged in a database.
+After the
 training phase, the application's system call stream
 is monitored and any detected
-deviation from the expected system call patterns (stored in the database) are
-acted upon in accordance with a predefined security policy.
+deviation triggers a
+predefined security policy.
 Warrender et al. implemented a hidden Markov model
-based implementation of this same system~\cite{DBLP:conf/sp/WarrenderFP99}.
-
-Sekar et al.\cite{DBLP:conf/sp/SekarBDB01} extend the work
-of~\cite{DBLP:conf/sp/ForrestHSL96} by proposing an algorithm and associated
-optimizations to create a finite state automaton that can learn the valid system
+based implementation of this same system~\cite{DBLP:conf/sp/WarrenderFP99},
+while
+Sekar et al.\cite{DBLP:conf/sp/SekarBDB01} proposed
+an algorithm
+for creating a finite state automaton that can learn the valid system
 call sequences of an application.
-The automaton is not limited to recognizing the small system call sequence sizes
-proposed in~\cite{DBLP:conf/sp/ForrestHSL96}.
-Instead, the automaton learns the entire sequence of system calls produced by
-each run of the application.
-To help minimize the size of the automaton, the authors incorporate program
-counter information to recognize loops.
+
+%The automaton is not limited to recognizing the small system call sequence sizes
+%proposed in~\cite{DBLP:conf/sp/ForrestHSL96}.
+%Instead, the automaton learns the entire sequence of system calls produced by
+%each run of the application.
+%To help minimize the size of the automaton, the authors incorporate program
+%counter information to recognize loops.
 %In addition, system calls made within standard libraries (such as libc) are excluded from the automaton as the authors felt that these system calls do not necessarily help capture the unique nature of system call behavior within the program.
 
-The work of Ko et al.~\cite{DBLP:conf/acsac/KoFL94} describe a real-time intrusion detection system
+Ko et al.~\cite{DBLP:conf/acsac/KoFL94} 
+takes a different approach
 based on simple predicate logic and regular expressions. Each system call in the
 steam is converted to a standard audit-policy record format which is then
 matched against program policy. For example,
 the rule \lstinline+exec "/bin/(sh | csh)"+ allows a new shell to be invoked and the rule
 \lstinline+~read("/etc/passed")+ prevents the password file from being read.
 However, the audit-policy can only be applied to
-one system call at a time, rules to recognize specific chains of system calls
-are not supported.
+one system call at a time,
+and does not support rules to recognize specific chains of system calls.
+Another alternative is
+Systrace~\cite{DBLP:conf/uss/Provos03},
+which
+supports fine-grained process confinement
+via system call monitoring and an associated policy language 
+for describing the action to take when a rule evaluates to true.
+Phoebe~\cite{DBLP:journals/corr/abs-2006-04444}
+identifies patterns of system call failures during normal program execution
+and uses them to generate fault-injection experiments
+to test the reliability of an application when a failure occurs.
+The downside is that there is no facility to create more elaborate fault-injection
+tests after a specific sequence of system calls are seen.
 
-Systrace~\cite{DBLP:conf/uss/Provos03} supports fine-grained process confinement
-via system call monitoring and an associated policy language consisting of a set
-of rules and triggers that execute once a rule evaluates to true.
-Rules are
-checked against only one system call at a time.
-As Systrace intercepts each system call prior to execution, this system can also
-be used for fault injection in various testing scenarios.
-
-Similar to system calls, remote procedure calls can also be abused for malicious
+Remote procedure calls can also be abused for malicious
 intent,
-so examining and acting upon a remote procedure call stream can help mitigate or prevent such attacks.
-The remote procedure call protection mechanism described in~\cite{DBLP:conf/uss/GiffinJM02} uses push-down automata to model the possible valid remote call streams that can be generated in a particular application.
-The model is created by static binary analysis and modification of the application to be protected.
-The application's incoming remote procedure call stream is vetted against the previously created model to determine whether particular calls are valid and therefore executable.
+so Giffin et al. ~\cite{DBLP:conf/uss/GiffinJM02} used
+push-down automata to model the possible valid
+remote call streams that an application might generate.
+The application's incoming remote procedure call stream 
+is vetted against a model created using static analysis
+to determine whether particular calls are valid and therefore executable.
 
-Phoebe~\cite{DBLP:journals/corr/abs-2006-04444} is a fault-injection framework
-that examines the system call stream of an application to determine which system
-calls fail naturally (during normal program execution). Based on this failure
-pattern,
-it generates fault-injection experiments designed to test the reliability of
-an application when a failure occurs. These experiments are meant to magnify the
-frequency of rarely occurring system call failures and to introduce them at
-points where they had not previously occurred within the application.
-Only single system call matching is done - there is no facility to create
-more elaborate fault-injection tests that are triggered after a specific
-sequence of system calls are seen.
 
+Lastly, domain-specific options for
+identifying problems
+in function calls.
 In~\cite{DBLP:conf/icse/ChristakisEG017}, Christakis et al. describe a
-domain-specific language and runtime to allow developers to intercept and modify
+such a language that allows developers to intercept and modify
 Windows applications’ dynamic link library function calls (which includes system
-calls). The domain-specific language provides a mechanism to identify which
-function call, or, using pattern matching, set of function calls, should be
-intercepted by the runtime. Once intercepted, code written in the
-domain-specific language (which, in part, is a subset of the C programming
-language) can be executed. This system allows one to test for and simulate
-application errors in a language-agnostic manner, as the runtime operates at the
-level of the application binary. The domain-specific language is only meant to
-match and intercept single function calls and was not designed to trigger a code
-injection only when a specific sequence of function calls are matched.
+calls). The language provides a mechanism to identify which
+function call or set of function calls, should be
+intercepted by the runtime.
+Further language mechanisms
+define code to be executed once a call or calls have been intercepted.
 
-Intrusion detection via system calls is one area where we believe PORT might be useful.
-The systems outlined above were built to solve one particular problem (intrusion detection via system calls) well and
+A commonality
+of all the systems
+outlined above
+is that they were built to solve one particular problem
+and
 therefore lack the flexibility that drove the creation of PORT.
 For example, these systems were not designed to be easily retargeted
 to a different type of event stream or allow transformations on the event stream.
 
 
 \subsection{Event Stream Processing Languages and Algorithms}
-
-A streaming application
-is a computer program
-that consumes and/or
-produces
-a stream of events (messages or other form of application-specific data).
-A domain-specific language designed for expressing streaming applications
-is referred to as a
-stream processing language~\cite{DBLP:journals/sigmod/HirzelBBVSV18}.
-PORT clearly
-fits within the above definition.
-Therefore, in this
-section we look at previous work related to stream processing languages.
+PORT can be categorized as a stream processing language,
+which means it is a domain-specific language
+designed for expressing streaming applications.
+Therefore,
+in this section we look at previous work related to stream processing languages.
 
 Pattern matching
 over event streams is a paradigm
 wherein a stream of continuously arriving events are examined for
 possible matches against a previously defined set of rules,
 which collectively form a pattern.
-Languages for pattern matching over event
-streams are significantly richer than languages for regular expression
+Languages written for pattern matching over event
+streams are significantly richer than those used for
+languages for regular expression
 matching~\cite{DBLP:conf/sigmod/AgrawalDGI08}.
 Stream processing languages typically provide automatic
 support for naming, type checking, filtering, aggregating, classifying and
@@ -165,15 +143,15 @@ awk~\cite{DBLP:journals/spe/AhoKW79}.
 
 Although PORT is a stream processing language, it does not
 require all of the features typically
-provided by many stream processing systems, such as
+included this sort of system, such as
 combining multiple stream sources,
 out of order data retrieval,
 methods for handling data loss,
 time window based event aggregation,
 or database integrations~\cite{DBLP:journals/csur/DayarathnaP18}.
-Rather PORT seems to fit within the special case of
-stream processing known as complex event processing (CEP),
-in which data items in input streams are referred to as raw events and data items in output streams
+Rather PORT seems to fit within the special case
+known as complex event processing (CEP),
+in which data items in input streams are referred to as raw events, and data items in output streams
 as composite (or derived) events. A CEP system uses patterns to inspect
 sequences of raw events and then generates a composite event for each
 match~\cite{DBLP:journals/ibmrd/HirzelAGJKKMNSSW13}.
@@ -187,19 +165,21 @@ processing language are converted to non-deterministic finite automata, which ar
 optimized.
 
 MatchRegex~\cite{DBLP:conf/debs/Hirzel12} is a CEP engine for IBM’s Stream Processing
-Language. Predicates defined on the individual events appearing in the event
+Language. Predicates defined on the individual events appearing in the
 stream can be utilized in the regular expression-based pattern matching
 engine. MatchRegex supports regular expression operators, such as “Kleene star”
 and “Kleene plus” over patterns consisting of predicates (boolean expressions).
-Standard regular expression semantics apply over these predicate-based patterns.
 
 The CEP systems described in this subsection are capable
-of recognizing the same stream patterns that PORT can.
-However, these CEP systems do not incorporate the
-stream transformation primitives required for the applications
+of recognizing the same stream patterns as PORT,
+but do not incorporate the
+stream transformation primitives 
+that would be required
+required for the applications
 envisioned for PORT. Although CEP systems do allow for the
-generation of composite events from raw events these composite events
-are meant to be utilized solely for recognition of additional patterns.
+generation of composite events from raw events,
+they are meant
+to be used solely to recognize additional patterns.
 It is the combination and interplay of pattern matching and transformation
 primitives that distinguishes PORT from CEP systems.
 

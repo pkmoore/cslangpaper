@@ -54,7 +54,7 @@ by recording and analyzing a trace of system calls,
 identifying file reads and writes,
 and checking whether they are preceded by a {\tt stat}
 system call (or another call from the same family).
-Absence of a {\tt stat} calls
+Absence of a {\tt stat} call
 immediately indicates
 that the application is vulnerable
 to failure
@@ -73,7 +73,7 @@ for each anomaly
 to process system call traces.
 PORT makes it easier to describe
 the pattern of interest
-and required modifications
+and the  modifications required
 to the system call recording.
 
 Our takeaway
@@ -83,8 +83,7 @@ is a valuable resource that can be systematically mined
 in order to find bugs
 that may be missed by other techniques.
 The work described in this paper
-is based on our own key insight that the best way to extract this
-valuable data
+is based on our own key insight that the best way to extract this data
 is to treat application activity
 as a sequence of events,
 thus allowing us to use
@@ -92,17 +91,12 @@ proven event processing techniques
 to analyze them.
 Two realizations followed shortly after this
 insight.
-First was that, with the correct tool,
-SEA's success in identifying environmental bugs
-could be expanded 
-beyond strace and system calls
-to encompass other activity types,
+First was that, a novel tool was needed to leverage
+SEA's success beyond strace and system calls. Such a tool would be able to encompass other activity types,
 such as calls to library functions
 and remote procedure calls.
-This could be achieved by designing such a tool
-can operate in an agnostic fashion with respect to the way an application's activity has been recorded.
-in a format agnostic fashion.
-And, the second was the understanding that existing
+This could be achieved by operating in a fashion agnostic to the way an application's activity has been recorded.
+And, the second insight was the understanding that existing
 stream processing tools
 are not well suited to the
 task we had in mind.
@@ -254,17 +248,16 @@ manipulated for
 reuse in subsequent operations.
 
 One possibility is to deploy more expressive automata models, such as register automata~\cite{DBLP:journals/tcs/KaminskiF94} or session automata~\cite{DBLP:journals/corr/BolligHLM14}. Yet, these models are still too limited as
-they do not permit  the production of a modified output events  processing.
+they do not permit  the production of a modified output. 
 We learned from the  SEA researchers that the ability to
-{\textit modify} activity allows researchers to create scenarios for the application that ensure
-failure rather than  waiting for it to possibly  perform
+{\textit modify} activity allows researchers to create scenarios  that ensure
+application failures rather than  waiting for it to possibly  perform
 problematic sequences.
-These capabilities are provided by several feature-rich event processing
-languages and libraries.
-Unfortunately, we found that, while some of these languages can modify and output
-incoming events,
-it is by no means a straightforward
-and ergonomic experience.
+Several feature-rich event processing
+languages and libraries do have these capabilities, but
+modifying and outputing
+incoming events
+is by no means a straightforward experience.
 In many cases, producing an output stream that met
 our needs would require
 falling back on the fully-featured nature of a host language (e.g. Java) -- a situation
@@ -279,21 +272,18 @@ provide some of the pattern and predicate matching primitives
 that we wished to
 incorporate.
 Unfortunately,
-none of them fit our purposes,
-due to a lack of
-support for the features
-we required,
-or because they were too complex
-to meet our
-goal of a system
-that would be easy to understand and use.
+these languages did not
+support  the features
+we require,
+or were too complex
+for the easy to use  system we were looking to offer.
 Typically,
 programs for these complex event processing engines are
 written in the engine's build or host language,
 such as Java,
 Scala or
 Python.
-These languages generally bring with them a great deal of boilerplate code,
+Such languages generally bring with them a great deal of boilerplate code,
 that can obscure or confuse
 the program's meaning.
 Recent studies
@@ -321,18 +311,16 @@ application opens and closes a file
 without reading from it.
 Figure~\ref{fig:PORTListing} shows a PORT program that implements this
 task.  The first three statements in this program define the events (i.e.
-system calls) and parameters relevant to opening, reading from, and closing
-a file.  The final three statements express that the event stream
+system calls) and parameters relevant to the task it performs.  The final three statements express that the event stream
 should contain an \texttt{open()} call followed by a \texttt{close()} call on the same file descriptor, with no intermittent \texttt{read()} call.
 
 We compare this program 
-(which can be executed using the code and tools available at: \textit{Link Removed for Blinding Purposes})
+\footnote{which can be executed using the code and tools available at: \textit{Link Removed for Blinding Purposes}}
 with a corresponding program written in OpenCEP~\cite{open_cep_website},
 a CEP module for the Python programming language.
-Figure~\ref{fig:OpenCEPListing} shows the same program written in
-OpenCEP.
+This program is shown in Figure~\ref{fig:OpenCEPListing}.
 The PORT program is both more concise with its main work being done in just
-three lines of code and more readable because it is not constrained by the
+three lines of code, and more readable because it is not constrained by the
 requirements of a host programming language.
 PORT further differentiates itself from OpenCEP and similar languages by
 offering the ability to modify and output an event.

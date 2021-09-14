@@ -1,7 +1,7 @@
 \section{Architecture and Implementation}
 
 The implementation of PORT consists of several related
-components that allow a program to be used to analyze a stream of
+components that allow a program to analyze a stream of
 application activity.
 In this section we discuss the most important of these components and some
 of the decisions that went into their design and operation.
@@ -43,11 +43,11 @@ disk so that it may be stored and reused.
 
 We wanted to make PORT flexible so the SEA technique
 could
-work with many different sorts of
-activity representations beyond system calls.
-Such flexibility would both prevent PORT from being tied to specific recording formats or activity representations and simplify the process of modifying parameter in a format-agnostic fashion.
+work with many types of
+activity representations rather than just  system calls.
+Such flexibility would prevent PORT from being tied to specific recording formats or activity representations, while also making it easier to modify parameters in a format-agnostic fashion.
 This required a method to cleanly separate the details of how
-an application's event activity is recorded from the representation of this event stream that is
+an application's event activity is recorded from the representation of this event stream
 processed by a transducer.
 Our solution is twofold.  First, we develop an intermediate data format
 (IDF) that
