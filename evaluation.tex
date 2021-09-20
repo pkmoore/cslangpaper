@@ -32,7 +32,7 @@ by the effectiveness of the SEA technique,
 our first experiment aims to reproduce the anomalies described
 in~\cite{DBLP:conf/issre/MooreCFW19}.
 We want to ensure that
-the language is sufficiently expressive
+the PORT language is sufficiently expressive
 to describe the anomalies the
 SEA research team used to
 find bugs.
@@ -52,8 +52,7 @@ the bulk of the bugs that were found.
 For the first part of this experiment,
 we used PORT to implement an ``unusual file type''
 mutator.
-This mutator, presented in
-Figure~\ref{lst:UnusualFiletypePORT},
+As illustrated in Figure~\ref{lst:UnusualFiletypePORT},this mutator
 takes an input trace
 that contains a call to either {\tt stat()},
 {\tt fstat()},
@@ -64,7 +63,7 @@ that indicates an unusual file type.
 As can be seen in
 Figure~\ref{lst:UnusualFiletypePORT}, this task can be expressed with only a few lines of PORT code.  In the figure,
 lines 1 through 4 define what {\tt stat()}, {\tt fstat()}, and {\tt
-lstat()} calls look like and which parameter contains the result buffer.
+lstat()} calls look like, and which parameter contains the result buffer.
 Line 6 generates an accepting state that, when entered, produces an output
 system call with a modified value in the return structure's {\tt st\_mode}
 field.  The output can then be used to modify the results of a running
@@ -90,11 +89,10 @@ anystat({sb: {mode: ->"st\_mode=S\_IFBLK"}});
 
 The original implementation of this mutator in~\cite{DBLP:conf/issre/MooreCFW19} consisted of 55 lines
 of Python code.
-When we compared our PORT code to the original mutator,
+When we compared our PORT code to the original mutator, it became apparent that there were
 several major advantages
-of writing a mutator using
-PORT rather than a general purpose programming language
-became apparent:
+to writing a mutator with
+PORT rather than a general purpose programming language:
 
 \textit{Minimal boilerplate code:} The PORT program lacks the boilerplate
 code associated with
@@ -150,7 +148,7 @@ condition where the file is replaced during the move process.
 Comparing this checker to the
 original SEA checker,
 which consisted of 45 lines of Python,
-shows that many of the same deficiencies that effected the unusual file type
+shows that many of the same deficiencies that affected the unusual file type
 mutator above are present.
 The PORT version is much more concise and its meaning is
 less obscured by boilerplate and state management code that makes up the
@@ -160,11 +158,10 @@ This exercise did expose one of PORT's shortcomings.  Specifically,
 we found that PORT cannot currently implement the ``Extended File
 Attributes'' checker.
 This checker ensures that an application
-preserves all of a file's extended attributes and re-applies them the
+preserves all of a file's extended attributes and re-applies them to the
 destination file after the move.
-The difficulty creating this checker
-in PORT was due to a lack of a list data structure.
-A list is required to capture all values gathered by {\tt getxattr()}
+PORT's lack of a list data structure made it difficult to create this checker as a
+list is required to capture the values {\tt getxattr()}
 and ensure they have all been applied with a
 corresponding call to {\tt setxattr()}.
 Though we are considering such a feature for future implementation,
@@ -193,11 +190,11 @@ fstat({fildesc: ?fd});
 
 Our second experiment evaluates PORT's usability beyond system call manipulation.
 A logical next step is to test PORT's capabilities when working
-with a higher level, but similarly structured, activity representation such as remote procedure calls.
+with a higher level, but similarly structured, activity representation, such as remote procedure calls.
 We chose the JSONRPC and XMLRPC APIs for this purpose as they are widely used and have well
 supported parsing libraries or modules.
 
-To evaluate PORT's ability to work with these representations we
+To evaluate how well PORT can work with these representations we
 construct transformer modules that convert these formats into our
 intermediate data format.
 We test our implementation by writing PORT programs that modify
@@ -208,7 +205,7 @@ Figure~\ref{lst:JSONProgram}.  This program matches a pattern of ``test''
 and ``update'' calls and, if the pattern is found, the final update call's
 parameters are replaced with the constants 999 and 888, respectively.
 
-Adding support for JSONRPC required a handful of hours of effort, and implementing the XMLRPC transformer,
+Adding support for JSONRPC by creating an appropriate transformer required a handful of hours of effort. Implementing the XMLRPC transformer,
 which we precisely timed, was completed in three
 hours and thirty-two minutes.  Based on the ease and speed with which we
 were able to complete these new input stream formats, we are confident that PORT can be
@@ -236,9 +233,9 @@ update({up1: ->999, up2: ->888});
 \subsection{Utilizing PORT's Flexibility}
 We further evaluate PORT's ability to replicate useful strategies
 from other work.
-For this experiment, we selected the work on
-describing and detecting malicious behavior in Windows
-applications done by Dornhackl et al.~\cite{Dornhackl2014}.  This work
+For this experiment, we selected the work of Dornhackl et al.~\cite{Dornhackl2014}
+in describing and detecting malicious behavior in Windows
+applications.  This work
 improves upon static malicious behavior detection using signatures by
 creating formal descriptions of misbehavior in an application's
 dynamic activity.  This is done by first describing a malicious goal
@@ -247,7 +244,7 @@ mapping these tasks onto
 the concrete Windows API calls required to carry them out.
 Realizing this strategy
 requires a mechanism for first grouping a set of similar API calls
-into a single operation and then describing a malicious task in terms of
+into a single operation, and then describing a malicious task in terms of
 these aggregate operations.  PORT supports the former using variants.
 For example, \cite{Dornhackl2014} proposes to group the API calls that may be used to
 open a Windows registry key as is shown in Figure~\ref{lst:DornhacklOpen}.
@@ -264,7 +261,7 @@ OPEN => RegOpenKeyA NtOpenKey
 \label{lst:DornhacklOpen}
 \end{figure}
 
-Each symbol beginning with ``Reg'' in Figure~\ref{lst:DornhacklOpen} represents a user
+Each symbol, beginning with ``Reg'' in Figure~\ref{lst:DornhacklOpen}, represents a user
 API call that opens or creates a registry key.  {\tt NtOpenKey} always follows
 each of these calls because it is the underlying ``native'' call that
 Windows makes to actually perform the operation.
@@ -341,8 +338,9 @@ that the pattern must appear for a specific registry key.
 %Though our implementation is
 %only a prototype, we wanted to make sure that its performance was not
 %overly slow.
-Our final experiment evaluates the performance of our prototype implementation.
-The experiment is focused on the time required
+Our final experiment evaluates the
+time our prototype implementation, 
+required
 to identify specific
 patterns within real-world system call traces.
 We record test traces
@@ -356,7 +354,7 @@ offer a sufficient level of complexity to evaluate
 PORT's effectiveness.
 
 Our experimental setup is as follows.  The applications are configured to service
-a simple piece of content (a single string in the case of NCat) and there system call activity is
+a simple piece of content (a single string in the case of NCat), and their system call activity is
 recorded using {\tt strace} while handling a request from a remote client.
 The strace recordings are then processed using the PORT program shown in
 Figure~\ref{lst:RealWorldPerformance},  which
@@ -364,7 +362,7 @@ identifies the sequence of system calls that implement
 a server's request handling loop\footnote{Recordings are pre-processed to remove system calls
 related to executable loading and process creation.}.  Table~\ref{tbl:RealWorldPerformance}
 shows the times in seconds required to perform this identification on each
-web server as well as the total number of system calls in each trace.
+web server, as well as the total number of system calls in each trace.
 
 \begin{figure}
   \begin{tabular}{|c|c|c}

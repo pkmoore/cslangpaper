@@ -75,6 +75,7 @@ if a particular activity sequence is encountered.
 By combining passive monitoring and active modification
 of an application's activity,
 PORT can aid in identifying bugs
+in a wide variety of programs
 that may be missed by other testing strategies.
 
 PORT's passive and active capabilities are made possible
@@ -86,8 +87,15 @@ That is,
 according to the rules laid down in its source program,
 the mutator will consume an input sequence of activity
 to determine if a particular pattern is present,
-while simultaneously producing an output stream. During this process, the format of the activity sequence is transformed to cause the desired output, which emerges with the initial format intact. 
-If the mutator accepts the input sequence
+while simultaneously producing an output stream.
+However, unlike a standard transducer which operates on the concrete contents of its input stream,
+a PORT mutator instead works using a generic representation we call our ``Intermediate Data Format (IDF).''
+This is a general format for representing events in terms of their type and parameters.
+It both abstracts the details of the concrete event in order to make writing PORT programs easier
+and acts as a medium through which modifications can be made to concrete events without having to
+know the details of their contents.
+
+When processing such a stream, if the mutator accepts the input sequence
 it means the described activity is present.
 In some cases,
 this may directly indicate
