@@ -1,6 +1,6 @@
 \section{Architecture and Implementation}
 
-The implementation of PORT consists of several related
+A  PORTimplementation consists of several related
 components that allow a program to analyze a stream of
 application activity.
 In this section we discuss the most important of these components and some
@@ -9,6 +9,7 @@ PORT is available for use at: \textit{Link Removed for Blinding Purposes}.
 \label{SEC:architecture}
 
 \begin{figure}
+\centering
   \includegraphics[scale=.19]{images/architecture}
   \caption{Overview of PORT compiler and run-time components.}
   % \caption{The PORT compiler produces a mutator that operates over a
@@ -35,8 +36,7 @@ from a PORT program.
 Compilation happens in two phases.  In the first phase, the program text is
 parsed into an abstract syntax tree using an LALR parser.
 In the second, the
-contents of the AST are used to construct the transducer.
-This transducer is then serialized to
+contents of the AST are used to construct the transducer, which is then serialized to
 disk so that it may be stored and reused.
 
 \subsection{The Internal Data Format}
@@ -45,7 +45,7 @@ We wanted to make PORT flexible so the SEA technique
 could
 work with many types of
 activity representations rather than just  system calls.
-Such flexibility would prevent PORT from being tied to specific recording formats or activity representations, while also making it easier to modify parameters in a format-agnostic fashion.
+Such flexibility would make it easier to modify parameters in a format-agnostic fashion.
 This required a method to cleanly separate the details of how
 an application's event activity is recorded from the representation of this event stream
 processed by a transducer.
@@ -55,7 +55,7 @@ stores the key components, such as parameter and return values,
 for application activities like function
 and system calls.  This format supports primitive string and numeric
 values as well as arbitrarily nested structures in the form of records.
-The language and compiler currently do not support unbounded arrays. However, extending PORT with arrays is relatively straightforward.
+The language and compiler currently do not support unbounded arrays. However, extending PORT with arrays should be relatively straightforward.
 
 % The decision to include these features
 % was based on the Linux kernel's system call implementation
@@ -65,7 +65,7 @@ The language and compiler currently do not support unbounded arrays. However, ex
 
 The actual activity stream of an application is converted from its original representation into IDF and
 back using a \emph{transformer} module. The transformer parses each activity entry,
-extracting the relevant data, and assembles this information into an IDF
+extracting the relevant data, and assembles it into an IDF
 event record.  These event records comprise the input stream of the transducer.
 The output event stream is then converted by the same transformer module
 back into the original activity representation. We have implemented transformers for different kinds of activity streams including system call and RPC call sequences.

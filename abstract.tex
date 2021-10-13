@@ -1,20 +1,14 @@
 \begin{abstract}
-Earlier work has proven that  information extracted from recordings of an
+Earlier work has proven that information extracted from recordings of an
 application’s activity can be tremendously valuable.
-However,
-applications make so many requests to external entities during execution that
-it is difficult to recognize and respond to patterns that indicate the
+However, during execution
+applications make so many requests to external entities that
+it is difficult to recognize the patterns that indicate the
 potential for failure.
-We propose that event processing techniques,
-which are capable of identifying patterns of interest in other domains,
-are a solution to
-this problem.
-This work demonstrates how PORT,
-our new domain specific language, can harness
-these techniques to identify
-bugs.
-PORT allows users to construct programs
-that can identify patterns in system call recordings and other streams,
+In this work, we propose addressing this problem by applying event processing techniques,
+which are already used to identify patterns of interest in other domains.
+To harness these techniques to identify bugs, we introduce PORT,
+a new domain specific language, that allows users to construct programs to identify patterns in system call recordings and other streams,
 and then rewrite the input activity on the fly.
 The former task can spot activity that indicates a bug,
 while the latter produces a modified stream
@@ -27,7 +21,7 @@ the results of system calls.
 Our re-implementations achieved the same
 efficacy and better reliability using fewer lines of
 code.
-We illustrated PORT’s extensibility
+We further illustrated PORT’s extensibility
 by supporting remote
 procedure call traces,
 and showing how PORT can be used
