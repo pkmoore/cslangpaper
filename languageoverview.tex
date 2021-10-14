@@ -160,6 +160,7 @@ A program is split into two parts: the \emph{preamble} consisting of type and ev
 
 \begin{figure}[t]
 \centering
+\scriptsize
 \begin{align*}
 \mathit{program} ::= {} &  (\mathit{typedef} \mid \mathit{eventdef})^* \; \mathit{action}^*\\
 \mathit{typedef} ::= {} & \mathtt{type}\; \mathit{id} \texttt{\{}\mathit{id} \texttt{:}\, t\, \texttt{@}\, n \; (\texttt{,} \mathit{id}\texttt{:} t\,\texttt{@}\,n)^*\texttt{\};}\\
@@ -231,8 +232,7 @@ This action matches the next (abstract) input event against the \emph{pattern} $
 \end{lstlisting}
 When matched against the event
 \begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
-  fstat({fdesc: 4, sbuf: {dev:"st_dev=makedev(0, 4)",
-                             ino: 42, mode="S_IFCHR|0666"}})
+  fstat({fdesc: 4, sbuf: {dev:"st_dev=makedev(0, 4)", ino: 42, mode="S_IFCHR|0666"}})
 \end{lstlisting}
 the match would succeed and assign the value \lstinline+4+ to register \lstinline+fd2+, \lstinline+"st_dev=makedev(0, 4)"+ to register \lstinline+rdev+, and \lstinline+"S_IFCHR|0666"+ to register \lstinline+rino2+.
 
@@ -243,14 +243,12 @@ When an action takes effect, the matched input event is consumed and an output e
 For example, consider the action:
 \begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
   fstat({fdesc: rfd2, sbuf: {dev:rdev, ino: rino2}})
-    with rfd2 == rfd and rdev == "st_dev=makedev(0, 4)"
-    -> fstat({sbuf:{ino: rino}});
-\end{lstlisting}
+    with rfd2 == rfd and rdev == "st_dev=makedev(0, 4)" -> fstat({sbuf:{ino: rino}});
+    \end{lstlisting}
 This action matches the \lstinline+fstat+ event given above, assuming the register \lstinline+rfd+ has value \lstinline+4+ before the match. Moreover, if the register \lstinline+rino+ has value \lstinline+43+ before the action is executed, then the action produces the output event:
 \begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
-  fstat({fdesc: 4, sbuf: {dev:"st_dev=makedev(0, 4)",
-                             ino: 43, mode="S_IFCHR|0666"}})
-\end{lstlisting}
+  fstat({fdesc: 4, sbuf: {dev:"st_dev=makedev(0, 4)", ino: 43, mode="S_IFCHR|0666"}})
+  \end{lstlisting}
 
 For convenience, we have included a syntactic short-hand that allows one to more compactly express common kinds of patterns. First, one often needs to express that the value of a matched record field is equal to the current value of a register. In the action above, the field \lstinline+fdesc+ of the matched \lstinline+fstat+ event must be equal to \lstinline+rfd+ for the match to succeed. This constraint can be expressed more succinctly by replacing \lstinline+rfd2+ with \lstinline+?rfd+ in the pattern of the action. Doing so ensures that the matched value is equal to \lstinline+rfd+ without changing the value of \lstinline+rfd+. The equality \lstinline+rsd2 == rsd+ can then be omitted from the \lstinline+with+ clause.
 
@@ -268,7 +266,7 @@ Using this syntactic short-hand, the action given above can be expressed more co
 PORT simplifies the handling of an unbounded input stream by using implicit repetition semantics.
 Any event in the input stream not matched by the current action is simply copied to the output stream. The transducer moves on by attempting to match the next input event against the current action.
 
-Sometimes, it is necessary to constrain this implicit repetition mechanism by disallowing the appearance of certain events in the input stream before an event  matched by the current action is encountered.  This can be done by \emph{negated patterns}, which take the form \lstinline+not id$(p)$ with $b$+. If an event that matches the pattern \lstinline+id$(p)$ with $b$+ is encountered before the next positive action in the program takes effect, then the transducer aborts. For instance, the program in Fig.~\ref{fig:PORTListing} uses a negated pattern to ensure that no \lstinline+read+ system call is executed on the opened file with file descriptor \lstinline+fd+ before the file is closed.
+Sometimes, it is necessary to constrain this implicit repetition mechanism by disallowing the appearance of certain events in the input stream before an event  matched by the current action is encountered.  This can be done by \emph{negated patterns}, which take the form \lstinline+not id$(p)$ with $b$+. If an event that matches the pattern \lstinline+id$(p)$ with $b$+ is encountered before the next positive action in the program takes effect, then the transducer aborts. For instance, the PORT program in Fig.~\ref{fig:CompareListing} uses a negated pattern to ensure that no \lstinline+read+ system call is executed on the opened file with file descriptor \lstinline+fd+ before the file is closed.
 
 \paragraph{Explicit Repetition}
 PORT also supports matching clearly defined sequences of events.  This functionality is useful when a desired pattern

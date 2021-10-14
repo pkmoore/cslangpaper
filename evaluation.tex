@@ -349,31 +349,31 @@ web server, as well as the total number of system calls in each trace.
 \label{tbl:RealWorldPerformance}
 \end{figure}
 
-\begin{figure}
-\centering
-\begin{tabular}{c}
-\begin{lstlisting}[gobble=2]
-  event accept { accept fd: Number@ret}
-             | { accept4 fd: Number@ret};
-  event anyrecv { recvfrom fd: Number@0}
-    | { read fd: Number@0} | { recv fd: Number@0};
-  event anysend {sendto fd: Number@0}
-    | { write fd: Number@0} | { send fd: Number@0};
-  event close {fd: Number@0};
-
-  accept({fd: storefd});
-  anyrecv({fd: ?storefd});
-  anysend({fd: ?storefd});
-  close({fd: ?storefd});
-\end{lstlisting}
-\end{tabular}
-\caption{A PORT program that matches patterns where a server application
-  accepts a connection, receives a request, sends a response, and closes
-  the connection.  The program uses variants to handle cases where
-  applications use different system calls to perform some common action
-  (e.g. receiving data from a socket).}
-\label{lst:RealWorldPerformance}
-\end{figure}
+%\begin{figure}
+%\centering
+%\begin{tabular}{c}
+%\begin{lstlisting}[gobble=2]
+%  event accept { accept fd: Number@ret}
+%             | { accept4 fd: Number@ret};
+%  event anyrecv { recvfrom fd: Number@0}
+%    | { read fd: Number@0} | { recv fd: Number@0};
+%  event anysend {sendto fd: Number@0}
+%    | { write fd: Number@0} | { send fd: Number@0};
+%  event close {fd: Number@0};
+%
+%  accept({fd: storefd});
+%  anyrecv({fd: ?storefd});
+%  anysend({fd: ?storefd});
+%  close({fd: ?storefd});
+%\end{lstlisting}
+%\end{tabular}
+%\caption{A PORT program that matches patterns where a server application
+%  accepts a connection, receives a request, sends a response, and closes
+%  the connection.  The program uses variants to handle cases where
+%  applications use different system calls to perform some common action
+%  (e.g. receiving data from a socket).}
+%\label{lst:RealWorldPerformance}
+%\end{figure}
 
 The results in Table~\ref{tbl:RealWorldPerformance} show that
 PORT's
