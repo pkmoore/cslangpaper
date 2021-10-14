@@ -276,7 +276,7 @@ Any event in the input stream not matched by the current action is simply copied
 
 Sometimes, it is necessary to constrain this implicit repetition mechanism by disallowing the appearance of certain events in the input stream before an event  matched by the current action is encountered.  This can be done by \emph{negated patterns}, which take the form \lstinline+not id$(p)$ with $b$+. If an event that matches the pattern \lstinline+id$(p)$ with $b$+ is encountered before the next positive action in the program takes effect, then the transducer aborts. For instance, the PORT program in Fig.~\ref{fig:CompareListing} uses a negated pattern to ensure that no \lstinline+read+ system call is executed on the opened file with file descriptor \lstinline+fd+ before the file is closed.
 
-\paragraph{Explicit Repetition}
+\paragraph{Explicit repetition}
 PORT also supports matching clearly defined sequences of events.  This functionality is useful when a desired pattern
 contains some unknown number of repetitions of one or more events.
 This functionality behaves similarly to a Kleene star as provided by many regular expressions engines.

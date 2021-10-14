@@ -321,21 +321,20 @@ Our final experiment evaluates the
 time required for our prototype implementation
 to identify specific
 patterns within real-world system call traces.
-We chose two widely used network applications that offered a sufficient level of complexity,
-NCat
-and
-Python's http server,
+We chose eight widely used network applications that offered a sufficient level of complexity
 and recorded test traces using the following 
-experimental setup.  The applications are configured to service
-a simple piece of content (a single string in the case of NCat), and their system call activity is
-recorded using {\tt strace} while handling a request from a remote client.
-The strace recordings are then processed using the PORT program shown in
-Figure~\ref{lst:RealWorldPerformance},  which
+experimental setup.
+Five of the applications are clients that operate by connecting to an appropriate service.  They were recorded as they made this connection and completed a small request (e.g. transmitting or receiving a file).
+Three of the applications were servers.  As such, they were recorded as they accepted a connection from an appropriate client and serviced a small request.
+These recordings were made with strace
+and then processed using a PORT program
+The program in question which
 identifies the sequence of system calls that implement
-a server's request handling loop\footnote{Recordings are pre-processed to remove system calls
+a client or server's request handling loop\footnote{Recordings are pre-processed to remove system calls
 related to executable loading and process creation.}.  Table~\ref{tbl:RealWorldPerformance}
-shows the times in seconds required to perform this identification on each
-web server, as well as the total number of system calls in each trace.
+shows the times in seconds required to perform this processing.
+Each execution timed 1, 10, and 100 times in order to mitigate the
+possibility of external factors influencing our measurements.
 
 \begin{figure}[t]
 \centering
