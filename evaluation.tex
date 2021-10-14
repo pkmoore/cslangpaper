@@ -339,13 +339,21 @@ web server, as well as the total number of system calls in each trace.
 
 \begin{figure}[t]
 \centering
-  \begin{tabular}{|c|c|c}
-                & Time in Sec. & Num. Syscalls.\\
+  \begin{tabular}{|c|l|l|l|l}
+                & 1 Execution & 10 Executions & 100 Executions & Num. Syscalls\\
               \hline
-  http.server   & 0.104 Sec.   & 297   \\
-  NCat          & 0.092 Sec.   & 43      \\
+  rsync client  & 0.128       & 1.257         & 12.067         & 274 \\
+  ftp client    & 0.200       & 1.858         & 18.616         & 891 \\
+  scp client    & 0.172       & 1.756         & 17.262         & 490 \\
+  ssh client    & 0.232       & 2.273         & 22.546         & 850 \\
+  telnet client & 0.114       & 0.958         & 9.132          & 23  \\
+  http.server   & 0.104       & 0.914         & 8.823          & 43  \\
+  ncat server   & 0.115       & 0.933         & 9.140          & 43  \\
+  socat server  & 0.118       & 1.124         & 10.321         & 71  \\
 \end{tabular}
-\caption{Time in seconds to process the listed number of events.}
+\caption{Time in seconds to process the listed number of events.  The 2nd - 4th
+columns list times required to complete 1, 10, and 100 executions.  Column 5
+notes the number of system calls in the trace being processed.}
 \label{tbl:RealWorldPerformance}
 \end{figure}
 
