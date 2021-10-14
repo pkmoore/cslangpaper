@@ -35,11 +35,11 @@ and what to do when you find it?
 
 In considering this question,  we drew inspiration from two sources. The
 first is a recent study that confirmed the value of monitoring and
-modifying an application’s  interactions with its environment.  Using a technique known as SEA (Simulating Environmental Anomalies),  the study demonstrated that when an applications fail, the causal properties
+modifying an application’s  interactions with its environment~\cite{DBLP:conf/issre/MooreCFW19}.  Using a technique known as SEA (Simulating Environmental Anomalies),  the study demonstrated that when an applications fail, the causal properties
 will be visible in the results of system calls it made. Further, the study affirmed these results could
 be captured and simulated for testing against other applications.  The
 second source was the  significant amount of literature supporting the use of event
-processing techniques over large streams of data. We posited that the techniques these tools
+processing techniques over large streams of data~\cite{DBLP:conf/sigmod/AgrawalDGI08,DBLP:conf/debs/Hirzel12,DBLP:journals/ibmrd/HirzelAGJKKMNSSW13,DBLP:journals/csur/DayarathnaP18}. We posited that the techniques these tools
 use to identify problems in a manufacturing environment, patterns in
 network outages, or customer behavior, could also be used to accurately and efficiently recognize target
 sequences in large
@@ -79,7 +79,7 @@ Operating  on principles similar
 to a standard finite-state transducer,
 the mutator will consume an input sequence of activity
 to determine if a particular pattern is present. At the same time, it
-produces an output stream
+produces an output stream.
 If the mutator accepts the input sequence of a stream,
 it means the described activity is present.
 In some cases,
