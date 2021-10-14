@@ -9,10 +9,10 @@ activity sequence. But, it can also produce a modified
 output event stream
 for application testing.
 As noted in Section 2, standard
-deterministic automatons or transducers can not accommodate these features.
+deterministic automata or transducers can not accommodate these features.
 Therefore, we instead compile a PORT program into
 an  enhanced transducer that can operate over complex data structures.
-The transducer consists of states, one of which is marked as the ``current state,'' and
+The transducer consists of states, one of which is marked as the ``current state'', and
 a series of rules that govern when the current state should change based on the event type
 and the parameters of an input stream element.
 Additionally, these rules describe what modifications should be made to the input stream.
@@ -31,7 +31,7 @@ Each item in an input
 sequence is examined and the transducer's internal state is updated accordingly.
  Output is then produced based on the rules described in the transducer's program.
  In this way, 
- the transducer itself can be thought of as a finite sequence of \emph{actions}
+ the transducer itself can be thought of as a sequence of \emph{actions}
  that may or may not be executed based on the values in the input stream. 
  The state of the transducer keeps track of the next action to be executed, as well as a valuation of a 
  finite number of \emph{registers} that hold data values.
@@ -161,6 +161,7 @@ A program is split into two parts: the \emph{preamble} consisting of type and ev
 \begin{figure}[t]
 \centering
 \scriptsize
+\begin{minipage}[t]{.5\linewidth}
 \begin{align*}
 \mathit{program} ::= {} &  (\mathit{typedef} \mid \mathit{eventdef})^* \; \mathit{action}^*\\
 \mathit{typedef} ::= {} & \mathtt{type}\; \mathit{id} \texttt{\{}\mathit{id} \texttt{:}\, t\, \texttt{@}\, n \; (\texttt{,} \mathit{id}\texttt{:} t\,\texttt{@}\,n)^*\texttt{\};}\\
@@ -170,12 +171,17 @@ A program is split into two parts: the \emph{preamble} consisting of type and ev
 %\mathit{action} ::= {} & \mathit{assignment} \mid \mathit{event}\\
 %\mathit{assignment} ::= {} & \mathit{regid} \texttt{ <- } e\\
 \mathit{action} ::= {} & \mathit{pattern} \texttt{ -> } \mathit{id}\,(e) \texttt{;} \mid \mathtt{not} \; \mathit{pattern} \texttt{;}\\
-\mathit{pattern} ::= {} & \mathit{id}\,(p) \;\mathtt{with}\; b\\
+\mathit{pattern} ::= {} & \mathit{id}\,(p) \;\mathtt{with}\; b
+\end{align*}
+\end{minipage}%
+\begin{minipage}[t]{.5\linewidth}
+\begin{align*}
 p \in \mathsf{pexp} ::= {} & \texttt{\{} \mathit{id}\texttt{:}\, p \; (\texttt{,} \mathit{id}\texttt{:}\, p)^*\texttt{\}} \mid \mathit{regid} \mid c \\
 e \in \mathsf{vexp} ::= {} & \mathit{regid} \mid c \mid e \,\texttt{+}\, e \mid e \,\texttt{-}\, e \mid \dots\\
 b \in \mathsf{bexp} ::= {} & \mathtt{true} \mid \mathtt{false} \mid e == e \mid \ldots \mid p \;\mathtt{and}\; p \mid \dots\\
 t \in \mathsf{texp} ::= {} & \mathtt{String} \mid \mathtt{Number} \mid \mathit{id} \mid \dots
 \end{align*}
+\end{minipage}
 \caption{Grammar of PORT's core language.}
 \label{lst:SyntaxGrammar}
 \end{figure}
@@ -230,10 +236,12 @@ This action matches the next (abstract) input event against the \emph{pattern} $
 \begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
   fstat({fdesc: fd2, sbuf: {dev:rdev, stino: rino2}})
 \end{lstlisting}
-When matched against the event
-\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
+When matched against the event%\\
+%\begin{adjustbox}{max width=\textwidth}
+\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2,basicstyle=\ttfamily\footnotesize]
   fstat({fdesc: 4, sbuf: {dev:"st_dev=makedev(0, 4)", ino: 42, mode="S_IFCHR|0666"}})
 \end{lstlisting}
+%\end{adjustbox}\\
 the match would succeed and assign the value \lstinline+4+ to register \lstinline+fd2+, \lstinline+"st_dev=makedev(0, 4)"+ to register \lstinline+rdev+, and \lstinline+"S_IFCHR|0666"+ to register \lstinline+rino2+.
 
 The Boolean expression $b$ is evaluated after the initial match of $\mathit{id}_1(p)$ succeeds. If $b$ evaluates to \lstinline+true+ then the action takes effect. Otherwise, the match fails and the registers are reset to their original values before $\mathit{id}_1(p)$ was matched.
@@ -256,7 +264,7 @@ Next, the \lstinline+with+ clause can also be omitted altogether from an action,
 
 Using this syntactic short-hand, the action given above can be expressed more compactly as:
 \begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
-  fstat({fdesc: ?rfd, sbuf: {dev:"st_dev=makedev(0, 4)", ino: ->rino}});
+  fstat({fdesc: ?rfd, sbuf: {dev:"st_dev=makedev(0, 4)", ino: -> rino}});
 \end{lstlisting}
 
 

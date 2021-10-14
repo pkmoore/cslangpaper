@@ -122,7 +122,7 @@ This could be achieved by operating in a fashion agnostic to the way an applicat
 %
 \begin{figure}[t]
 \begin{minipage}{.5\textwidth}
-  \begin{lstlisting}[gobble=4]
+  \begin{lstlisting}[basicstyle=\ttfamily\scriptsize,gobble=4]
     # Before Modification
     open("example.txt", O_RDWR, 0) = 3
     fstat(3, {...}) = 0
@@ -132,7 +132,7 @@ This could be achieved by operating in a fashion agnostic to the way an applicat
   \end{lstlisting}
  \end{minipage}%
  \begin{minipage}{.5\textwidth}
-  \begin{lstlisting}
+  \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
     # After Modification
     open("example.txt", O_RDWR, 0) = 3
     fstat(3, {...}) = 0
@@ -182,7 +182,7 @@ reuse in subsequent operations.
 \begin{figure}[t]
 \centering
 \begin{minipage}{.5\textwidth}
-  \begin{lstlisting}[basicstyle=\small,gobble=4,xleftmargin=.8em]
+  \begin{lstlisting}[basicstyle=\ttfamily\small,gobble=4,xleftmargin=.8em]
     event open {filedesc: Number@ret};
     event read {filedesc: Number@0};
     event close {filedesc: Number@0,
@@ -193,7 +193,7 @@ reuse in subsequent operations.
   \end{lstlisting}
   \end{minipage}%
   \begin{minipage}{.5\textwidth}
-  \begin{lstlisting}[basicstyle=\tiny]
+  \begin{lstlisting}[basicstyle=\ttfamily\tiny]
 pattern = Pattern(
   SeqOperator(
      PrimitiveEventStructure("OPEN", "a"),

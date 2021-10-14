@@ -67,8 +67,8 @@ SEA technique.
 
 \begin{figure}
 \centering
-\begin{minipage}{.5\textwidth}
-\begin{lstlisting}
+\begin{minipage}[t]{.5\textwidth}
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 event fstat {filedesc: Numeric@0};
 event stat {filename: String@0};
 event open {filename: String@0, filedesc: Numeric@ret};
@@ -78,13 +78,13 @@ open({filename: ?fn, filedesc: fd});
 fstat({fildesc: ?fd});
 \end{lstlisting}
 \end{minipage}%
-\begin{minipage}{.5\textwidth}
-\begin{lstlisting}
+\begin{minipage}[t]{.5\textwidth}
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 event Statbuf {mode: String@2};
 event anystat {stat sb: Statbuf@1}
         | {lstat sb: Statbuf@1} 
         | {fstat sb: Statbuf@1};
-anystat({sb: {mode: ->"st\_mode=S\_IFBLK"}});
+anystat({sb: {mode: -> "st_mode=S_IFBLK"}});
 \end{lstlisting}
 \end{minipage}
 \caption{The left listing contains a
@@ -202,7 +202,7 @@ Based on the ease and speed with which we
 were able to complete these new input stream formats, we are confident that PORT can be
 quickly adapted to support new activity representations as required.
 
-\begin{figure}[H]
+\begin{figure}[t]
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}
@@ -231,7 +231,7 @@ concrete Windows API calls required to carry them out. PORT accomplishes the tas
 these aggregate operations. As illustrated in  Figure~\ref{lst:DornhacklOpen} PORT uses variants to group the API calls that may be used to
 open a Windows registry key \cite{Dornhackl2014}. 
 
-\begin{figure}
+\begin{figure}[t]
 \begin{lstlisting}
 OPEN => RegOpenKeyA NtOpenKey
   | RegOpenKeyW NtOpenKey
@@ -249,7 +249,7 @@ these calls because it is the underlying ``native'' call that actually performs 
 Figure~\ref{lst:PORTOpenReg} shows the grouping and execution semantics as expressed
 in PORT.
 
-\begin{figure}
+\begin{figure}[t]
 \begin{lstlisting}[gobble=2]
   event open {RegOpenKeyA ...} | {RegOpenKeyW ...};
     # ... further variants omitted
@@ -279,7 +279,7 @@ setting an autostart key.  PORT can also express
 that the pattern must appear for a specific registry key.
 %using the value stored in the ``regkey'' register.
 
-\begin{figure}
+\begin{figure}[t]
 \centering
 \begin{tabular}{c}
 \begin{lstlisting}[gobble=2]
@@ -337,7 +337,7 @@ related to executable loading and process creation.}.  Table~\ref{tbl:RealWorldP
 shows the times in seconds required to perform this identification on each
 web server, as well as the total number of system calls in each trace.
 
-\begin{figure}
+\begin{figure}[t]
 \centering
   \begin{tabular}{|c|c|c}
                 & Time in Sec. & Num. Syscalls.\\
