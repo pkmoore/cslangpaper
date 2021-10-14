@@ -181,7 +181,7 @@ reuse in subsequent operations.
 
 \begin{figure}[t]
 \centering
-\begin{minipage}{.5\textwidth}
+\begin{minipage}[t]{.5\textwidth}
   \begin{lstlisting}[basicstyle=\ttfamily\small,gobble=4,xleftmargin=.8em]
     event open {filedesc: Number@ret};
     event read {filedesc: Number@0};
@@ -192,8 +192,8 @@ reuse in subsequent operations.
     close({filedesc: ?fd});
   \end{lstlisting}
   \end{minipage}%
-  \begin{minipage}{.5\textwidth}
-  \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+  \begin{minipage}[t]{.5\textwidth}
+  \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 pattern = Pattern(
   SeqOperator(
      PrimitiveEventStructure("OPEN", "a"),
