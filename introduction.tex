@@ -35,12 +35,12 @@ and what to do when you find it?
 
 In considering this question,  we drew inspiration from two sources. The
 first is a recent study that confirmed the value of monitoring and
-modifying an application’s  interactions with its environment~\cite{DBLP:conf/issre/MooreCFW19}.  Using a technique known as SEA (Simulating Environmental Anomalies),  the study demonstrated that when an applications fail, the causal properties
+modifying an application’s  interactions with its environment~\cite{DBLP:conf/issre/MooreCFW19}.  Using a technique known as SEA (Simulating Environmental Anomalies),  the study demonstrated that when an application fails, the causal properties
 will be visible in the results of system calls it made. Further, the study affirmed these results could
 be captured and simulated for testing against other applications.  The
-second source was the  significant amount of literature supporting the use of event
+second source was the significant amount of literature supporting the use of event
 processing techniques over large streams of data~\cite{DBLP:conf/sigmod/AgrawalDGI08,DBLP:conf/debs/Hirzel12,DBLP:journals/ibmrd/HirzelAGJKKMNSSW13,DBLP:journals/csur/DayarathnaP18}. We posited that the techniques these tools
-use to identify problems in a manufacturing environment, patterns in
+use to identify problems in  manufacturing environments, patterns in
 network outages, or customer behavior, could also be used to accurately and efficiently recognize target
 sequences in large
 application activity streams.
@@ -128,7 +128,7 @@ We also demonstrate that PORT can also be used for applications other than softw
 Specifically, we sketch how a model used for
 detecting malicious behavior in Windows applications due to Dornhackl et al.~\cite{Dornhackl2014} can be implemented in PORT.
 
-Finally, show that PORT's performance 
+Finally, we show that PORT programs are able to quickly process recordings taken from real world applications.  Our results show that thousands of executions can be completed in a handful of seconds.
 %This plan details how PORT could be used to
 %implement each of the components required by their technique.
 
@@ -147,7 +147,7 @@ The main contributions in this work can be summarized as follows:
   it to accept a variety of ``activity representations.''
   
 \item We provide an open source implementation of PORT available for immediate use
-at \textit{Link removed for blinding purposes}.
+at: \textit{Link removed for blinding purposes. Additionally, we will submit an artifact for evaluation if accepted.}
 
 \end{itemize}
 
