@@ -1,14 +1,25 @@
-\documentclass[runningheads]{llncs}
+\documentclass[a4paper,twoside]{article}
 
-\usepackage{amsmath}
-\usepackage{hyperref}
-\usepackage{amssymb}
-\usepackage{graphicx}
+
+\usepackage{epsfig}
+\usepackage{subcaption}
 \usepackage{calc}
+\usepackage{amssymb}
+\usepackage{amstext}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{multicol}
+\usepackage{pslatex}
+\usepackage{apalike}
+\usepackage[bottom]{footmisc}
+\usepackage{SCITEPRESS} 
+
+
+\usepackage{hyperref}
+\usepackage{graphicx}
 \usepackage{listings}
 \usepackage{float}
 \usepackage[T1]{fontenc}
-\usepackage{subfig}
 \usepackage{inconsolata} % For cleaner fonts in code listings
 \usepackage{bm}
 \usepackage{bold-extra}
@@ -72,18 +83,13 @@ Application Recordings}
 %Fourth Author\inst{1}\orcidID{2222--3333-4444-5555} \and
 %Fifth Author\inst{2}\orcidID{2222--3333-4444-5555}}
 %
-\authorrunning{Anon.}
-\titlerunning{Needles in a Haystack}
-% First names are abbreviated in the running head.
-% If there are more than two authors, 'et al.' is used.
-%
-%\institute{Anonymous University, Sometown, XX 00000, Country \and
-%Another University, Anothertown YY, Country}
-%\email{lncs@springer.com}\\
-%\url{http://www.springer.com/gp/computer-science/lncs}
-\maketitle
+\keywords{The paper must have at least one keyword. The text must be set to 9-point font size and without the use of bold or italic font style. For more than one keyword, please use a comma as a separator. Keywords must be titlecased.}
 
 \input{abstract}
+
+\onecolumn \maketitle \normalsize \setcounter{footnote}{0} \vfill
+
+
 \input{introduction}
 \input{background}
 \input{languageoverview}
@@ -93,7 +99,9 @@ Application Recordings}
 \input{conclusion}
 
 
-\bibliographystyle{splncs04}
-\bibliography{bibdata}
+\bibliographystyle{apalike}
+{\small
+\bibliography{bibdata}}
+
 
 \end{document}
