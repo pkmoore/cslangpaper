@@ -1,15 +1,14 @@
 \section{Language Overview}
 \label{sec:Overview}
 
-The PORT language allows its users to completely describe a mutator - a program that can recognize a particular event stream and optionally produce a modified version of the same event stream.
+The PORT language allows its users to completely describe a mutator - a program that can recognize a particular event stream and optionally produce a modified version of that stream.
 As noted in Section 2, standard
 deterministic automata or transducers can not accommodate these features.
-Therefore, we instead compile a PORT program into
+Therefore, we compile a PORT program into
 an  enhanced transducer that can operate over complex data structures.
-The transducer consists of states, one of which is marked as the ``current state'', and
-a series of rules that govern when the current state should change based on the event type
-and the parameters of an input stream element.
-Additionally, these rules describe what modifications should be made to the input stream.
+The transducer consists of states, and
+a series of rules that govern when the current state should change. Based on the event type
+and the parameters of an input stream element, these rules also describe what modifications should be made to the input stream.
 
 The transducer rules consist of logical comparisons between an event's parameter values, the values stored in the transducer's registers, or the literals specified directly in a program's code.
 Using event processing techniques, PORT maps activity onto a
@@ -192,11 +191,11 @@ This definition maps the concrete events named \lstinline+read+ and \lstinline+r
 If an event definition defines an abstract event in terms of a single variant for which the concrete event name coincides with the name of the abstract event, then the former can be omitted in the variant.
 
 Event definitions have three distinct functions. First, they allow a PORT program to ignore
-irrelevant parameter values in concrete events. Second, they can map semantically-related concrete events to the same abstract event, and lastly it permits any modifications of record fields to be mapped back to corresponding modifications of the underlying concrete events.
+irrelevant parameter values in concrete events. Second, they can map semantically-related concrete events to the same abstract event, and lastly they permit any modifications of record fields to be mapped back to corresponding modifications of the underlying concrete events.
 %These operations can be accomplished even if the values tracked by the
 %abstract event occur at different positions in the parameter lists of the concrete events.
 
-The abstraction mechanism used for the parameter lists of concrete events can also be applied to the values themselves. For instance, the 1st parameter of an \lstinline+fstat+ system call is a status buffer that consists of a list of values. \emph{Type definitions} can be used to abstract such compound values into records. The following PORT code defines an abstract \lstinline+fstat+ event that tracks only the device identifier, inode number, and mode of the status buffer:
+The abstraction mechanism used for these parameter lists can also be applied to the values themselves. For instance, the 1st parameter of an \lstinline+fstat+ system call is a status buffer that consists of a list of values. \emph{Type definitions} can be used to abstract such compound values into records. The following PORT code defines an abstract \lstinline+fstat+ event that tracks only the device identifier, inode number, and mode of the status buffer:
 \begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
   type SB {dev: String@0, ino: String@1, mode: String@2};
   event fstat {fdesc: Number@0, sbuf: SB@1};
@@ -225,7 +224,7 @@ The abstraction mechanism used for the parameter lists of concrete events can al
 
 
 \paragraph*{Body.}
-The action expression in the body of a PORT program describe how the input event stream is transformed to the output event stream. An individual input event is matched and transformed by an atomic action of the form
+The action expression in the body of a PORT program describes how the input event stream is transformed to the output event stream. An individual input event is matched and transformed by an atomic action of the form
 \[\mathit{id}_1(p) \;\mathtt{with}\; b \texttt{ -> } \mathit{id}_2\,(e)\]
 This action matches the next (abstract) input event against the \emph{pattern} $\mathit{id}_1(p)$ subject to the constraint $b$. The action is triggered if the name of the matched event is $\mathit{id}_1$ and its record satisfies the constraints imposed by $p$ and $b$. The semantics of pattern matching is similar to the way  expressions are pattern matched in functional programming languages. In particular, a variable occurring in a pattern refers to a register of the transducer. If the pattern matches the event, then the register is assigned to the corresponding value. For example, consider the pattern:
 \begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
@@ -233,7 +232,7 @@ This action matches the next (abstract) input event against the \emph{pattern} $
 \end{lstlisting}
 When matched against the event\\[.3em]
 \begin{adjustbox}{max width=\textwidth}
-\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2,breaklines=false]
+\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
   fstat({fdesc: 4, sbuf: {dev:"st_dev=makedev(0, 4)", ino: 42, mode="S_IFCHR|0666"}})
 \end{lstlisting}
 \end{adjustbox}\\[.5em]
@@ -246,7 +245,7 @@ When an atomic action takes effect, the matched input event is consumed and an o
 For example, consider the atomic action:
 \\[.3em]
 \begin{adjustbox}{max width=\textwidth}
-\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2,breaklines=false]
+\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
   fstat({fdesc: rfd2, sbuf: {dev:rdev, ino: rino2}})
     with rfd2 == rfd and rdev == "st_dev=makedev(0, 4)" -> fstat({sbuf:{ino: rino}});
     \end{lstlisting}
@@ -254,13 +253,13 @@ For example, consider the atomic action:
 This action matches the \lstinline+fstat+ event given above, assuming the register \lstinline+rfd+ has value \lstinline+4+ before the match. Moreover, if the register \lstinline+rino+ has value \lstinline+43+ before the action is executed, then the action produces the output event:
 \\[.3em]
 \begin{adjustbox}{max width=\textwidth}
-\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2,breaklines=false]
+\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
   fstat({fdesc: 4, sbuf: {dev:"st_dev=makedev(0, 4)", ino: 43, mode="S_IFCHR|0666"}})
   \end{lstlisting}
 \end{adjustbox}\\[.5em]
-For convenience, we have included a syntactic short-hand that allows one to more compactly express common kinds of patterns. First, one often needs to express that the value of a matched record field is equal to the current value of a register. In the action above, the field \lstinline+fdesc+ of the matched \lstinline+fstat+ event must be equal to \lstinline+rfd+ for the match to succeed. This constraint can be expressed more succinctly by replacing \lstinline+rfd2+ with \lstinline+?rfd+ in the pattern of the action. Doing so ensures that the matched value is equal to \lstinline+rfd+ without changing the value of \lstinline+rfd+. The equality \lstinline+rsd2 == rsd+ can then be omitted from the \lstinline+with+ clause.
+For convenience, we have included a syntactic short-hand that allows one to more compactly express common pattern types. First, one often needs to express that the value of a matched record field is equal to the current value of a register. In the action above, the field \lstinline+fdesc+ of the matched \lstinline+fstat+ event must be equal to \lstinline+rfd+ for the match to succeed. This constraint can be expressed more succinctly by replacing \lstinline+rfd2+ with \lstinline+?rfd+ in the pattern of the action. Doing so ensures that the matched value is equal to \lstinline+rfd+ without changing the value of \lstinline+rfd+. The equality \lstinline+rsd2 == rsd+ can then be omitted from the \lstinline+with+ clause.
 
-Next, the \lstinline+with+ clause can also be omitted altogether from an atomic action, in which case $b$ defaults to \lstinline+true+. Likewise, the output clause can be omitted and the matched input event can simply be copied to the output stream. Finally, an action is replacing only the value of a field, and the action is not dependent on the old value, then the modified field value can be specified directly in the pattern using the notation \lstinline+-> $e$+. Here, the expression $e$ determines the new value to be stored in the field.
+Next, the \lstinline+with+ clause can also be omitted altogether from an atomic action, in which case $b$ defaults to \lstinline+true+. Likewise, the output clause can be omitted and the matched input event can simply be copied to the output stream. Finally, if an action is replacing only the value of a field, and the action is not dependent on the old value, then the modified field value can be specified directly in the pattern using the notation \lstinline+-> $e$+. Here, the expression $e$ determines the new value to be stored in the field.
 
 Using this syntactic short-hand, the action given above can be expressed more compactly as:
 \begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]

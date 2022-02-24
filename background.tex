@@ -35,45 +35,39 @@ discussed in the SEA paper's evaluation.
 This anomaly may be problematic
 when an application running under Linux
 attempts to open and read data from a file on disk.
-In addition to ``regular'' files,
-which are used to store text and
+In addition to files,
+used to store text and
 binary data,
 Linux supports several special file types.
 Writing to and
-reading from each of these file types requires special procedures.
-As a result, an application should check the type of files it intends to
-process so that it can handle it correctly.
+reading from these files types requires special procedures.
 The SEA technique
 may simulate the presence of such a file by
 modifying
 the return value
 of a {\tt stat} call.
-Moore et al. accomplish this manually
-by writing a script
+While Moore et al. had to manually
+write a script
 for each anomaly
-to process system call traces.
-PORT improves on this process by
-making it easier to describe
-where and how to make required modifications.
+to process system call traces, 
+PORT improves on this process by simplifying the description and directing where and how to make the required modifications.
 
 Our takeaway
-from reading this study
+from this study
 was that an application's activity
 can be systematically mined to find bugs.
-The work described in this paper
-shows that the best way to extract this data
+In this paper, we
+show that the best way to extract this data
 is to treat application activity
-as a sequence of events,
-thus allowing us to analyze it using
+as a sequence of events. This enables us to use
 proven event processing techniques. 
 Yet, it became apparent that existing
 stream processing tools
-are not well suited to this task. We needed a 
-novel tool to leverage
+are not well suited to this task. To leverage
 SEA's success beyond system calls to encompass other activity types,
 such as calls to library functions
-and remote procedure calls.
-This could be achieved by operating in a fashion agnostic to the way an application's activity has been recorded. Such a tool would require a distinct language. 
+and remote procedure calls, we needed to develop a novel tool.
+Such a tool would be  agnostic to the way an application's activity has been recorded, and as such would require its own  distinct language. 
 
 
 %%% What are we really doing here.  WHY did we decided to make this language?
@@ -120,8 +114,7 @@ This could be achieved by operating in a fashion agnostic to the way an applicat
 %programs~\cite{sudocopy} in the
 %last year alone!
 %
-\begin{figure}[t]
-\begin{minipage}{.5\textwidth}
+\begin{figure}
   \begin{lstlisting}[basicstyle=\ttfamily\scriptsize,gobble=4]
     # Before Modification
     open("example.txt", O_RDWR, 0) = 3
@@ -130,8 +123,6 @@ This could be achieved by operating in a fashion agnostic to the way an applicat
     write(3, "Hello World!\n", 13) = 13
     close(3) = 0
   \end{lstlisting}
- \end{minipage}%
- \begin{minipage}{.5\textwidth}
   \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
     # After Modification
     open("example.txt", O_RDWR, 0) = 3
@@ -140,11 +131,10 @@ This could be achieved by operating in a fashion agnostic to the way an applicat
     write(3, "Hello World!\n", 13) = 13
     close(3) = -1
   \end{lstlisting}
-  \end{minipage}
   \caption{A system call trace of a program that opens, writes to, and closes
   a file before and after modifying the return value of the \texttt{close()} call.}
   \label{fig:StraceListing}
-\end{figure}
+ \end{figure}
 
 \subsection{Why a New Domain Specific Language?}
 
@@ -155,17 +145,14 @@ This could be achieved by operating in a fashion agnostic to the way an applicat
 %a significant amount of work
 %to define,
 %implement, document, and support.
-Existing stream processing systems do not deliver the features we need, which motivates the design and implementation of a new domain specific language. For starters, the language  had to be able to identify specific
+In designing  and implementing a new domain specific language, we needed to meet some specific criteria. For starters, the language had to be able to identify specific
 patterns as they appear in a recording of application activity.
-At first glance, it seems a simple model,
-such as a deterministic finite automaton (i.e. a DFA or a FSA), would suffice.
-The description could be written
-in a language similar to
-regular expressions, but enhanced to operate on complex
-structures rather than symbols in a string.
-Unfortunately,the solution is not so simple due to  dependencies
+A simple model,
+such as a deterministic finite automaton (i.e. a DFA or a FSA),  written enhanced to operate on complex
+structures would appear to be sufficient.
+Unfortunately, due to  dependencies
 between activities in these patterns
-across time,
+across time, the simple model will not work.
 as shown in Figure~\ref{fig:StraceListing}.
 The {\tt open()} call produces a file descriptor that a subsequent {\tt
 read()} call may match.
@@ -175,13 +162,11 @@ that can easily capture
 the internal contents of events,
 like argument data,
 pointer addresses,
-and return values that can be
+and return values. This content can then be
 manipulated for
 reuse in subsequent operations.
 
-\begin{figure}[t]
-\centering
-\begin{minipage}[t]{.5\textwidth}
+\begin{figure}
   \begin{lstlisting}[basicstyle=\ttfamily\small,gobble=4,xleftmargin=.8em]
     event open {filedesc: Number@ret};
     event read {filedesc: Number@0};
@@ -191,8 +176,6 @@ reuse in subsequent operations.
     not read({filedesc: ?fd});
     close({filedesc: ?fd});
   \end{lstlisting}
-  \end{minipage}%
-  \begin{minipage}[t]{.5\textwidth}
   \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 pattern = Pattern(
   SeqOperator(
@@ -209,7 +192,6 @@ AndCondition(EqCondition(
      Variable("b", lambda x: x["File Handle"]))),
 timedelta(minutes=10))
   \end{lstlisting}
-  \end{minipage}
   \caption{
   The left listing is a PORT program that finds situations
   where a program opens a file and closes it without reading from it.
@@ -220,10 +202,10 @@ timedelta(minutes=10))
 
 
 
-One possibility is to deploy more expressive automata models, such as register automata~\cite{DBLP:journals/tcs/KaminskiF94} or session automata~\cite{DBLP:journals/corr/BolligHLM14}. Yet, these models cannot produce a modified output and, as the 
+One possibility is to deploy more expressive automata models, such as register automata~\cite{DBLP:journals/tcs/KaminskiF94} or session automata~\cite{DBLP:journals/corr/BolligHLM14}. Yet, these models cannot produce a modified output.  As the 
 SEA researchers found,  the ability to
-{\textit modify} activity allows one to create scenarios that ensure
-application failures rather than  waiting for them to possibly occur.
+{\textit modify} activity can create scenarios to ensure
+application failures rather than  waiting for them to occur.
 Several feature-rich event processing
 languages and libraries do have these capabilities, but
 modifying and outputting
@@ -265,16 +247,16 @@ it means that the author,
 and future maintainers,
 of a
 program must be fluent in this host language.
-Finally,
-these languages include features and optimizations
-that would likely not be useful for our application domain, such as time-based event windows,
-merging multiple event streams,
-and the calculation of
-summary statistics over specified fields. 
+%Finally,
+%these languages include features and optimizations
+%that would likely not be useful for our application domain, such as time-based event windows,
+%merging multiple event streams,
+%and the calculation of
+%summary statistics over specified fields. 
 
 
 To demonstrate these points concretely,
-we consider two programs that recognize a system call sequence wherein an
+we consider two programs that can recognize a system call sequence wherein an
 application opens and closes a file
 without reading from it.
 Figure~\ref{fig:CompareListing} shows a PORT program that implements this
@@ -286,7 +268,7 @@ We compare this program\footnote{The program can be executed using the code and 
 with a corresponding program written in OpenCEP~\cite{open_cep_website},
 a CEP module for the Python programming language.
 As shown in Figure~\ref{fig:CompareListing},
-the PORT program is both more concise with its main work being done in just
+the PORT program is both more concise, with its main work accomplished in just
 three lines of code, and more readable because it is not constrained by the
 requirements of a host programming language.
 Unlike  OpenCEP and similar languages, PORT can modify and output an event.

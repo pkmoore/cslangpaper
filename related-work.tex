@@ -87,16 +87,16 @@ In~\cite{DBLP:conf/icse/ChristakisEG017}, Christakis et al. describe a language 
 Windows applications’ dynamic link library function calls to identify which ones should be
 intercepted by the runtime.
 
-A commonality
-of all the systems
-outlined above
-is that they were built to solve one particular problem
-and
-therefore lack the flexibility that drove the creation of PORT.
-For example, these systems were not designed to be easily re-targeted
-to a different type of event stream or to allow for transformations.
-
-It is likely that the previously cited FSA-based programs can be further improved by applying recent advances in inference modeling algorithms~\cite{MarianiPS17,WalkinshawTD13,EmamM18,BeschastnikhBEK14}. Although these algorithms are not application-specific, and can be tailored to recognize different types of event streams after some initial training phase, they lack the conciseness and flexibility found in PORT. PORT does not require training sets and is expressive enough to specify both frequent and  “needle in the haystack” event sequences with just a few lines of code.
+%A commonality
+%of all the systems
+%outlined above
+%is that they were built to solve one particular problem
+%and
+%therefore lack the flexibility that drove the creation of PORT.
+%For example, these systems were not designed to be easily re-targeted
+%to a different type of event stream or to allow for transformations.
+%
+It is likely that the previously cited FSA-based programs can be improved by applying recent advances in inference modeling algorithms~\cite{MarianiPS17,WalkinshawTD13,EmamM18,BeschastnikhBEK14}. Although these algorithms are not application-specific, and can be tailored to recognize different types of event streams after some initial training phase, they lack the conciseness and flexibility found in PORT. PORT does not require training sets and is expressive enough to specify both frequent and  “needle in the haystack” event sequences with just a few lines of code.
 
 
 \subsection{Event Stream Processing Languages and Algorithms}
@@ -118,12 +118,10 @@ annotation of incoming events. They also  provide many benefits over traditional
 stream-based text processing languages, such as sed~\cite{Mcmahon1979sed} and
 awk~\cite{DBLP:journals/spe/AhoKW79}.
 
-Although PORT is a stream processing language, it does not
+Because PORT is a stream processing language, it does not
 require all of the features typically
 included in this sort of system, such as
 combining multiple stream sources,
-out of order data retrieval,
-methods for handling data loss,
 time window based event aggregation,
 or database integrations~\cite{DBLP:journals/csur/DayarathnaP18}.
 Rather PORT seems to fit within the special case

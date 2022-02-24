@@ -13,16 +13,14 @@
 
 It is a well established principle
 that, in the wake of an application failure,
-examining its actions
-during execution can provide valid insight
-into the root cause.
+its actions
+during execution can provide clues
+to the root cause.
 Such information
-can aid not only in correcting
+can not only help correct
 the cause of failure,
-but also in the creation
-of tests to ensure
-that those causes
-are not repeated.
+but also prevent its repetition through the creation
+of better test methods.
 The challenge is 
 how to identify and extract this data
 from large and detailed sources like application logs,
@@ -30,18 +28,18 @@ system call traces,
 or application recordings.
 In other words, how does one
 accurately describe what activity is important
-and what to do when you find it?
+and what you should do when you find it?
 % This paper covers our efforts to make this process easier.
 
 In considering this question,  we drew inspiration from two sources. The
 first is a recent study that confirmed the value of monitoring and
-modifying an application’s  interactions with its environment~\cite{DBLP:conf/issre/MooreCFW19}.  Using a technique known as SEA (Simulating Environmental Anomalies),  the study demonstrated that when an application fails, the causal properties
-will be visible in the results of system calls it made. Further, the study affirmed these results could
+modifying an application’s  interactions with its environment~\cite{DBLP:conf/issre/MooreCFW19}.  Using a technique known as SEA (Simulating Environmental Anomalies), the study demonstrated that when an application fails, the causal properties
+will be visible in the results of the system calls it made. Further, the study affirmed these results could
 be captured and simulated for testing against other applications.  The
 second source was the significant amount of literature supporting the use of event
-processing techniques over large streams of data~\cite{DBLP:conf/sigmod/AgrawalDGI08,DBLP:conf/debs/Hirzel12,DBLP:journals/ibmrd/HirzelAGJKKMNSSW13,DBLP:journals/csur/DayarathnaP18}. We posited that the techniques these tools
-use to identify problems in  manufacturing environments, patterns in
-network outages, or customer behavior, could also be used to accurately and efficiently recognize target
+processing techniques over large streams of data~\cite{DBLP:conf/sigmod/AgrawalDGI08,DBLP:conf/debs/Hirzel12,DBLP:journals/ibmrd/HirzelAGJKKMNSSW13,DBLP:journals/csur/DayarathnaP18}. We posited that techniques
+currently used to identify problems in  manufacturing environments, or patterns in
+network outages, could also be used to accurately recognize target
 sequences in large
 application activity streams.
 
@@ -49,30 +47,29 @@ Building upon these successes,
 we introduce a tool
 that utilizes event processing techniques
 to identify
-the types of behaviors 
+behaviors 
 that may cause applications to fail.
 What makes this possible is PORT
 (\textbf{P}attern \textbf{O}bservation, \textbf{R}ecognition, and
 \textbf{T}ransformation),
 a new domain specific language
 that can describe these behaviors
-in a briefer and more easily understood manner than those written in conventional languages. In turn, the descriptions can be used
-to search a recording of an application's actions
-across a variety of ``activity representations,''
-such as system calls,
-or remote procedure calls.
-This capability ensures that an application either executed a desired behavior
+in a briefer and more easily understood manner than conventional languages. In turn, the descriptions can be used
+to search recordings of an application's actions
+across a variety of ``activity representations.'' That is, it can search
+system calls,
+or remote procedure calls and determine if  an application either executed a desired behavior
 or avoided an undesired one.
 Further, PORT can specify
 a set of modifications
-that should be made
+to be made
 if a particular activity sequence is encountered.
 By combining passive monitoring and active activity modification,
 PORT can aid in identifying bugs
 in a wide variety of programs
 that might be missed by other testing strategies.
 
-Harnessing PORT's passive and active capabilities is done
+We determined that harnessing PORT's passive and active capabilities could best be done
 by compiling a PORT program
 into a mutator.
 Operating  on principles similar
@@ -84,21 +81,20 @@ If the mutator accepts the input sequence of a stream,
 it means the described activity is present.
 In some cases,
 this may directly indicate
-the existence of a bug, while in
+the existence of a bug. In
 others, 
 the pattern may
-indicate an opportunity
-for more detailed testing. If the latter occurs, 
-the modified output sequence is used to evaluate an application's response to a simulated scenario.
+be employed
+for more detailed testing in which an application's response to the 
+modified output sequence indicates a flaw.
 Unlike a standard transducer, however,  
 a PORT mutator works using a generic representation we call our ``Intermediate Data Format (IDF).''
 An IDF can both abstract the details of a concrete event to make writing PORT programs easier, and 
-act as a medium through which modifications can be made to events without having to
-know the details of their contents.
+act as a medium through which modifications can be made to events even without any details of their contents.
 
-We first evaluate the effectiveness of the above technique to
-create a prototype implementation of PORT
-and use it to
+We first evaluate the effectiveness of the above technique by
+creating a prototype implementation of PORT
+and using it to
 re-implement the ``anomalies''
 described in the earlier work on the SEA technique~\cite{DBLP:conf/issre/MooreCFW19}.
 Side-by-side comparison shows that our new
@@ -121,10 +117,10 @@ To do so, we
 added support for two remote procedure call formats --
 JSONRPC~\cite{jsonspec} and XMLRPC~\cite{xmlspec}.
 This effort
-showed that PORT is both quick and easy to extend largely thanks to its
+showed that PORT is both quick and easy to extend largely because of its
 use of a generic intermediate data format.
 
-We also demonstrate that PORT can also be used for applications other than software testing.
+We also demonstrate that PORT can be used for applications other than software testing.
 Specifically, we sketch how a model used for
 detecting malicious behavior in Windows applications due to Dornhackl et al.~\cite{Dornhackl2014} can be implemented in PORT.
 
@@ -137,15 +133,13 @@ The main contributions in this work can be summarized as follows:
 
 \begin{itemize}
 
-\item We create a new domain specific language, {\em PORT}
-  that allows for concise descriptions of checkers that can recognize patterns in
-  an application's activity, as well as transform such activity streams to aid in software testing.
+\item We create a new domain specific language, {\em PORT},
+  that allows for concise descriptions of patterns
+  that may be
+  found and transformed in an application's activity stream.
 
-\item We show how PORT can utilize the SEA technique on a wider scale by finding bugs in more types of software.
+\item We show how PORT can utilize the SEA technique on a wider scale by finding bugs using more types of activity streams.
 
-\item We illustrate the ease with which PORT can be extended by modifying
-  it to accept a variety of ``activity representations.''
-  
 \item We provide an open source implementation of PORT available for immediate use
 at: \textit{Link removed for blinding purposes. Additionally, we will submit an artifact for evaluation if accepted.}
 

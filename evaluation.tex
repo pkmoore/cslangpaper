@@ -2,7 +2,7 @@
 \label{SEC:evaluation}
 
 With our implementation of PORT in hand, we designed a set of experiments to evaluate
-whether PORT would be effective in real world situations.
+if it would be effective in real world situations.
 Specifically, we aim to answer the following questions:
 
 \begin{itemize}
@@ -52,9 +52,8 @@ takes an input trace
 that contains a call to either {\tt stat()},
 {\tt fstat()},
 or {\tt lstat()}
-and modifies the call's result data structure such
-that its {\tt ST\_MODE} member will contain a value
-that indicates an unusual file type.
+and modifies its result data structure so
+its {\tt ST\_MODE} member will indicate an unusual file type.
 As can be seen in
 Figure~\ref{lst:SEAListings}, this task can be expressed with only a few lines of PORT code.  In the figure,
 lines 1 through 4 define what {\tt stat()}, {\tt fstat()}, and {\tt
@@ -67,7 +66,6 @@ SEA technique.
 
 \begin{figure}
 \centering
-\begin{minipage}[t]{.5\textwidth}
 \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 event fstat {filedesc: Numeric@0};
 event stat {filename: String@0};
@@ -77,8 +75,6 @@ stat({filename: fn});
 open({filename: ?fn, filedesc: fd});
 fstat({fildesc: ?fd});
 \end{lstlisting}
-\end{minipage}%
-\begin{minipage}[t]{.5\textwidth}
 \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 event Statbuf {mode: String@2};
 event anystat {stat sb: Statbuf@1}
@@ -86,7 +82,6 @@ event anystat {stat sb: Statbuf@1}
         | {fstat sb: Statbuf@1};
 anystat({sb: {mode: -> "st_mode=S_IFBLK"}});
 \end{lstlisting}
-\end{minipage}
 \caption{The left listing contains a
 PORT program that can detect whether a file was replaced as it was copied.
 The right listing shows a program that
@@ -115,20 +110,19 @@ the need for users to do so manually.
 In PORT, there is no
 need to explicitly exclude system
 calls outside of the desired set.  Each statement defines a new state with
-incoming and outgoing transitions configured such that any system calls not
-dealt with in the PORT program are ignored.
+incoming and outgoing transitions configured to ignore any system calls not
+dealt with in the PORT program.
 
 \textit{Easy to modify call contents:}  PORT's operators make it
 easy to change only those parameters  of a system call
  needed to produce output.
 This is a far cry
-from the Python program, which relies on manual and fragile string manipulation
-to achieve the same effect.
+from the Python program, which relies on manual and fragile string manipulation.
 
 \subsubsection{Supporting Cross-Disk Move Checkers}
 
-In the second part of this experiment we test whether PORT can be used to
-implement the ``checkers'' used in the SEA work to determine if an
+In the second part of this experiment we tested whether PORT can
+implement the ``checkers'' used in SEA to determine if an
 application can correctly move a file from one disk to another.
 This task is a common source of bugs in Linux applications. As the
 Linux
@@ -173,16 +167,14 @@ and ensure they have all been applied with a
 corresponding call to {\tt setxattr()}.
 Though we are considering such a feature for future implementation,
 we do not currently support it because such an extension could
-hurt program clarity and make it more difficult to reason about
+hurt program clarity and make it harder to reason about
 mutator behavior.
 
 
 \subsection{Extending PORT to Other Activity Representations}
 
 Our second experiment evaluates PORT's usability beyond system call manipulation.
-A logical next step is to test PORT's capabilities when working
-with a higher level, but similarly structured, activity representation, such as remote procedure calls.
-We chose the JSONRPC and XMLRPC APIs for this purpose as they are widely used and have well
+We selected remote procedure calls as a logical next step and chose the JSONRPC and XMLRPC APIs for this purpose. Both  are widely used and have well
 supported parsing libraries or modules.
 
 To evaluate how well PORT can work with these representations we
@@ -193,7 +185,7 @@ activity streams similar to the examples presented in the JSONRPC
 2.0~\cite{jsonspec} and XMLRPC~\cite{xmlspec}
 specifications.  One such program is shown in
 Figure~\ref{lst:JSONProgram}.  This program matches a pattern of ``test''
-and ``update'' calls and, if the pattern is found, the final update call's
+and ``update'' calls. If the pattern is found, the final update call's
 parameters are replaced with the constants 999 and 888, respectively.
 
 Adding support for JSONRPC and XMLRPC by creating
@@ -227,7 +219,7 @@ reproducing Dornhackl et al.'s~\cite{Dornhackl2014}
 efforts to describe and detect malicious behavior in Windows
 applications.  The Dornhackl team was able to describe what it takes to implement a malicious goal, and then
 map those tasks onto the
-concrete Windows API calls required to carry them out. PORT accomplishes the task by making one operation out of a set of similar API calls and then describing a malicious task  in terms of
+concrete Windows API calls required to carry them out. PORT accomplishes the task by making one operation out of a set of similar API calls and then describing a malicious task in terms of
 these aggregate operations. As illustrated in  Figure~\ref{lst:DornhacklOpen} PORT uses variants to group the API calls that may be used to
 open a Windows registry key \cite{Dornhackl2014}. 
 
@@ -268,9 +260,7 @@ in PORT.
 
 Though they use different approaches to do so,  both Dornhackl et al. and PORT can describe a pattern that, if
 detected, indicates that
-a Windows registry key has been installed
-that can cause some malicious action
-the next time the machine is restarted.
+a Windows registry key capable of causing some malicious action  has been installed.
 % (assuming PORT were extended to support Windows).
 The PORT program is shown in Figure~\ref{lst:PORTRegDetect}.  The program groups API calls into \lstinline+OPEN+, \lstinline+SET+, and \lstinline+CLOSE+ operations and searches for a pattern that
 indicates
@@ -328,7 +318,7 @@ Five of the applications are clients that operate by connecting to an appropriat
 Three of the applications were servers.  As such, they were recorded as they accepted a connection from an appropriate client and serviced a small request.
 These recordings were made with strace
 and then processed using a PORT program
-The program in question which
+The program in question
 identifies the sequence of system calls that implement
 a client or server's request handling loop\footnote{Recordings are pre-processed to remove system calls
 related to executable loading and process creation.}.  Table~\ref{tbl:RealWorldPerformance}
@@ -339,7 +329,7 @@ possibility of external factors influencing our measurements.
 \begin{figure}[t]
 \centering
   \begin{tabular}{|c|l|l|l|l}
-                & 1 Execution & 10 Executions & 100 Executions & Num. Syscalls\\
+                & 1 Exe. & 10 Exe. & 100 Exe. & Length\\
               \hline
   rsync client  & 0.128       & 1.257         & 12.067         & 274 \\
   ftp client    & 0.200       & 1.858         & 18.616         & 891 \\

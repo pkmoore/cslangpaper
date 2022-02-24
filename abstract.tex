@@ -1,19 +1,18 @@
 \abstract{Earlier work has proven that information extracted from recordings of an
 application’s activity can be tremendously valuable.
-However, given the many requests  applications make to external entities, 
-recognizing the handful of patterns that indicate the
-potential for failure has been difficult at best. In this paper we propose a new technique for finding bugs that adapts 
+However, given the many requests  applications make to external entities, isolating the handful of patterns that indicate the
+potential for failure has been difficult at best. In this paper we propose a new technique that can find bugs by utilizing
 event processing techniques
-already used to locate patterns of interest in other domains. By creating PORT,
+proven to locate patterns in other domains. By creating PORT,
 a new domain specific language, users can extract patterns in system call recordings and other streams,
 and then rewrite input activity on the fly.
 The former task can spot activity that indicates a bug,
 while the latter produces a modified stream
 for use in more active testing.
-We employed PORT
+To test PORT's capabilities, we used it
 to recreate the mutators and checkers
-used by the SEA project
-to modify and replay
+that the SEA project
+employed to modify and replay
 the results of system calls. Our
  re-implementations achieved the same
 efficacy and better reliability using fewer lines of
