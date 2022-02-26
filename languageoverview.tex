@@ -1,7 +1,8 @@
 \section{Language Overview}
 \label{sec:Overview}
 
-The PORT language allows its users to completely describe a mutator - a program that can recognize a particular event stream and optionally produce a modified version of that stream.
+
+The PORT language allows its users to completely describe a mutator, or a program that can recognize a particular event stream and optionally produce a modified version of that stream.
 As noted in Section 2, standard
 deterministic automata or transducers can not accommodate these features.
 Therefore, we compile a PORT program into
@@ -10,14 +11,13 @@ The transducer consists of states, and
 a series of rules that govern when the current state should change. Based on the event type
 and the parameters of an input stream element, these rules also describe what modifications should be made to the input stream.
 
-The transducer rules consist of logical comparisons between an event's parameter values, the values stored in the transducer's registers, or the literals specified directly in a program's code.
+The transducer rules consist of logical comparisons between an event's parameter values, and the values stored in the transducer's registers or the literals specified directly in a program's code.
 Using event processing techniques, PORT maps activity onto a
-stream of \emph{events}, which can be defined here as individual interactions between the program and its environment, e.g.,
+stream of \emph{events}, which can be defined here as individual interactions between a program and its environment, e.g.,
 a single library, system, or remote procedure call.
 Each event consists of a unique identifier (e.g. the name of the function being called) and a list of parameter values (e.g. the argument and return values of the called function).
-Parameter values are drawn from a set of basic data values, such as strings and numbers, as well as user-definable record types.
 
-PORT allows the user to ignore parameter values that are irrelevant for the particular task at hand.  It also can create a single abstract event from several that are semantically related, but have different event identifiers. The transducer description can then refer to just these abstract events rather than individually specify each event it contains.
+Parameter values are drawn from a set of basic data values, such as strings and numbers, as well as user-definable record types. PORT also gives users the option to ignore parameter values that are irrelevant for the particular task at hand. And, it can  create a single abstract event from several semantically related, but different event identifiers. In this manner, the transducer description can refer to just the abstract events rather than individually specifying each event it contains.
 
 A PORT transducer processes an input event stream as follows (illustrated in Figure~\ref{fig:Processing}).
 Each item in an input
@@ -182,12 +182,11 @@ t \in \mathsf{texp} ::= {} & \mathtt{String} \mid \mathtt{Number} \mid \mathit{i
 
 \paragraph*{Preamble.}
 
-An abstract event consists of a name and a record of named fields that hold data values of interest. As an example, consider the event definition:
+An abstract event consists of a name and a record of named fields that hold data values of interest. Consider the event definition:
 \begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2,columns=strict]
   event rd {read fdesc: Number@0} | {recv fdesc: Number@0};
 \end{lstlisting}
 This definition maps the concrete events named \lstinline+read+ and \lstinline+recv+ to the abstract event \lstinline+rd+. The parameter values of the concrete events are abstracted to a record consisting of a single field \lstinline+fdesc+ that holds a value of type \lstinline+Number+. The notation \lstinline+fdesc: Number@0+ in each variant indicates that the value of \lstinline+fdesc+ is the 0th parameter of the corresponding concrete event. Note that all variants must map their parameters to the same record type.
-
 If an event definition defines an abstract event in terms of a single variant for which the concrete event name coincides with the name of the abstract event, then the former can be omitted in the variant.
 
 Event definitions have three distinct functions. First, they allow a PORT program to ignore

@@ -1,24 +1,16 @@
 \abstract{Earlier work has proven that information extracted from recordings of an
-application’s activity can be tremendously valuable.
-However, given the many requests  applications make to external entities, isolating the handful of patterns that indicate the
-potential for failure has been difficult at best. In this paper we propose a new technique that can find bugs by utilizing
-event processing techniques
-proven to locate patterns in other domains. By creating PORT,
-a new domain specific language, users can extract patterns in system call recordings and other streams,
+application’s activity can be tremendously valuable. However, given the many requests that pass between applications and external entities, it has been difficult to isolate the handful of patterns that indicate the potential for failure. In this paper we propose a method that harnesses proven event processing techniques to find those problematic patterns. The key addition is PORT,
+a new domain specific language we wrote that enables users to  extract patterns in system call recordings and other streams,
 and then rewrite input activity on the fly.
 The former task can spot activity that indicates a bug,
 while the latter produces a modified stream
 for use in more active testing.
-To test PORT's capabilities, we used it
-to recreate the mutators and checkers
-that the SEA project
-employed to modify and replay
-the results of system calls. Our
+We tested PORT's capabilities in several ways, starting with recreating the mutators and checkers utilized by an earlier work called SEA to modify and replay the results of system calls. Our
  re-implementations achieved the same
 efficacy and better reliability using fewer lines of
 code.
-We further illustrated PORT’s extensibility
-by supporting remote
-procedure call traces,
-and showing how PORT can be used
-to detect malicious application behavior.}
+We also  illustrated PORT’s extensibility
+by adding support for
+detecting malicious USB commands
+within recorded traffic.
+}

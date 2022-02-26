@@ -25,7 +25,7 @@ of the decisions that went into their design and operation.
 
 \paragraph{The PORT compiler.}
 
-Thecompiler is responsible for constructing a transducer
+The compiler is responsible for constructing a transducer
 from a PORT program.
 %PORT is a compiled rather than an interpreted language because
 %the earlier SEA work showed that this sort of program is typically
@@ -39,7 +39,7 @@ In the second, the
 contents of the AST are used to construct the transducer, which is then serialized to
 disk so that it may be stored and reused.
 
-\paragraph{The internal data format.}
+\paragraph{Transformers and the internal data format.}
 
 We wanted to make PORT flexible so the SEA technique
 could
@@ -66,9 +66,9 @@ The language and compiler currently do not support unbounded arrays. However, ex
 The actual activity stream of an application is converted from its original representation into IDF and
 back using a \emph{transformer} module. The transformer parses each activity entry,
 extracts the relevant data, and assembles it into an IDF
-event record.  These event records comprise the input stream of the transducer.
-The output event stream is then converted by the same transformer module
-back into the original activity representation. We have implemented transformers for different kinds of activity streams including system call and RPC call sequences.
+event record.  Event records comprise the input stream of the transducer, while 
+the output event stream is converted back by the same transformer module
+into the original  representation. We have implemented transformers for different kinds of activity streams including system call, USB, and RPC call sequences.
 
 \paragraph{Executing a PORT program.}
 

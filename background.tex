@@ -35,22 +35,19 @@ discussed in the SEA paper's evaluation.
 This anomaly may be problematic
 when an application running under Linux
 attempts to open and read data from a file on disk.
-In addition to files,
-used to store text and
-binary data,
-Linux supports several special file types.
-Writing to and
-reading from these files types requires special procedures.
+Linux supports several special file types and
+writing to and
+reading from these files requires special procedures.
 The SEA technique
 may simulate the presence of such a file by
 modifying
 the return value
 of a {\tt stat} call.
-While Moore et al. had to manually
-write a script
-for each anomaly
-to process system call traces, 
-PORT improves on this process by simplifying the description and directing where and how to make the required modifications.
+PORT improves on the process described by Moore et al. 
+for employing such an anomaly
+by simplifying the
+process of describing a target pattern
+and desired modifications.
 
 Our takeaway
 from this study
@@ -63,8 +60,8 @@ as a sequence of events. This enables us to use
 proven event processing techniques. 
 Yet, it became apparent that existing
 stream processing tools
-are not well suited to this task. To leverage
-SEA's success beyond system calls to encompass other activity types,
+are not well suited to this task. To apply
+SEA's success to other activity types,
 such as calls to library functions
 and remote procedure calls, we needed to develop a novel tool.
 Such a tool would be  agnostic to the way an application's activity has been recorded, and as such would require its own  distinct language. 
@@ -148,13 +145,9 @@ Such a tool would be  agnostic to the way an application's activity has been rec
 In designing  and implementing a new domain specific language, we needed to meet some specific criteria. For starters, the language had to be able to identify specific
 patterns as they appear in a recording of application activity.
 A simple model,
-such as a deterministic finite automaton (i.e. a DFA or a FSA),  written enhanced to operate on complex
-structures would appear to be sufficient.
-Unfortunately, due to  dependencies
-between activities in these patterns
-across time, the simple model will not work.
-as shown in Figure~\ref{fig:StraceListing}.
-The {\tt open()} call produces a file descriptor that a subsequent {\tt
+such as a deterministic finite automaton (i.e. a DFA or a FSA) enhanced to operate on complex
+structures, would appear to be sufficient.
+Unfortunately, as shown in Figure~\ref{fig:StraceListing}, the simple model will not work.  The {\tt open()} call produces a file descriptor that a subsequent {\tt
 read()} call may match.
 Yet, a standard DFA or FSA cannot match patterns with this sort of dependency. 
 Instead, we need a language
@@ -281,7 +274,7 @@ clause as follows:
 \begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2,columns=strict]
   close({filedesc: ?fd}) -> close({retval: -1});
 \end{lstlisting}
-If the modified PORT program is executed on the system call trace shown in the upper half of Fig.~\ref{fig:StraceListing}, it will produce the modified system call trace shown in the bottom half.
+If the modified PORT program is executed on the system call trace shown in the upper half of Fig.~\ref{fig:StraceListing}, it will produce the modified trace shown in the bottom half.
 
 % A domain specific language like PORT provides a more
 % concise syntax that makes it easier for all individuals to read and

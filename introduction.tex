@@ -53,11 +53,15 @@ What makes this possible is PORT
 (\textbf{P}attern \textbf{O}bservation, \textbf{R}ecognition, and
 \textbf{T}ransformation),
 a new domain specific language
-that can describe these behaviors
-in a briefer and more easily understood manner than conventional languages. In turn, the descriptions can be used
+we designed with the goal of
+making it possible
+to describe
+these behaviors
+in a briefer and more easily understood manner than conventional languages.
+The descriptions can be used
 to search recordings of an application's actions
-across a variety of ``activity representations.'' That is, it can search
-system calls,
+across a variety of ``activity representations.'' That is, it can search activities like
+system calls
 or remote procedure calls and determine if  an application either executed a desired behavior
 or avoided an undesired one.
 Further, PORT can specify
@@ -69,32 +73,12 @@ PORT can aid in identifying bugs
 in a wide variety of programs
 that might be missed by other testing strategies.
 
-We determined that harnessing PORT's passive and active capabilities could best be done
-by compiling a PORT program
-into a mutator.
-Operating  on principles similar
-to a standard finite-state transducer,
-the mutator will consume an input sequence of activity
-to determine if a particular pattern is present. At the same time, it
-produces an output stream.
-If the mutator accepts the input sequence of a stream,
-it means the described activity is present.
-In some cases,
-this may directly indicate
-the existence of a bug. In
-others, 
-the pattern may
-be employed
-for more detailed testing in which an application's response to the 
-modified output sequence indicates a flaw.
-Unlike a standard transducer, however,  
-a PORT mutator works using a generic representation we call our ``Intermediate Data Format (IDF).''
-An IDF can both abstract the details of a concrete event to make writing PORT programs easier, and 
-act as a medium through which modifications can be made to events even without any details of their contents.
-
-We first evaluate the effectiveness of the above technique by
-creating a prototype implementation of PORT
-and using it to
+In order to illustrate PORT's usefulness,
+we built a prototype compiler
+for the language
+and carried out a three part evaluation.
+The first part consisted of using our prototype
+to
 re-implement the ``anomalies''
 described in the earlier work on the SEA technique~\cite{DBLP:conf/issre/MooreCFW19}.
 Side-by-side comparison shows that our new
@@ -104,29 +88,24 @@ and maintainable
 than their original counterparts.
 As an added benefit,
 PORT can expand the use of the SEA technique,
-which has already been proven
-to be an effective bug detector,
-by facilitating its use
-on a wider variety of applications and activity formats.
+which has already proven effective as a bug detector,
+by expanding its use
+to a wider variety of applications and activity formats.
 
-Next, we
-determined how well PORT
-supports activity streams
-other than system calls.
-To do so, we 
-added support for two remote procedure call formats --
-JSONRPC~\cite{jsonspec} and XMLRPC~\cite{xmlspec}.
-This effort
-showed that PORT is both quick and easy to extend largely because of its
-use of a generic intermediate data format.
+Next,
+we investigated how well PORT could support
+other activity representations. 
+PORT has features, discussed in
+Section~\ref{SEC:architecture},
+that allowed us to quickly
+add support for recorded streams of USB
+traffic. This new capability enabled us to explore PORT's usefulness in detecting and simulating BADUSB-style attacks.
 
-We also demonstrate that PORT can be used for applications other than software testing.
-Specifically, we sketch how a model used for
-detecting malicious behavior in Windows applications due to Dornhackl et al.~\cite{Dornhackl2014} can be implemented in PORT.
-
-Finally, we show that PORT programs are able to quickly process recordings taken from real world applications.  Our results show that thousands of executions can be completed in a handful of seconds.
-%This plan details how PORT could be used to
-%implement each of the components required by their technique.
+Finally,
+we conduct a performance evaluation in order
+to demonstrate that PORT programs are able to quickly 
+process recordings taken from real world network and compression applications.
+Our results show that thousands of executions can be completed in a handful of seconds.  We provide the scripts necessary to reproduce our performance figures along with our PORT implementation.
 
 
 The main contributions in this work can be summarized as follows:
@@ -138,10 +117,12 @@ The main contributions in this work can be summarized as follows:
   that may be
   found and transformed in an application's activity stream.
 
-\item We show how PORT can utilize the SEA technique on a wider scale by finding bugs using more types of activity streams.
+\item We show how PORT improves upon earlier work on the SEA technique by offering a concise, but powerful way to write anomalies.
+
+\item We demonstrate that PORT can be extended to other activity representations by using it to detect and simulate BADUSB-style attacks.
 
 \item We provide an open source implementation of PORT available for immediate use
-at: \textit{Link removed for blinding purposes. Additionally, we will submit an artifact for evaluation if accepted.}
+at: \textit{Link removed for blinding purposes.}
 
 \end{itemize}
 

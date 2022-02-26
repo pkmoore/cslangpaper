@@ -1,8 +1,7 @@
 \section{Evaluation}
 \label{SEC:evaluation}
 
-With our implementation of PORT in hand, we designed a set of experiments to evaluate
-if it would be effective in real world situations.
+Once we had an implementation of PORT, we designed a set of experiments to evaluate its  effectiveness in real world situations.
 Specifically, we aim to answer the following questions:
 
 \begin{itemize}
@@ -28,7 +27,7 @@ Specifically, we aim to answer the following questions:
 \label{sub:SEAAnomalies}
 Given that this work is motivated
 in large part
-by the effectiveness of the SEA technique,
+by a desire to expand the utility of the SEA technique,
 our first experiment aims to reproduce the anomalies described
 in~\cite{DBLP:conf/issre/MooreCFW19}.
 Specifically,
@@ -92,17 +91,18 @@ identifies a \texttt{stat}, \texttt{lstat}, or \texttt{fstat} call and modifies
 \end{figure}
 
 The original implementation of this mutator in~\cite{DBLP:conf/issre/MooreCFW19} consisted of 55 lines
-of Python code.
+of Python code, much of it error-prone state management code. While this code was needed, it harmed
+readability and maintainability.
 When compared to the original mutator, it became apparent that there were
 several major advantages
 to using
 PORT:
 
-\textit{Minimal boilerplate code:} The PORT program lacks the boilerplate
-code associated with
+\textit{Minimal boilerplate code:} Because PORT's capabilities are narrowly defined to
+only describe the states and operations of a transducer, it lacks the boilerplate
+code associated with general purpose languages. No code is needed for 
 reading an input trace, managing mutator state, and producing output.
-This is possible because PORT's capabilities are narrowly defined to
-only describe the states and operations of a transducer.  As a result,
+As a result,
 functions can be generically implemented within PORT's core, eliminating
 the need for users to do so manually.
 
@@ -132,29 +132,28 @@ applications must perform this complex
 operation themselves.
 Moore et al. identified the steps required to
 correctly perform such a move by examining the source code of the ``mv''
-command and implemented a set of checkers to identify situations where one
-of these steps is not carried out correctly by an application.
+command. The team then implemented a set of checkers to identify situations where an application does not carry out one
+of these steps correctly. 
 In real world applications,
 these checkers were able to identify bugs
 in many popular applications and libraries that offer file movement
 capabilities.
 
 We evaluated each of the four checkers listed in Moore et al.'s work and
-determined that PORT could be used to implement three of them.
+determined that PORT could implement three of them.
 Figure~\ref{lst:SEAListings} shows our PORT implementation of
 the ``File Replaced During Copy'' checker
 that ensures {\tt fstat} is used after a file is opened but
 before it is moved.  This pattern indicates that an application may be
-storing the {\tt inode} number of the file -- a step necessary to prevent a race
+storing the {\tt inode} number of the file -- a step that prevents a race
 condition where the file is replaced during the move process.
 Comparing it to the
 original SEA checker,
-which consisted of 45 lines of Python,
-shows that many of the same deficiencies that affected the unusual file type
-mutator above are present.
+which consisted of 45 lines of difficult to read and maintain Python code,
+shows many of the same deficiencies as the unusual file type
+mutator above.
 The PORT version is much more concise and its meaning is
-less obscured by boilerplate and state management code that makes up the
-bulk of the Python version.
+less obscured by boilerplate and state management code.
 
 This exercise did expose one of PORT's shortcomings.  Specifically,
 we found that PORT cannot currently implement the ``Extended File
@@ -173,131 +172,28 @@ mutator behavior.
 
 \subsection{Extending PORT to Other Activity Representations}
 
-Our second experiment evaluates PORT's usability beyond system call manipulation.
-We selected remote procedure calls as a logical next step and chose the JSONRPC and XMLRPC APIs for this purpose. Both  are widely used and have well
-supported parsing libraries or modules.
+In order to get an idea of PORT’s extensibility we decided to see if we could use it to find and transform useful patterns in another domain.
+Our search lead us to USB, which seemed a good fit because of its ubiquity and reliance on numerous parties correctly implementing a standard protocol.
+Using PORT on streams of USB activity required that we implement an appropriate transformer and develop some way to capture communications between USB devices.
+For the latter, we used Wireshark because of its excellent traffic capture and dissection capabilities~\ref{wireshark}.
+We developed a transformer that could consume the JSON representation of a stream of frames as exported by Wireshark.
+Together, these two components allowed us to write PORT programs that could both identify patterns and transform streams of USB frames.
 
-To evaluate how well PORT can work with these representations we
-construct transformer modules that convert these formats into our
-intermediate data format.
-We test our implementation by writing PORT programs that modify
-activity streams similar to the examples presented in the JSONRPC
-2.0~\cite{jsonspec} and XMLRPC~\cite{xmlspec}
-specifications.  One such program is shown in
-Figure~\ref{lst:JSONProgram}.  This program matches a pattern of ``test''
-and ``update'' calls. If the pattern is found, the final update call's
-parameters are replaced with the constants 999 and 888, respectively.
+As a test scenario, we settled upon the recent type of usb-based attack known as BADUSB~\ref{badusb}.
+These attacks utilize small USB devices that resemble thumb drives. However, rather than storing files, when plugged into a targeted computer, these devices register themselves as human interface devices and rapidly send keystrokes to execute malicious commands before a human is able to react.
+Our goal was to construct PORT programs to recognize these attacks within a recording of a machine’s USB traffic and simulate them by transforming an innocent USB recording into one containing such an attack.
+The latter could be replayed using a device similar to those used in actual attacks in order to assess whether or not a computer’s defensive measures (e.g. antivirus software or specialized anti-BADUSB programs) are able detect the attacks. 
 
-Adding support for JSONRPC and XMLRPC by creating
-appropriate transformers required only a handful of hours of effort.
-Based on the ease and speed with which we
-were able to complete these new input stream formats, we are confident that PORT can be
-quickly adapted to support new activity representations as required.
+The PORT program in figure <fig> is an example of a program that detects a USB device attempting to execute powershell
+in a mode where its security policy is bypassed.
+This is a common starting point for BADUSB attacks that seek to execute complex payloads, such as powershell scripts.
+This program detects USB frames that contain a sequence of ``scan codes'' in which a series of keystrokes spell out ``powershell -Exec bypass.''
+Detecting this string is critical because it explicitly disables security controls, a step that should only be taken under special circumstances.
+We were able to use this program to detect the target sequence in streams of USB traffic recorded from a real computer using a standard USB keyboard.
 
-\begin{figure}[t]
-\centering
-\begin{tabular}{c}
-\begin{lstlisting}
-event update {up1: Number@0, up2: Number@1};
-event test {tp1: Number@0, tp2: String@1};
-update({up1: pone, up2: ptwo});
-test({tp1: 45, tp2: "alpha"});
-update({up1: ->999, up2: ->888});
-\end{lstlisting}
-\end{tabular}
-\caption{This PORT program matches a pattern of JSONRPC calls to
-  ``update'' and ``test.''  If the pattern is identified, the final call to
-  update is modified so that its first two parameter values are replaced
-  with new constant values.}
-\label{lst:JSONProgram}
-\end{figure}
-
-
-\subsection{Utilizing PORT's Flexibility}
-We further evaluate PORT's ability to replicate useful strategies by
-reproducing Dornhackl et al.'s~\cite{Dornhackl2014}
-efforts to describe and detect malicious behavior in Windows
-applications.  The Dornhackl team was able to describe what it takes to implement a malicious goal, and then
-map those tasks onto the
-concrete Windows API calls required to carry them out. PORT accomplishes the task by making one operation out of a set of similar API calls and then describing a malicious task in terms of
-these aggregate operations. As illustrated in  Figure~\ref{lst:DornhacklOpen} PORT uses variants to group the API calls that may be used to
-open a Windows registry key \cite{Dornhackl2014}. 
-
-\begin{figure}[t]
-\begin{lstlisting}
-OPEN => RegOpenKeyA NtOpenKey
-  | RegOpenKeyW NtOpenKey
-  | RegOpenKeyExA NtOpenKey
-  | RegOpenKeyExW NtOpenKey
-\end{lstlisting}
-\caption{Grouping of Windows API calls for opening or creating a Windows
-  registry key into an OPEN operation as per Dornhackl et al.}
-\label{lst:DornhacklOpen}
-\end{figure}
-
-Each symbol, beginning with ``Reg'' in Figure~\ref{lst:DornhacklOpen}, represents a user
-API call that opens or creates a registry key.  {\tt NtOpenKey} always follows
-these calls because it is the underlying ``native'' call that actually performs the operation.
-Figure~\ref{lst:PORTOpenReg} shows the grouping and execution semantics as expressed
-in PORT.
-
-\begin{figure}[t]
-\begin{lstlisting}[gobble=2]
-  event open {RegOpenKeyA ...} | {RegOpenKeyW ...};
-    # ... further variants omitted
-  event NtOpenKey {...};
-
-  open({...});
-  NtOpenKey({...});
-\end{lstlisting}
-  \caption{Abstract PORT program (with parameters
-  omitted) that groups Windows API calls responsible for opening or
-  creating a Windows registry key.  It also shows
-  how the requirement that \lstinline+NtOpenKey+ follow any of these calls can be
-  captured.}
-\label{lst:PORTOpenReg}
-\end{figure}
-
-Though they use different approaches to do so,  both Dornhackl et al. and PORT can describe a pattern that, if
-detected, indicates that
-a Windows registry key capable of causing some malicious action  has been installed.
-% (assuming PORT were extended to support Windows).
-The PORT program is shown in Figure~\ref{lst:PORTRegDetect}.  The program groups API calls into \lstinline+OPEN+, \lstinline+SET+, and \lstinline+CLOSE+ operations and searches for a pattern that
-indicates
-an application is
-setting an autostart key.  PORT can also express
-that the pattern must appear for a specific registry key.
-%using the value stored in the ``regkey'' register.
-
-\begin{figure}[t]
-\centering
-\begin{tabular}{c}
-\begin{lstlisting}[gobble=2]
-  event open {RegOpenKeyA ...} | {RegOpenKeyW ...} | ...;
-    # further variants omitted
-  event NtOpenKey {...};
-  event set {RegSetValueExA ...} | {RegSetValueExW ...}
-            | ...;  # further variants omitted
-  event NtSetValueKey {...};
-  event close {RegCloseKey ...};
-  event NtClose {...};
-
-  open({...});
-  NtOpenKey({...});
-  set({...});
-  NtSetValueKey({...});
-  close({...});
-  NtClose({...});
-\end{lstlisting}
-\end{tabular}
-  \caption{This listing shows an abstract PORT program (with parameters
-  omitted) that detects situations where an application is maliciously
-  installing an ``autostart'' Windows registry key.  It does so by
-  implementing the pattern described by Dornhackl et al.  Unimportant
-  parameters are omitted and some API call variants in each group have been
-  eluded.}
-\label{lst:PORTRegDetect}
-\end{figure}
+A more advanced example of PORT's capabilities with USB streams involves simulating a BADUSB attack, as demonstrated in figure <FIG>.
+In a similar fashion to our detection program, this program identifies USB human interface device frames, and then transforms the scan codes they contain to yield key presses that spell out ``powershell -Exec bypass.''
+In this way, the program can use an innocent stream to create a malicious one capable of driving a BADUSB attack. In doing so, a user can determine how well a system's defenses can detect and prevent such a scenario.
 
 
 \subsection{PORT's Performance}
@@ -314,7 +210,7 @@ patterns within real-world system call traces.
 We chose eight widely used network applications that offered a sufficient level of complexity
 and recorded test traces using the following 
 experimental setup.
-Five of the applications are clients that operate by connecting to an appropriate service.  They were recorded as they made this connection and completed a small request (e.g. transmitting or receiving a file).
+Five of the applications are clients that operate by connecting to an appropriate service. They were recorded as they made this connection and completed a small request (e.g. transmitting or receiving a file).
 Three of the applications were servers.  As such, they were recorded as they accepted a connection from an appropriate client and serviced a small request.
 These recordings were made with strace
 and then processed using a PORT program
