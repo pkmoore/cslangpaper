@@ -115,7 +115,7 @@ and remote procedure calls, we needed to develop a novel tool that would be  agn
     write(3, "Hello World!\n", 13) = 13
     close(3) = 0
   \end{lstlisting}
-  \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+  \begin{lstlisting}[basicstyle=\ttfamily\scriptsize,gobble=4]
     # After Modification
     open("example.txt", O_RDWR, 0) = 3
     fstat(3, {...}) = 0

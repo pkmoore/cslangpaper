@@ -155,7 +155,8 @@ A program is split into two parts: the \emph{preamble} consisting of type and ev
 \begin{figure}[t]
 \centering
 \scriptsize
-\begin{minipage}[t]{.5\linewidth}
+\resizebox{\linewidth}{!}{
+\begin{minipage}[t]{.55\linewidth}
 \begin{align*}
 \mathit{program} ::= {} &  (\mathit{typedef} \mid \mathit{eventdef})^* \; \mathit{action}\\
 \mathit{typedef} ::= {} & \mathtt{type}\; \mathit{id} \texttt{\{}\mathit{id} \texttt{:}\, t\, \texttt{@}\, n \; (\texttt{,} \mathit{id}\texttt{:} t\,\texttt{@}\,n)^*\texttt{\};}\\
@@ -169,14 +170,21 @@ A program is split into two parts: the \emph{preamble} consisting of type and ev
 \mathit{pattern} ::= {} & \mathit{id}\,(p) \;\mathtt{with}\; b
 \end{align*}
 \end{minipage}%
-\begin{minipage}[t]{.5\linewidth}
+\begin{minipage}[t]{.05\linewidth}
+  \quad
+\end{minipage}%
+\begin{minipage}[t]{.4\linewidth}
 \begin{align*}
-p \in \mathsf{pexp} ::= {} & \texttt{\{} \mathit{id}\texttt{:}\, p \; (\texttt{,} \mathit{id}\texttt{:}\, p)^*\texttt{\}} \mid \mathit{regid} \mid c \\
-e \in \mathsf{vexp} ::= {} & \mathit{regid} \mid c \mid e \,\texttt{+}\, e \mid e \,\texttt{-}\, e \mid \dots\\
-b \in \mathsf{bexp} ::= {} & \mathtt{true} \mid \mathtt{false} \mid e == e \mid p \;\mathtt{and}\; p \mid \dots\\
-t \in \mathsf{texp} ::= {} & \mathtt{String} \mid \mathtt{Number} \mid \mathit{id} \mid \dots
+p \in \mathsf{pexp} ::= {} & \texttt{\{} \mathit{id}\texttt{:}\, p \; (\texttt{,} \mathit{id}\texttt{:}\, p)^*\texttt{\}} \\
+\mid {} & \mathit{regid} \mid c \\
+e \in \mathsf{vexp} ::= {} & \mathit{regid} \mid c \mid e \,\texttt{+}\, e \mid \dots\\
+b \in \mathsf{bexp} ::= {} & \mathtt{true} \mid \mathtt{false} \\
+\mid {} & e == e \mid p \;\mathtt{and}\; p \mid \dots\\
+t \in \mathsf{texp} ::= {} & \mathtt{String} \mid \mathtt{Number} \\
+\mid {} & \mathit{id} \mid \dots
 \end{align*}
 \end{minipage}
+}
 \caption{Grammar of PORT's core language.}
 \label{lst:SyntaxGrammar}
 \end{figure}
@@ -185,7 +193,8 @@ t \in \mathsf{texp} ::= {} & \mathtt{String} \mid \mathtt{Number} \mid \mathit{i
 
 An abstract event consists of a name and a record of named fields that hold data values of interest. Consider the event definition:
 \begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2,columns=strict]
-  event rd {read fdesc: Number@0} | {recv fdesc: Number@0};
+  event rd {read fdesc: Number@0} |
+            {recv fdesc: Number@0};
 \end{lstlisting}
 This definition maps the concrete events named \lstinline+read+ and \lstinline+recv+ to the abstract event \lstinline+rd+. The parameter values of the concrete events are abstracted to a record consisting of a single field \lstinline+fdesc+ that holds a value of type \lstinline+Number+. The notation \lstinline+fdesc: Number@0+ in each variant indicates that the value of \lstinline+fdesc+ is the 0th parameter of the corresponding concrete event. Note that all variants must map their parameters to the same record type.
 If an event definition defines an abstract event in terms of a single variant for which the concrete event name coincides with the name of the abstract event, then the former can be omitted in the variant.
@@ -197,7 +206,8 @@ irrelevant parameter values in concrete events. Second, they can map semanticall
 
 The abstraction mechanism used for these parameter lists can also be applied to the values themselves. For instance, the 1st parameter of an \lstinline+fstat+ system call is a status buffer that consists of a list of values. \emph{Type definitions} can be used to abstract such compound values into records. The following PORT code defines an abstract \lstinline+fstat+ event that tracks only the device identifier, inode number, and mode of the status buffer:
 \begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
-  type SB {dev: String@0, ino: String@1, mode: String@2};
+  type SB {dev: String@0, ino: String@1,
+            mode: String@2};
   event fstat {fdesc: Number@0, sbuf: SB@1};
 \end{lstlisting}
 
@@ -243,13 +253,14 @@ The Boolean expression $b$ is evaluated after the initial match of $\mathit{id}_
 When an atomic action takes effect, the matched input event is consumed and an output event is appended to the output stream. This output event is described by $\mathit{id}_2\,(e)$ in the \emph{output clause} of the action. If $\mathit{id}_2=\mathit{id}_1$, then $e$ can be a \emph{partial} record expression, describing only those parts of the input record that should be modified by the action. Record fields that are not specified by $e$ are copied from the input event to the output event. If the record types of the input and output events differ, $e$ must describe the output record completely.
 
 For example, consider the atomic action:
-\\[.3em]
-\begin{adjustbox}{max width=\textwidth}
-\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
+%\\[.3em]
+%\begin{adjustbox}{max width=\textwidth}
+\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2,basicstyle=\footnotesize\ttfamily]
   fstat({fdesc: rfd2, sbuf: {dev:rdev, ino: rino2}})
     with rfd2 == rfd and rdev == "st_dev=makedev(0, 4)" -> fstat({sbuf:{ino: rino}});
-    \end{lstlisting}
-\end{adjustbox}\\[.5em]
+\end{lstlisting}
+% \end{adjustbox}
+%\\[.5em]
 This action matches the \lstinline+fstat+ event given above, assuming the register \lstinline+rfd+ has value \lstinline+4+ before the match. Moreover, if the register \lstinline+rino+ has value \lstinline+43+ before the action is executed, then the action produces the output event:
 \\[.3em]
 \begin{adjustbox}{max width=\textwidth}
@@ -257,7 +268,7 @@ This action matches the \lstinline+fstat+ event given above, assuming the regist
   fstat({fdesc: 4, sbuf: {dev:"st_dev=makedev(0, 4)", ino: 43, mode="S_IFCHR|0666"}})
   \end{lstlisting}
 \end{adjustbox}\\[.5em]
-For convenience, we have included a syntactic short-hand that allows one to more compactly express common pattern types. First, one often needs to express that the value of a matched record field is equal to the current value of a register. In the action above, the field \lstinline+fdesc+ of the matched \lstinline+fstat+ event must be equal to \lstinline+rfd+ for the match to succeed. This constraint can be expressed more succinctly by replacing \lstinline+rfd2+ with \lstinline+?rfd+ in the pattern of the action. Doing so ensures that the matched value is equal to \lstinline+rfd+ without changing the value of \lstinline+rfd+. The equality \lstinline+rsd2 == rsd+ can then be omitted from the \lstinline+with+ clause.
+For convenience, we add a syntactic short-hand that allows one to more compactly express common pattern types. First, one often needs to express that the value of a matched record field is equal to the current value of a register. In the action above, the field \lstinline+fdesc+ of the matched \lstinline+fstat+ event must be equal to \lstinline+rfd+ for the match to succeed. This constraint can be expressed more succinctly by replacing \lstinline+rfd2+ with \lstinline+?rfd+ in the pattern of the action. This ensures that the matched value is equal to \lstinline+rfd+ without changing the value of \lstinline+rfd+. The equality \lstinline+rsd2 == rsd+ can then be omitted from the \lstinline+with+ clause.
 
 Next, the \lstinline+with+ clause can also be omitted altogether from an atomic action, in which case $b$ defaults to \lstinline+true+. Likewise, the output clause can be omitted and the matched input event can simply be copied to the output stream. Finally, if an action is replacing only the value of a field, and the action is not dependent on the old value, then the modified field value can be specified directly in the pattern using the notation \lstinline+-> $e$+. Here, the expression $e$ determines the new value to be stored in the field.
 
@@ -272,7 +283,7 @@ Using this syntactic short-hand, the action given above can be expressed more co
 Atomic actions can be sequenced to form compound action expressions that match and transform sequences of events, $\mathit{action}_1 \texttt{;} \mathit{action}_2$. PORT simplifies the handling of unbounded event sequences by using implicit repetition semantics.
 If the next event in the input stream is not matched by the current atomic action in the action sequence, the event is simply copied to the output stream. The transducer moves on by attempting to match the next input event against the current atomic action.
 
-Sometimes, it is necessary to constrain this implicit repetition mechanism by disallowing the appearance of certain events in the input stream before an event  matched by the current atomic action is encountered.  This can be done by \emph{negated patterns}, which take the form \lstinline+not id$(p)$ with $b$+. If an event that matches the pattern \lstinline+id$(p)$ with $b$+ is encountered before the next atomic action in the program takes effect, then the transducer aborts. For instance, the PORT program in Fig.~\ref{fig:CompareListing} uses a negated pattern to ensure that no \lstinline+read+ system call is executed on the opened file with file descriptor \lstinline+fd+ before the file is closed.
+Sometimes, it is necessary to constrain this implicit repetition by disallowing the appearance of certain events in the input stream before an event  matched by the current atomic action is encountered.  This can be done by \emph{negated patterns}, which take the form \lstinline+not id$(p)$ with $b$+. If an event that matches the pattern \lstinline+id$(p)$ with $b$+ is encountered before the next atomic action in the program takes effect, then the transducer aborts. For instance, the PORT program in Fig.~\ref{fig:CompareListing} uses a negated pattern to ensure that no \lstinline+read+ system call is executed on the opened file with file descriptor \lstinline+fd+ before the file is closed.
 
 \paragraph{Explicit repetition.}
 PORT also supports explicit repetition of actions, which is indicated using a Kleene star, $\mathit{action}\texttt{*}$, similar to standard regular expression syntax.

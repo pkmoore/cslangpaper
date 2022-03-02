@@ -14,7 +14,7 @@ system calls, RPC invocations or
 web-browser events.
 Below, we discuss some of the more significant work in these areas.
 
-\subsection{System Call Stream Processing Applications}
+\paragraph{System Call Stream Processing Applications.}
 
 System call based intrusion detection systems fall into two types: misuse and anomaly detection.
 The former search for known patterns of application specific
@@ -80,7 +80,7 @@ to determine whether particular calls are valid and therefore executable.
 Lastly, there are some domain-specific options for
 identifying problems
 in function calls.
-In~\cite{DBLP:conf/icse/ChristakisEG017}, Christakis et al. describe a language that allows developers to intercept and modify
+Christakis et al.~\cite{DBLP:conf/icse/ChristakisEG017} describe a language that allows developers to intercept and modify
 Windows applications’ dynamic link library function calls to identify which ones should be
 intercepted by the runtime.
 
@@ -96,7 +96,7 @@ intercepted by the runtime.
 It is likely that the previously cited FSA-based programs can be improved by applying recent advances in inference modeling algorithms~\cite{MarianiPS17,WalkinshawTD13,EmamM18,BeschastnikhBEK14}. Yet, these algorithms lack the conciseness and flexibility found in PORT. PORT does not require training sets and is expressive enough to specify both frequent and  “needle in the haystack” event sequences with just a few lines of code.
 
 
-\subsection{Event Stream Processing Languages and Algorithms}
+\paragraph{Event Stream Processing Languages and Algorithms.}
 PORT can be categorized as a stream processing language,
 which means it is domain-specific and
 designed for expressing streaming applications.
@@ -140,7 +140,7 @@ and “Kleene plus” over patterns consisting of predicates (boolean expression
 GraphCE~\cite{DBLP:conf/models/BarqueroBTV18} describes the implementation of a CEP-like system on graph-based data. The system uses Scala code for pattern description but recommends the development of a DSL for use by data domain experts.
 David et al. cover methods for dynamically modifying the underlying CEP query recognition model as the stream is being processed~\cite{DBLP:journals/sosym/DavidRV18}.
 
-Though CEP systems described in this subsection are capable
+Though these CEP systems are capable
 of recognizing the same stream patterns as PORT, they
 do not incorporate the
 transformation primitives 

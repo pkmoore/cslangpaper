@@ -41,7 +41,7 @@ the bulk of the bugs that were found.
 
 
 
-\subsubsection{Creating the Unusual File type Mutator}
+\paragraph{Creating the Unusual File type Mutator.}
 \label{subsub:UnusualFiletype}
 For the first part of this experiment,
 we used PORT to implement an ``unusual file type''
@@ -118,7 +118,7 @@ easy to change only those parameters  of a system call
 This is a far cry
 from the Python program, which relies on manual and fragile string manipulation.
 
-\subsubsection{Supporting Cross-Disk Move Checkers}
+\paragraph{Supporting Cross-Disk Move Checkers.}
 
 In the second part of this experiment we tested whether PORT can
 implement the ``checkers'' used in SEA to determine if an
@@ -178,14 +178,14 @@ src <- "2.1.1";
 dst <- "host";
 usbhid({src: ?src, dst: ?dst, data: ?num1}) -> usbhid({data: ->num2});
   \end{lstlisting}
-  \caption{A demonstration port program that matches USB activity that indicates the '1' key is being pressed and transforms it to a new frame where the '2' key is being pressed}
+  \caption{A PORT program that matches USB activity that indicates the '1' key is being pressed and transforms it to a new frame where the '2' key is being pressed}
   \label{fig:USB}
 \end{figure}
 
 
-A key feature of PORT is the ease with which support for new activity representations 
-can be added. To demonstrate this
-we implemented support for streams of USB activity. This format was chosen because of its ubiquity and reliance on numerous parties correctly implementing a standard protocol.
+A key feature of PORT that we aimed to evaluate is the ease with which support for new activity representations 
+can be added. To this end,
+we implemented support for streams of USB activity. This format was chosen because of its ubiquity and reliance on numerous parties correctly implementing a standard protocol, leading to potential bugs when different devices interact.
 Using PORT on streams of USB activity required that we implement an appropriate transformer and develop some way to capture communications between USB devices.
 For the latter, we used Wireshark because of its excellent traffic capture and dissection capabilities~\cite{wireshark}.
 For the former, implementing such a transformer was a straightfoward task taking around two and a half hours.
@@ -201,14 +201,14 @@ powershell in a mode where its security policy is bypassed.
 This is a common starting point for BADUSB attacks that seek to execute complex payloads, such as powershell scripts.
 This program detects USB frames that contain a sequence of ``scan codes'' in which a series of keystrokes spell out ``powershell -Exec bypass.''
 Detecting this string is critical because it explicitly disables security controls, a step that should only be taken under special circumstances.
-We were able to use this program to detect the target sequence in streams of USB traffic recorded from a real computer using a standard USB keyboard.  An abbreviated example program that performs this sort of operation is shown in Figure~\ref:{fig:USB}.
+We were able to use this program to detect the target sequence in streams of USB traffic recorded from a real computer using a standard USB keyboard.  An abbreviated example program that performs this sort of operation is shown in Figure~\ref{fig:USB}.
 
 A more advanced example of PORT's capabilities with USB streams involves simulating a BADUSB attack.
 In a similar fashion to our detection program, this program identifies USB human interface device frames, and then transforms the scan codes they contain to yield key presses that spell out ``powershell -Exec bypass.''
 An analogous operation is illustrated in the latter half of Figure~\ref{fig:USB}.
 In this way, the program can use an innocent stream to create a malicious one capable of driving a BADUSB attack. In doing so, a user can determine how well a system's defenses can detect and prevent such a scenario.
 
-The above successes show that PORT is easily capable of extension to activity representations beyond system calls.
+The above successes show that PORT can be easily extended to activity representations beyond system calls.
 We did, however, identify one point of friction -- keyboard scan codes are cumbersome to work with.
 Future work could employ meta-programming to smooth the rough edges of lower level activity representations.
 This minor complication notwithstanding,
@@ -254,6 +254,7 @@ Our PORT compiler comes with a script to reproduce these results with one comman
 \begin{figure}[t]
 \centering
 \small
+\resizebox{\linewidth}{!}{
   \begin{tabular}{|c|l|l}
 Utility and Operation & Exec. Time & No. Syscalls \\
               \hline
@@ -271,6 +272,7 @@ ftp client           & 0.160           & 891 \\
 scp client           & 0.135           & 490 \\
 telnet client        & 0.106           & 23  \\
 \end{tabular}
+  }
 \caption{Average time required to process the specified recording based on 100 executions.}
 \label{tbl:RealWorldPerformance}
 \end{figure}
@@ -296,7 +298,9 @@ While we conducted this evaluation as rigorously as possible,
 there are a few areas where some ambiguity may exist.
 First, in our work with USB activity, we limited ourselves to US English
 keyboards.  Other keyboard languages and designs may require enhancements to our transformer or programs.  Additionally, our performance evaluation samples from only a handful
-of programs that were curated rather than randomly selected.  This was done due to the selected program's popularity and the lack of time to complete an exhaustive exploration of all candidates. There may be programs that would diverge from the performance trend we report above. Future work can determine how widely this phenomena occurs and if any subsequent modifications are required.
+of programs that were selected by popularity rather than at random.
+% This was done due to the selected program's popularity and the lack of time to complete an exhaustive exploration of all candidates.
+There may be programs that would diverge from the performance trend we report above. Future work can determine how widely this phenomena occurs and if any subsequent modifications are required.
 
 %%% Local Variables:
 %%% mode: latex
