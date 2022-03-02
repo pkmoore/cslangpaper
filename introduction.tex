@@ -54,8 +54,7 @@ What makes this possible is PORT
 \textbf{T}ransformation),
 a new domain specific language
 we designed with the goal of
-making it possible
-to describe
+describing
 these behaviors
 in a briefer and more easily understood manner than conventional languages.
 The descriptions can be used
@@ -86,24 +85,22 @@ descriptions are more concise,
 readable,
 and maintainable
 than their original counterparts.
-As an added benefit,
-PORT can expand the use of the SEA technique,
-which has already proven effective as a bug detector,
-by expanding its use
-to a wider variety of applications and activity formats.
+As an added benefit, by proving that
+PORT can work on a wider variety of applications and activity formats, we can facilitate broader use of the SEA technique,
+which has already proven effective as a bug detector.
 
 Next,
-we investigated how well PORT could support
+we demonstrate the ease with which PORT can be extended to
 other activity representations. 
 PORT has features, discussed in
 Section~\ref{SEC:architecture},
 that allowed us to quickly
 add support for recorded streams of USB
-traffic. This new capability enabled us to explore PORT's usefulness in detecting and simulating BADUSB-style attacks.
+traffic. This new capability enabled us to test PORT's usefulness in detecting and simulating BADUSB-style attacks.
 
 Finally,
-we conduct a performance evaluation in order
-to demonstrate that PORT programs are able to quickly 
+we conduct a performance evaluation
+to demonstrate how quickly  PORT programs can
 process recordings taken from real world network and compression applications.
 Our results show that thousands of executions can be completed in a handful of seconds.  We provide the scripts necessary to reproduce our performance figures along with our PORT implementation.
 
@@ -117,7 +114,7 @@ The main contributions in this work can be summarized as follows:
   that may be
   found and transformed in an application's activity stream.
 
-\item We show how PORT improves upon earlier work on the SEA technique by offering a concise, but powerful way to write anomalies.
+\item We show how PORT improves upon earlier work, such as that on the SEA technique, by offering a concise, but powerful way to write anomalies.
 
 \item We demonstrate that PORT can be extended to other activity representations by using it to detect and simulate BADUSB-style attacks.
 

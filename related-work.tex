@@ -16,22 +16,19 @@ Below, we discuss some of the more significant work in these areas.
 
 \subsection{System Call Stream Processing Applications}
 
-There are two types of system call based intrusion detection systems: misuse and anomaly detection.
+System call based intrusion detection systems fall into two types: misuse and anomaly detection.
 The former search for known patterns of application specific
 system call
 sequences known as intrusion signatures~\cite{GARCIATEODORO200918}, while
 the latter assumes that
 any deviation
-from ``normally observed'' system call sequences are 
+from ``normally observed'' system call sequences is
 malicious~\cite{DBLP:conf/sp/ForrestHSL96}.
 The two systems are typically used in tandem. 
 
 Forrest et al.~\cite{DBLP:conf/sp/ForrestHSL96} describe
 an anomaly detection system that
-``exercises'' on various inputs to expose the
-sequence of system calls found in valid situations.
-Each witnessed pattern in the stream
-is cataloged in a database.
+``exercises'' on various inputs to expose and catalog  witnessed patterns  in a database.
 The application's system call stream
 is monitored and any
 deviation triggers a
@@ -63,13 +60,13 @@ Systrace~\cite{DBLP:conf/uss/Provos03},
 which
 supports fine-grained process confinement
 via system call monitoring and uses an associated policy language 
-to describe the prescribed action when a rule evaluates to true.
+to describe the action prescribed when a rule evaluates to true.
 Phoebe~\cite{DBLP:journals/corr/abs-2006-04444}
 identifies patterns of system call failures during normal program execution
 and uses them
 to test the reliability of an application when a failure occurs.
-The downside is that, after a specific sequence of system calls are seen, there is no way to create more elaborate fault-injection
-tests.
+The downside is that there is no way to create more elaborate fault-injection
+tests from these sequences.
 
 Remote procedure calls can also be abused for malicious
 intent,
@@ -96,21 +93,20 @@ intercepted by the runtime.
 %For example, these systems were not designed to be easily re-targeted
 %to a different type of event stream or to allow for transformations.
 %
-It is likely that the previously cited FSA-based programs can be improved by applying recent advances in inference modeling algorithms~\cite{MarianiPS17,WalkinshawTD13,EmamM18,BeschastnikhBEK14}. Although these algorithms are not application-specific, and can be tailored to recognize different types of event streams after some initial training phase, they lack the conciseness and flexibility found in PORT. PORT does not require training sets and is expressive enough to specify both frequent and  “needle in the haystack” event sequences with just a few lines of code.
+It is likely that the previously cited FSA-based programs can be improved by applying recent advances in inference modeling algorithms~\cite{MarianiPS17,WalkinshawTD13,EmamM18,BeschastnikhBEK14}. Yet, these algorithms lack the conciseness and flexibility found in PORT. PORT does not require training sets and is expressive enough to specify both frequent and  “needle in the haystack” event sequences with just a few lines of code.
 
 
 \subsection{Event Stream Processing Languages and Algorithms}
 PORT can be categorized as a stream processing language,
-which means it is a domain-specific and
+which means it is domain-specific and
 designed for expressing streaming applications.
-In this section we look at previous work related to stream processing languages.
+In this section we look at previous work in this area
 
 Pattern matching
 over event streams is a paradigm
-wherein a stream of continuously arriving events are examined for
+that looks for
 possible matches against a previously defined set of rules. Collectively, these matches form a pattern.
-Languages written for pattern matching over event
-streams are significantly richer than those used for regular expression
+Languages written for this purpose are significantly richer than those used for regular expression
 matching~\cite{DBLP:conf/sigmod/AgrawalDGI08},
 and typically provide automatic
 support for naming, type checking, filtering, aggregating, classifying and
@@ -118,17 +114,14 @@ annotation of incoming events. They also  provide many benefits over traditional
 stream-based text processing languages, such as sed~\cite{Mcmahon1979sed} and
 awk~\cite{DBLP:journals/spe/AhoKW79}.
 
-Because PORT is a stream processing language, it does not
+Though PORT is a stream processing language, it does not
 require all of the features typically
-included in this sort of system, such as
-combining multiple stream sources,
-time window based event aggregation,
-or database integrations~\cite{DBLP:journals/csur/DayarathnaP18}.
+included in this sort of system~\cite{DBLP:journals/csur/DayarathnaP18}.
 Rather PORT seems to fit within the special case
-known as complex event processing (CEP),
-in which data items in input streams are referred to as raw events, and data items in output streams
-as composite (or derived) events. A CEP system uses patterns to inspect
-sequences of raw events and then generate a composite event for each
+known as complex event processing (CEP) 
+Data items in input streams of these systems are referred to as raw events, while items in output streams are called
+composite (or derived) events. A CEP system uses patterns to inspect
+sequences of raw events and generate a composite event for each
 match~\cite{DBLP:journals/ibmrd/HirzelAGJKKMNSSW13}
 
 Queries and transforms written for CEP systems are
@@ -144,14 +137,15 @@ stream can be utilized in the regular expression-based pattern matching
 engine. MatchRegex supports regular expression operators, such as “Kleene star”
 and “Kleene plus” over patterns consisting of predicates (boolean expressions).
 
-The CEP systems described in this subsection are capable
-of recognizing the same stream patterns as PORT,
-but do not incorporate the
+GraphCE~\cite{DBLP:conf/models/BarqueroBTV18} describes the implementation of a CEP-like system on graph-based data. The system uses Scala code for pattern description but recommends the development of a DSL for use by data domain experts.
+David et al. cover methods for dynamically modifying the underlying CEP query recognition model as the stream is being processed~\cite{DBLP:journals/sosym/DavidRV18}.
+
+Though CEP systems described in this subsection are capable
+of recognizing the same stream patterns as PORT, they
+do not incorporate the
 transformation primitives 
 required by the applications
-envisioned for PORT. Although CEP systems do allow for the
-generation of composite events from raw events,
-they are meant
+envisioned for PORT. CEP systems are meant
 to be used solely to recognize additional patterns.
 It is the combination and interplay of pattern matching and transformation
 primitives that distinguishes PORT from CEP systems.

@@ -17,9 +17,10 @@ stream of \emph{events}, which can be defined here as individual interactions be
 a single library, system, or remote procedure call.
 Each event consists of a unique identifier (e.g. the name of the function being called) and a list of parameter values (e.g. the argument and return values of the called function).
 
-Parameter values are drawn from a set of basic data values, such as strings and numbers, as well as user-definable record types. PORT also gives users the option to ignore parameter values that are irrelevant for the particular task at hand. And, it can  create a single abstract event from several semantically related, but different event identifiers. In this manner, the transducer description can refer to just the abstract events rather than individually specifying each event it contains.
+Parameter values are drawn from a set of basic data values, such as strings and numbers, as well as user-definable record types. PORT also gives users the option to ignore parameter values that are irrelevant for the particular task at hand. And, it can create a single abstract event from several semantically related, but different event identifiers. In this manner, the transducer description can refer to just the abstract events rather than individually specifying each event it contains.
 
-A PORT transducer processes an input event stream as follows (illustrated in Figure~\ref{fig:Processing}).
+A PORT transducer processes an input event stream as follows.
+%(illustrated in Figure~\ref{fig:Processing}).
 Each item in an input
 sequence is examined and the transducer's internal state is updated accordingly.
  Output is then produced based on the rules described in the transducer's program.
@@ -34,14 +35,14 @@ sequence is examined and the transducer's internal state is updated accordingly.
 event from the input stream, which may update some of the registers, and then writing the next event in the output stream.
 %The parameter values in the output event may be computed from the (updated) registers.
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[scale=.6]{images/processing}
-  \caption{A transducer individually processes each item in an input
-  sequence, updating its internal state and producing output according
-  to the rules described in its program.}
-  \label{fig:Processing}
-\end{figure}
+%\begin{figure}[t]
+%  \centering
+%  \includegraphics[scale=.6]{images/processing}
+%  \caption{A transducer individually processes each item in an input
+%  sequence, updating its internal state and producing output according
+%  to the rules described in its program.}
+%  \label{fig:Processing}
+%\end{figure}
 
 %\iffalse
 %Each action either processes a single event from the input stream, possibly additionally updating some registers of the transducer.
@@ -225,7 +226,7 @@ The abstraction mechanism used for these parameter lists can also be applied to 
 \paragraph*{Body.}
 The action expression in the body of a PORT program describes how the input event stream is transformed to the output event stream. An individual input event is matched and transformed by an atomic action of the form
 \[\mathit{id}_1(p) \;\mathtt{with}\; b \texttt{ -> } \mathit{id}_2\,(e)\]
-This action matches the next (abstract) input event against the \emph{pattern} $\mathit{id}_1(p)$ subject to the constraint $b$. The action is triggered if the name of the matched event is $\mathit{id}_1$ and its record satisfies the constraints imposed by $p$ and $b$. The semantics of pattern matching is similar to the way  expressions are pattern matched in functional programming languages. In particular, a variable occurring in a pattern refers to a register of the transducer. If the pattern matches the event, then the register is assigned to the corresponding value. For example, consider the pattern:
+This action matches the next (abstract) input event against the \emph{pattern} $\mathit{id}_1(p)$ subject to the constraint $b$. The action is triggered if the name of the matched event is $\mathit{id}_1$ and its record satisfies the constraints imposed by $p$ and $b$. The semantics of pattern matching is similar to the way expressions are pattern matched in functional programming languages. In particular, a variable occurring in a pattern refers to a register of the transducer. If the pattern matches the event, then the register is assigned to the corresponding value. For example, consider the pattern:
 \begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
   fstat({fdesc: fd2, sbuf: {dev:rdev, stino: rino2}})
 \end{lstlisting}

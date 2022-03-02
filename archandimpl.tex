@@ -8,20 +8,20 @@ of the decisions that went into their design and operation.
 %PORT is available for use at: \textit{Link Removed for Blinding Purposes}.
 \label{SEC:architecture}
 
-\begin{figure}
-\centering
-  \includegraphics[scale=.6]{images/architecture}
-  \caption{Overview of PORT compiler and run-time components.}
-  % \caption{The PORT compiler produces a mutator that operates over a
-  % generic intermediate data format that contains the contents of an application
-  % recording.  This is facilitated by an executor program provides each
-  % event in the input stream to the mutator in turn.  The mutator updates
-  % its own internal state based on the contents of each event and, if
-  % appropriate, produces a modified output event.  At the end of processing,
-  % the mutator either accepts or rejects the input stream based on whether
-  % or not its pattern was found.}
-  \label{fig:architecture}
-\end{figure}
+%\begin{figure}
+%\centering
+%  \includegraphics[scale=.6]{images/architecture}
+%  \caption{Overview of PORT compiler and run-time components.}
+%  % \caption{The PORT compiler produces a mutator that operates over a
+%  % generic intermediate data format that contains the contents of an application
+%  % recording.  This is facilitated by an executor program provides each
+%  % event in the input stream to the mutator in turn.  The mutator updates
+%  % its own internal state based on the contents of each event and, if
+%  % appropriate, produces a modified output event.  At the end of processing,
+%  % the mutator either accepts or rejects the input stream based on whether
+%  % or not its pattern was found.}
+%  \label{fig:architecture}
+%\end{figure}
 
 \paragraph{The PORT compiler.}
 
@@ -47,7 +47,7 @@ work with many types of
 activity representations rather than just system calls.
 Such flexibility would make it easier to modify parameters in a format-agnostic fashion.
 This required a method to cleanly separate the details of how
-an application's event activity is recorded from the representation of this event stream
+an application's event activity is recorded from the representation of this event stream as
 processed by a transducer.
 Our solution is twofold.  First, we develop an intermediate data format
 (IDF) that

@@ -6,9 +6,7 @@
 \label{sec:MotivatingExample}
 % How SEA showed success using system calls
 
-The initial impetus for this work was sparked by the efforts of Moore et al.~\cite{DBLP:conf/issre/MooreCFW19}
-that lead to the creation of
-the Simulating Environmental Anomalies (SEA) technique.
+The initial impetus for this work was sparked by the Simulating Environmental Anomalies (SEA) technique developed by Moore et al.~\cite{DBLP:conf/issre/MooreCFW19}.
 This effort centered on the key insight
 that problematic
 environmental properties,
@@ -23,7 +21,7 @@ test
 an application as if
 it had been encountered
 in the real world.
-In that work, results of system calls made
+Results of system calls made
 during execution were recorded, modified, and replayed to simulate whether or not the application
 responded correctly to the anomaly.
 Using this strategy, the authors were able to identify a number of bugs
@@ -35,19 +33,17 @@ discussed in the SEA paper's evaluation.
 This anomaly may be problematic
 when an application running under Linux
 attempts to open and read data from a file on disk.
-Linux supports several special file types and
-writing to and
-reading from these files requires special procedures.
+Linux supports several special file types  that require special procedures to 
+write to and
+read from.
 The SEA technique
 may simulate the presence of such a file by
 modifying
 the return value
 of a {\tt stat} call.
-PORT improves on the process described by Moore et al. 
-for employing such an anomaly
-by simplifying the
-process of describing a target pattern
-and desired modifications.
+PORT improves on the original procedure for employing such an anomaly
+by simplifying how a target pattern
+and its desired modifications are employed.
 
 Our takeaway
 from this study
@@ -63,8 +59,7 @@ stream processing tools
 are not well suited to this task. To apply
 SEA's success to other activity types,
 such as calls to library functions
-and remote procedure calls, we needed to develop a novel tool.
-Such a tool would be  agnostic to the way an application's activity has been recorded, and as such would require its own  distinct language. 
+and remote procedure calls, we needed to develop a novel tool that would be  agnostic to the way an application's activity has been recorded. As such, it required its own  distinct language. 
 
 
 %%% What are we really doing here.  WHY did we decided to make this language?
@@ -186,9 +181,9 @@ AndCondition(EqCondition(
 timedelta(minutes=10))
   \end{lstlisting}
   \caption{
-  The left listing is a PORT program that finds situations
+  The top listing is a PORT program that finds situations
   where a program opens a file and closes it without reading from it.
-  The right listing is an OpenCEP listing that identifies the same pattern.
+  The bottom listing is an OpenCEP listing that identifies the same pattern.
 }
   \label{fig:CompareListing}
 \end{figure}
