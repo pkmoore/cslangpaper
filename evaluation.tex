@@ -209,8 +209,8 @@ An analogous operation is illustrated in the latter half of Figure~\ref{fig:USB}
 In this way, the program can use an innocent stream to create a malicious one capable of driving a BADUSB attack. In doing so, a user can determine how well a system's defenses can detect and prevent such a scenario.
 
 The above successes show that PORT can be easily extended to activity representations beyond system calls.
-We did, however, identify one point of friction -- keyboard scan codes are cumbersome to work with.
-Future work could employ meta-programming to smooth the rough edges of lower level activity representations.
+We did, however, identify one point of friction -- keyboard scan codes are cumbersome to work with directly.
+Future work could employ meta-programming to further simplify the manipulation of lower level activity representations.
 This minor complication notwithstanding,
 our ability to recognize patterns within and transform USB streams demonstrates
 that PORT achieves its purpose of 
