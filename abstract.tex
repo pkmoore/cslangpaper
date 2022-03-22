@@ -1,6 +1,8 @@
 \abstract{Earlier work has proven that information extracted from recordings of an
-application’s activity can be tremendously valuable. However, given the many requests that pass between applications and external entities, it has been difficult to isolate the handful of patterns that indicate the potential for failure. In this paper we propose a method that harnesses proven event processing techniques to find those problematic patterns. The key addition is a program we wrote called PORT,
-a new domain specific language that enables users to  extract patterns in system call recordings and other streams,
+application’s activity can be tremendously valuable. However, given the many requests that pass between applications and external entities, it has been difficult to isolate the handful of patterns that indicate the potential for failure. In this paper we propose a method that harnesses proven event processing techniques to find those problematic patterns. The key addition is PORT,
+a new domain specific language which, when combined with its event stream
+recognition and transformation engine,
+that enables users to  extract patterns in system call recordings and other streams,
 and then rewrite input activity on the fly.
 The former task can spot activity that indicates a bug,
 while the latter produces a modified stream
