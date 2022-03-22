@@ -190,7 +190,7 @@ timedelta(minutes=10))
 
 
 
-One possibility is to deploy more expressive automata models, such as register automata~\cite{DBLP:journals/tcs/KaminskiF94} or session automata~\cite{DBLP:journals/corr/BolligHLM14}. Yet, these models cannot produce a modified output.  As the 
+One possibility is to deploy more expressive automata models, such as register automata~\cite{DBLP:journals/tcs/KaminskiF94} or session automata~\cite{DBLP:journals/corr/BolligHLM14}.  As the 
 SEA researchers found,  the ability to
 {\textit modify} activity can create scenarios to ensure
 application failures rather than  waiting for them to occur.
@@ -247,13 +247,13 @@ To demonstrate these points concretely,
 we consider two programs that can recognize a system call sequence wherein an
 application opens and closes a file
 without reading from it.
-Figure~\ref{fig:CompareListing} shows a PORT program that implements this
+The top of Figure~\ref{fig:CompareListing} shows a PORT program that implements this
 task.  The first three statements in this program define the events (i.e.
 system calls) and parameters relevant to the task it performs.  The final three statements express that the event stream
 should contain an \texttt{open()} call followed by a \texttt{close()} call on the same file descriptor, with no intermittent \texttt{read()} call.
 
 We compare this program\footnote{The program can be executed using the code and tools available at: \textit{Link Removed for Blinding Purposes}.}
-with a corresponding program written in OpenCEP~\cite{open_cep_website},
+with a corresponding program written in OpenCEP~\cite{open_cep_website} located at the bottom of Figure~\ref{fig:CompareListing},
 a CEP module for the Python programming language.
 As shown in Figure~\ref{fig:CompareListing},
 the PORT program is both more concise, with its main work accomplished in just
@@ -264,12 +264,13 @@ That is, the program in Figure~\ref{fig:CompareListing} could be
 re-purposed to not only find the appropriate pattern but also modify the
 results of the {\tt close} call to simulate a failure.
 This would be achieved
-by editing line 8 of the program to contain an output
-clause as follows:
-\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2,columns=strict]
+by adding the following output clause to line 8 of the program 
+as follows:
+\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
   close({filedesc: ?fd}) -> close({retval: -1});
 \end{lstlisting}
 If the modified PORT program is executed on the system call trace shown in the upper half of Fig.~\ref{fig:StraceListing}, it will produce the modified trace shown in the bottom half.
+
 
 % A domain specific language like PORT provides a more
 % concise syntax that makes it easier for all individuals to read and

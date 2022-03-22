@@ -1,4 +1,4 @@
-\section{\uppercase{Introduction}}
+\section{Introduction}
 \label{sec:introduction}
 
 %H. Dornhackl, K. Kadletz, R. Luh and P. Tavolato,
@@ -95,14 +95,14 @@ other activity representations.
 PORT has features, discussed in
 Section~\ref{SEC:architecture},
 that allowed us to quickly
-add support for manipulating recorded streams of USB
-traffic. This new capability enabled us to test PORT's usefulness in detecting and simulating BADUSB-style attacks.
+add support for recorded streams of USB
+traffic. This new capability enabled us to test PORT's usefulness in detecting and simulating BADUSB-style attacks~\cite{badusb}.
 
 Finally,
 we conduct a performance evaluation
 to demonstrate how quickly  PORT programs can
 process recordings taken from real world network and compression applications.
-Our results show that thousands of executions can be completed in a handful of seconds.  We provide the scripts necessary to reproduce our performance figures along with our PORT implementation.
+Our results show that PORT programs are able to process large recordings in well under a second. We provide the scripts necessary to reproduce our performance figures along with our PORT implementation.
 
 
 The main contributions in this work can be summarized as follows:
@@ -116,7 +116,7 @@ The main contributions in this work can be summarized as follows:
 
 \item We show how PORT improves upon earlier work, such as that on the SEA technique, by offering a concise, but powerful way to write anomalies.
 
-\item We demonstrate that PORT can be extended to other activity representations by using it to detect and simulate BADUSB-style attacks.
+\item We demonstrate that PORT can be extended to other activity representations by using it to detect and simulate USB-based attacks and failures.
 
 \item We provide an open source implementation of PORT available for immediate use
 at: \textit{Link removed for blinding purposes.}

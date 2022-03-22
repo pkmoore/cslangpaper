@@ -1,7 +1,6 @@
 \section{Language Overview}
 \label{sec:Overview}
 
-
 The PORT language allows its users to completely describe a mutator, or a program that can recognize a particular event stream and optionally produce a modified version of that stream.
 As noted in Section 2, standard
 deterministic automata or transducers can not accommodate these features.
@@ -189,12 +188,10 @@ t \in \mathsf{texp} ::= {} & \mathtt{String} \mid \mathtt{Number} \\
 \label{lst:SyntaxGrammar}
 \end{figure}
 
-\paragraph*{Preamble.}
-
-An abstract event consists of a name and a record of named fields that hold data values of interest. Consider the event definition:
-\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2,columns=strict]
-  event rd {read fdesc: Number@0} |
-            {recv fdesc: Number@0};
+\noindent\textbf{Preamble} An abstract event consists of a name and a record of named fields that hold data values of interest. Consider the event definition:
+\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
+  event rd {read fdesc: Number@0}
+         | {recv fdesc: Number@0};
 \end{lstlisting}
 This definition maps the concrete events named \lstinline+read+ and \lstinline+recv+ to the abstract event \lstinline+rd+. The parameter values of the concrete events are abstracted to a record consisting of a single field \lstinline+fdesc+ that holds a value of type \lstinline+Number+. The notation \lstinline+fdesc: Number@0+ in each variant indicates that the value of \lstinline+fdesc+ is the 0th parameter of the corresponding concrete event. Note that all variants must map their parameters to the same record type.
 If an event definition defines an abstract event in terms of a single variant for which the concrete event name coincides with the name of the abstract event, then the former can be omitted in the variant.
@@ -233,8 +230,7 @@ The abstraction mechanism used for these parameter lists can also be applied to 
 
 
 
-\paragraph*{Body.}
-The action expression in the body of a PORT program describes how the input event stream is transformed to the output event stream. An individual input event is matched and transformed by an atomic action of the form
+\noindent\textbf{Body} The action expression in the body of a PORT program describes how the input event stream is transformed to the output event stream. An individual input event is matched and transformed by an atomic action of the form
 \[\mathit{id}_1(p) \;\mathtt{with}\; b \texttt{ -> } \mathit{id}_2\,(e)\]
 This action matches the next (abstract) input event against the \emph{pattern} $\mathit{id}_1(p)$ subject to the constraint $b$. The action is triggered if the name of the matched event is $\mathit{id}_1$ and its record satisfies the constraints imposed by $p$ and $b$. The semantics of pattern matching is similar to the way expressions are pattern matched in functional programming languages. In particular, a variable occurring in a pattern refers to a register of the transducer. If the pattern matches the event, then the register is assigned to the corresponding value. For example, consider the pattern:
 \begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
@@ -253,10 +249,10 @@ The Boolean expression $b$ is evaluated after the initial match of $\mathit{id}_
 When an atomic action takes effect, the matched input event is consumed and an output event is appended to the output stream. This output event is described by $\mathit{id}_2\,(e)$ in the \emph{output clause} of the action. If $\mathit{id}_2=\mathit{id}_1$, then $e$ can be a \emph{partial} record expression, describing only those parts of the input record that should be modified by the action. Record fields that are not specified by $e$ are copied from the input event to the output event. If the record types of the input and output events differ, $e$ must describe the output record completely.
 
 For example, consider the atomic action:
-%\\[.3em]
-%\begin{adjustbox}{max width=\textwidth}
-\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2,basicstyle=\footnotesize\ttfamily]
-  fstat({fdesc: rfd2, sbuf: {dev:rdev, ino: rino2}})
+\\[.3em]
+\begin{adjustbox}{max width=\textwidth}
+\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
+  fstat({fdesc:rfd2, sbuf:{dev:rdev, ino:rino2}})
     with rfd2 == rfd and rdev == "st_dev=makedev(0, 4)" -> fstat({sbuf:{ino: rino}});
 \end{lstlisting}
 % \end{adjustbox}
@@ -265,7 +261,7 @@ This action matches the \lstinline+fstat+ event given above, assuming the regist
 \\[.3em]
 \begin{adjustbox}{max width=\textwidth}
 \begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
-  fstat({fdesc: 4, sbuf: {dev:"st_dev=makedev(0, 4)", ino: 43, mode="S_IFCHR|0666"}})
+  fstat({fdesc:4, sbuf:{dev:"st_dev=makedev(0,4)" , ino: 43, mode="S_IFCHR|0666"}})
   \end{lstlisting}
 \end{adjustbox}\\[.5em]
 For convenience, we add a syntactic short-hand that allows one to more compactly express common pattern types. First, one often needs to express that the value of a matched record field is equal to the current value of a register. In the action above, the field \lstinline+fdesc+ of the matched \lstinline+fstat+ event must be equal to \lstinline+rfd+ for the match to succeed. This constraint can be expressed more succinctly by replacing \lstinline+rfd2+ with \lstinline+?rfd+ in the pattern of the action. This ensures that the matched value is equal to \lstinline+rfd+ without changing the value of \lstinline+rfd+. The equality \lstinline+rsd2 == rsd+ can then be omitted from the \lstinline+with+ clause.
@@ -278,14 +274,14 @@ Using this syntactic short-hand, the action given above can be expressed more co
 \end{lstlisting}
 
 
-\paragraph*{Sequencing, implicit repetition, and negated patterns.}
+\noindent\textbf{Sequencing, Implicit Repetition, and Negation}
 %In our design of PORT we have decided against the inclusion of the repetition and choice constructs supported by general-purpose stream processing languages. This design decision greatly simplifies the transducer construction as we do not have to deal with elimination of epsilon transitions expressing nondeterministic choice. 
 Atomic actions can be sequenced to form compound action expressions that match and transform sequences of events, $\mathit{action}_1 \texttt{;} \mathit{action}_2$. PORT simplifies the handling of unbounded event sequences by using implicit repetition semantics.
 If the next event in the input stream is not matched by the current atomic action in the action sequence, the event is simply copied to the output stream. The transducer moves on by attempting to match the next input event against the current atomic action.
 
 Sometimes, it is necessary to constrain this implicit repetition by disallowing the appearance of certain events in the input stream before an event  matched by the current atomic action is encountered.  This can be done by \emph{negated patterns}, which take the form \lstinline+not id$(p)$ with $b$+. If an event that matches the pattern \lstinline+id$(p)$ with $b$+ is encountered before the next atomic action in the program takes effect, then the transducer aborts. For instance, the PORT program in Fig.~\ref{fig:CompareListing} uses a negated pattern to ensure that no \lstinline+read+ system call is executed on the opened file with file descriptor \lstinline+fd+ before the file is closed.
 
-\paragraph{Explicit repetition.}
+\noindent\textbf{Explicit Repetition}
 PORT also supports explicit repetition of actions, which is indicated using a Kleene star, $\mathit{action}\texttt{*}$, similar to standard regular expression syntax.
 % matching clearly defined sequences of events.  This functionality is useful when a desired pattern
 % contains some unknown number of repetitions of one or more events.
@@ -293,6 +289,8 @@ PORT also supports explicit repetition of actions, which is indicated using a Kl
 The generated transducer accepts zero or more repetitions of the specified sequence of events.
 Output is only produced if a complete repetition of sequence is encountered.
 All previously discussed functionality and behavior holds true for the sequence being repeated.
+
+\vspace{-.5cm}
 
 %\iffalse
 %This production triggers the creation of a mutator with only a starting
