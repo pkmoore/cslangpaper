@@ -255,8 +255,7 @@ For example, consider the atomic action:
   fstat({fdesc:rfd2, sbuf:{dev:rdev, ino:rino2}})
     with rfd2 == rfd and rdev == "st_dev=makedev(0, 4)" -> fstat({sbuf:{ino: rino}});
 \end{lstlisting}
-% \end{adjustbox}
-%\\[.5em]
+\end{adjustbox} \\[.5em]
 This action matches the \lstinline+fstat+ event given above, assuming the register \lstinline+rfd+ has value \lstinline+4+ before the match. Moreover, if the register \lstinline+rino+ has value \lstinline+43+ before the action is executed, then the action produces the output event:
 \\[.3em]
 \begin{adjustbox}{max width=\textwidth}
