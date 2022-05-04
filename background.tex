@@ -1,6 +1,7 @@
 \section{Background and Motivation}
 \label{SEC:background}
 
+We did not take the decision to construct a large tool like PORT lightly.  In this section we describe why making use of an existing tool could not meet our requirements.
 
 \subsection{Our Motivating Example}
 \label{sec:MotivatingExample}
@@ -50,13 +51,14 @@ from this study
 was that an application's activity
 can be systematically mined to find bugs.
 In this paper, we
-show that the best way to extract this data
+show one effective way to extract this data
 is to treat application activity
 as a sequence of events. This enables us to use
 proven event processing techniques. 
-Yet, it became apparent that existing
-stream processing tools
-are not well suited to this task. To apply
+Yet, existing
+implementations of such techniques
+lack important features necessary for our goals.
+ To apply
 SEA's success to other activity types,
 such as calls to library functions
 and remote procedure calls, we needed to develop a novel tool that would be  agnostic to the way an application's activity has been recorded. As such, it required its own  distinct language. 
@@ -106,27 +108,27 @@ and remote procedure calls, we needed to develop a novel tool that would be  agn
 %programs~\cite{sudocopy} in the
 %last year alone!
 %
-\begin{figure}
-  \begin{lstlisting}[basicstyle=\ttfamily\scriptsize,gobble=4]
-    # Before Modification
-    open("example.txt", O_RDWR, 0) = 3
-    fstat(3, {...}) = 0
-    getpid() = 34355
-    write(3, "Hello World!\n", 13) = 13
-    close(3) = 0
-  \end{lstlisting}
-  \begin{lstlisting}[basicstyle=\ttfamily\scriptsize,gobble=4]
-    # After Modification
-    open("example.txt", O_RDWR, 0) = 3
-    fstat(3, {...}) = 0
-    getpid() = 34355
-    write(3, "Hello World!\n", 13) = 13
-    close(3) = -1
-  \end{lstlisting}
-  \caption{A system call trace of a program that opens, writes to, and closes
-  a file before and after modifying the return value of the \texttt{close()} call.}
-  \label{fig:StraceListing}
- \end{figure}
+%\begin{figure}
+%  \begin{lstlisting}[basicstyle=\ttfamily\scriptsize,gobble=4]
+%    # Before Modification
+%    open("example.txt", O_RDWR, 0) = 3
+%    fstat(3, {...}) = 0
+%    getpid() = 34355
+%    write(3, "Hello World!\n", 13) = 13
+%    close(3) = 0
+%  \end{lstlisting}
+%  \begin{lstlisting}[basicstyle=\ttfamily\scriptsize,gobble=4]
+%    # After Modification
+%    open("example.txt", O_RDWR, 0) = 3
+%    fstat(3, {...}) = 0
+%    getpid() = 34355
+%    write(3, "Hello World!\n", 13) = 13
+%    close(3) = -1
+%  \end{lstlisting}
+%  \caption{A system call trace of a program that opens, writes to, and closes
+%  a file before and after modifying the return value of the \texttt{close()} call.}
+%  \label{fig:StraceListing}
+% \end{figure}
 
 \subsection{Why a New Domain Specific Language?}
 
@@ -142,7 +144,8 @@ patterns as they appear in a recording of application activity.
 A simple model,
 such as a deterministic finite automaton (i.e. a DFA or a FSA) enhanced to operate on complex
 structures, would appear to be sufficient.
-Unfortunately, as shown in Figure~\ref{fig:StraceListing}, the simple model will not work.  The {\tt open()} call produces a file descriptor that a subsequent {\tt
+Unfortunately, the simple model will not work.
+The {\tt open()} call produces a file descriptor that a subsequent {\tt
 read()} call may match.
 Yet, a standard DFA or FSA cannot match patterns with this sort of dependency. 
 Instead, we need a language
@@ -154,39 +157,39 @@ and return values. This content can then be
 manipulated for
 reuse in subsequent operations.
 
-\begin{figure}
-  \begin{lstlisting}[basicstyle=\ttfamily\small,gobble=4,xleftmargin=.8em]
-    event open {filedesc: Number@ret};
-    event read {filedesc: Number@0};
-    event close {filedesc: Number@0,
-                 retval: Number@ret};
-    open({filedesc: fd});
-    not read({filedesc: ?fd});
-    close({filedesc: ?fd});
-  \end{lstlisting}
-  \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-pattern = Pattern(
-  SeqOperator(
-     PrimitiveEventStructure("OPEN", "a"),
-     NegationOperator(
-        PrimitiveEventStructure("READ","b")
-     ),
-     PrimitiveEventStructure("CLOSE","c")),
-AndCondition(EqCondition(
-     Variable("a", lambda x: x["File Handle"]),
-     Variable("c", lambda x: x["File Handle"])),
-     EqCondition(
-     Variable("c", lambda x: x["File Handle"]),
-     Variable("b", lambda x: x["File Handle"]))),
-timedelta(minutes=10))
-  \end{lstlisting}
-  \caption{
-  The top listing is a PORT program that finds situations
-  where a program opens a file and closes it without reading from it.
-  The bottom listing is an OpenCEP listing that identifies the same pattern.
-}
-  \label{fig:CompareListing}
-\end{figure}
+%\begin{figure}
+%  \begin{lstlisting}[basicstyle=\ttfamily\small,gobble=4,xleftmargin=.8em]
+%    event open {filedesc: Number@ret};
+%    event read {filedesc: Number@0};
+%    event close {filedesc: Number@0,
+%                 retval: Number@ret};
+%    open({filedesc: fd});
+%    not read({filedesc: ?fd});
+%    close({filedesc: ?fd});
+%  \end{lstlisting}
+%  \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+%pattern = Pattern(
+%  SeqOperator(
+%     PrimitiveEventStructure("OPEN", "a"),
+%     NegationOperator(
+%        PrimitiveEventStructure("READ","b")
+%     ),
+%     PrimitiveEventStructure("CLOSE","c")),
+%AndCondition(EqCondition(
+%     Variable("a", lambda x: x["File Handle"]),
+%     Variable("c", lambda x: x["File Handle"])),
+%     EqCondition(
+%     Variable("c", lambda x: x["File Handle"]),
+%     Variable("b", lambda x: x["File Handle"]))),
+%timedelta(minutes=10))
+%  \end{lstlisting}
+%  \caption{
+%  The top listing is a PORT program that finds situations
+%  where a program opens a file and closes it without reading from it.
+%  The bottom listing is an OpenCEP listing that identifies the same pattern.
+%}
+%  \label{fig:CompareListing}
+%\end{figure}
 
 
 
@@ -243,34 +246,34 @@ program must be fluent in this host language.
 %summary statistics over specified fields. 
 
 
-To demonstrate these points concretely,
-we consider two programs that can recognize a system call sequence wherein an
-application opens and closes a file
-without reading from it.
-The top of Figure~\ref{fig:CompareListing} shows a PORT program that implements this
-task.  The first three statements in this program define the events (i.e.
-system calls) and parameters relevant to the task it performs.  The final three statements express that the event stream
-should contain an \texttt{open()} call followed by a \texttt{close()} call on the same file descriptor, with no intermittent \texttt{read()} call.
-
-We compare this program\footnote{The program can be executed using the code and tools available at: \textit{Link Removed for Blinding Purposes}.}
-with a corresponding program written in OpenCEP~\cite{open_cep_website} located at the bottom of Figure~\ref{fig:CompareListing},
-a CEP module for the Python programming language.
-As shown in Figure~\ref{fig:CompareListing},
-the PORT program is both more concise, with its main work accomplished in just
-three lines of code, and more readable because it is not constrained by the
-requirements of a host programming language.
-Unlike  OpenCEP and similar languages, PORT can modify and output an event.
-That is, the program in Figure~\ref{fig:CompareListing} could be
-re-purposed to not only find the appropriate pattern but also modify the
-results of the {\tt close} call to simulate a failure.
-This would be achieved
-by adding the following output clause to line 8 of the program 
-as follows:
-\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
-  close({filedesc: ?fd}) -> close({retval: -1});
-\end{lstlisting}
-If the modified PORT program is executed on the system call trace shown in the upper half of Fig.~\ref{fig:StraceListing}, it will produce the modified trace shown in the bottom half.
-
+%To demonstrate these points concretely,
+%we consider two programs that can recognize a system call sequence wherein an
+%application opens and closes a file
+%without reading from it.
+%The top of Figure~\ref{fig:CompareListing} shows a PORT program that implements this
+%task.  The first three statements in this program define the events (i.e.
+%system calls) and parameters relevant to the task it performs.  The final three statements express that the event stream
+%should contain an \texttt{open()} call followed by a \texttt{close()} call on the same file descriptor, with no intermittent \texttt{read()} call.
+%
+%We compare this program\footnote{The program can be executed using the code and tools available at: \textit{Link Removed for Blinding Purposes}.}
+%with a corresponding program written in OpenCEP~\cite{open_cep_website} located at the bottom of Figure~\ref{fig:CompareListing},
+%a CEP module for the Python programming language.
+%As shown in Figure~\ref{fig:CompareListing},
+%the PORT program is both more concise, with its main work accomplished in just
+%three lines of code, and more readable because it is not constrained by the
+%requirements of a host programming language.
+%Unlike  OpenCEP and similar languages, PORT can modify and output an event.
+%That is, the program in Figure~\ref{fig:CompareListing} could be
+%re-purposed to not only find the appropriate pattern but also modify the
+%results of the {\tt close} call to simulate a failure.
+%This would be achieved
+%by adding the following output clause to line 8 of the program 
+%as follows:
+%\begin{lstlisting}[numbers=none,xleftmargin=0em,gobble=2]
+%  close({filedesc: ?fd}) -> close({retval: -1});
+%\end{lstlisting}
+%If the modified PORT program is executed on the system call trace shown in the upper half of Fig.~\ref{fig:StraceListing}, it will produce the modified trace shown in the bottom half.
+%
 
 % A domain specific language like PORT provides a more
 % concise syntax that makes it easier for all individuals to read and

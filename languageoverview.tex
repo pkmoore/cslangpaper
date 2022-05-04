@@ -145,9 +145,6 @@ event from the input stream, which may update some of the registers, and then wr
 %\fi
 
 
-\subsection{Syntax and Semantics}
-\label{sub:SyntaxAndSemantics}
-
 Figure~\ref{lst:SyntaxGrammar} shows the grammar of PORT's core language.
 A program is split into two parts: the \emph{preamble} consisting of type and event definitions, and the \emph{body} of the program which consists of an action expression. 
 
@@ -278,7 +275,7 @@ Using this syntactic short-hand, the action given above can be expressed more co
 Atomic actions can be sequenced to form compound action expressions that match and transform sequences of events, $\mathit{action}_1 \texttt{;} \mathit{action}_2$. PORT simplifies the handling of unbounded event sequences by using implicit repetition semantics.
 If the next event in the input stream is not matched by the current atomic action in the action sequence, the event is simply copied to the output stream. The transducer moves on by attempting to match the next input event against the current atomic action.
 
-Sometimes, it is necessary to constrain this implicit repetition by disallowing the appearance of certain events in the input stream before an event  matched by the current atomic action is encountered.  This can be done by \emph{negated patterns}, which take the form \lstinline+not id$(p)$ with $b$+. If an event that matches the pattern \lstinline+id$(p)$ with $b$+ is encountered before the next atomic action in the program takes effect, then the transducer aborts. For instance, the PORT program in Fig.~\ref{fig:CompareListing} uses a negated pattern to ensure that no \lstinline+read+ system call is executed on the opened file with file descriptor \lstinline+fd+ before the file is closed.
+Sometimes, it is necessary to constrain this implicit repetition by disallowing the appearance of certain events in the input stream before an event  matched by the current atomic action is encountered.  This can be done by \emph{negated patterns}, which take the form \lstinline+not id$(p)$ with $b$+. If an event that matches the pattern \lstinline+id$(p)$ with $b$+ is encountered before the next atomic action in the program takes effect, then the transducer aborts.
 
 \noindent\textbf{Explicit Repetition}
 PORT also supports explicit repetition of actions, which is indicated using a Kleene star, $\mathit{action}\texttt{*}$, similar to standard regular expression syntax.

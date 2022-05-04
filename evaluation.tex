@@ -66,24 +66,13 @@ SEA technique.
 \begin{figure}
 \centering
 \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-event fstat {filedesc: Numeric@0};
-event stat {filename: String@0};
-event open {filename: String@0, filedesc: Numeric@ret};
-
-stat({filename: fn});
-open({filename: ?fn, filedesc: fd});
-fstat({fildesc: ?fd});
-\end{lstlisting}
-\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 event Statbuf {mode: String@2};
 event anystat {stat sb: Statbuf@1}
         | {lstat sb: Statbuf@1} 
         | {fstat sb: Statbuf@1};
 anystat({sb: {mode: -> "st_mode=S_IFBLK"}});
 \end{lstlisting}
-\caption{The top listing contains a
-PORT program that can detect whether a file was replaced as it was copied.
-The bottom listing shows a program that
+\caption{A PORT program that
 identifies a \texttt{stat}, \texttt{lstat}, or \texttt{fstat} call and modifies
   the \lstinline+ST\_MODE+ member of its \lstinline+statbuf+ output parameter to contain the value
   \lstinline+"S\_IFBLK"+. This indicates that the file being examined is a block device rather than a regular file.}
@@ -140,18 +129,19 @@ capabilities.
 
 We evaluated each of the four checkers listed in Moore et al.'s work and
 determined that PORT could implement three of them.
-Figure~\ref{lst:SEAListings} shows our PORT implementation of
-the ``File Replaced During Copy'' checker
-that ensures {\tt fstat} is used after a file is opened but
-before it is moved.  This pattern indicates that an application may be
-storing the {\tt inode} number of the file -- a step that prevents a race
-condition where the file is replaced during the move process.
-Comparing it to the
-original SEA checker,
+For example, 
+we were able to replace the ``File Replaced During Copy'' checker,
 which consisted of 45 lines of difficult to read and maintain Python code,
-the PORT version is much more concise and its meaning is
-less obscured by boilerplate and state management code.
-
+with a clearer 7 line PORT program.
+%This checker ensures {\tt fstat} is used after a file is opened but
+%before it is moved.  This pattern indicates that an application may be
+%storing the {\tt inode} number of the file -- a step that prevents a race
+%condition where the file is replaced during the move process.
+%Comparing it to the
+%original SEA checker,
+%which consisted of 45 lines of difficult to read and maintain Python code,
+%the PORT version is much more concise and its meaning is
+%less obscured by boilerplate and state management code.
 This exercise did expose one of PORT's shortcomings.  Specifically,
 we found that PORT cannot currently implement the ``Extended File
 Attributes'' checker, which
@@ -193,7 +183,8 @@ Together, these two components allowed us to write PORT programs that could both
 
 \textbf{BADUSB} As one test scenario, we settled upon the recent type of USB-based attack known as BADUSB~\cite{badusb}.
 These attacks utilize small USB devices that resemble thumb drives. However, rather than storing files, when plugged into a targeted computer, these devices register themselves as human interface devices. They can then rapidly send keystrokes to execute malicious commands before a human is able to react.
-Our goal was to construct PORT programs to recognize these attacks within a recording of a machine’s USB traffic, and simulate them by transforming an innocent USB recording into one containing such an attack.
+Our goal was to construct PORT programs to recognize these attacks within a recording of a machine’s USB traffic, and perform SEA-style simulation by transforming an innocent USB recording into one containing such an attack
+that could then be replayed.
 The latter could be replayed using a device similar to those used in actual attacks in order to assess whether or not a computer’s defensive measures (e.g. antivirus software or specialized anti-BADUSB programs) are able detect the attacks. 
 
 The first PORT program we wrote detects a USB device attempting to execute
@@ -208,7 +199,7 @@ In a similar fashion to our detection program, this program identifies USB human
 An analogous operation is illustrated in the latter half of Figure~\ref{fig:USB}.
 In this way, the program can use an innocent stream to create a malicious one capable of driving a BADUSB attack. In doing so, a user can determine how well a system's defenses can detect and prevent such a scenario.
 
-\textbf{Device ID Conflicts} Our second test involved simulating a USB device receiving an inappropriate ``vendor ID'' or ``product ID'' from its manufacturer.
+\textbf{Device ID Conflicts} Our second test involved using SEA to simulate a USB device receiving an inappropriate ``vendor ID'' or ``product ID'' from its manufacturer.
 Because these identifiers help determine which driver to load for a device,
 incorrect settings can, at best, cause the device to not work correctly~\cite{wrongid}.
 In other cases,
@@ -218,7 +209,8 @@ To do so, we wrote a PORT program that monitors a stream of USB traffic for USB 
 The first time it encounters one, the program stores the \textit{vendorID} and \textit{productID} field into registers.
 When subsequent registrations are encountered,
 their identifiers are rewritten using these stored values.
-As a consequence, the action produces a new stream of USB activity in which many devices share incorrect device identifiers. The new stream can then be used to test a system's response to such a mis-configuration.
+As a consequence, the action produces a new stream of USB activity in which many devices share incorrect device identifiers. 
+This recording could then be used after the fashion of SEA to test a system's response to such a mis-configuration.
 
 The above successes show that PORT is easily capable of working with activity representations beyond system calls.
 We did, however, identify one point of friction -- keyboard scan codes are cumbersome to work with.
